@@ -23,5 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
-.firebase
+firestore.rules
+storage.rules
+.firebaserc
+
 .prettierrc
