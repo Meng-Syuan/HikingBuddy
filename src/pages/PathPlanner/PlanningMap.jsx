@@ -11,8 +11,8 @@ import getGeoJSON from '@utils/osmApi';
 import { useSearchLocation } from '@utils/zustand';
 import { useEffect } from 'react';
 //components
-import SearchInputField from './SearchInput';
-import SearchedLocationInfo from './SearchedLocationInfo';
+import SearchInputField from './SearchedLocation/SearchInput';
+import SearchedLocationInfo from './SearchedLocation/LocationDetails';
 
 const StyledMapContainer = styled(MapContainer)`
   height: calc(100vh - 100px);
@@ -50,7 +50,6 @@ const SearchedPositionMarker = () => {
   useEffect(() => {
     if (!geoJSON) return;
     if (!geoJSON.features) {
-      setLocation('此處無法安排行程');
       setSearchInvalid();
       return;
     }
@@ -61,7 +60,7 @@ const SearchedPositionMarker = () => {
       town || ''
     }${city_district || ''}${road || ''}${leisure || ''}`;
 
-    setLocation(searchedLocation || '此處無法安排行程');
+    setLocation(searchedLocation || null);
 
     searchedLocation.length > 0 ? setSearchValid() : setSearchInvalid();
   }, [geoJSON]);

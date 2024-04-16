@@ -1,6 +1,7 @@
 import Map from './PlaningMap';
-// import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import Schedules from './Schedules/Schedules';
 import styled from 'styled-components';
+import color from '@utils/theme';
 import 'leaflet/dist/leaflet.css';
 import { useAuth } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
@@ -13,9 +14,10 @@ const MapWrapper = styled.section`
   flex: 1;
 `;
 
-const PlannerWrapper = styled.aside`
-  background-color: green;
+const SchedulesWrapper = styled.aside`
+  background-color: ${color.lightBackgroundColor};
   flex: 0 1 350px;
+  padding: 20px;
 `;
 
 const PathPlanner = () => {
@@ -29,8 +31,10 @@ const PathPlanner = () => {
   return (
     <>
       <PlannerContainer>
-        <MapWrapper>{isSignedIn && <Map />}</MapWrapper>
-        <PlannerWrapper></PlannerWrapper>
+        {/* <MapWrapper>{isSignedIn && <Map />}</MapWrapper> */}
+        <SchedulesWrapper>
+          <Schedules />
+        </SchedulesWrapper>
       </PlannerContainer>
     </>
   );

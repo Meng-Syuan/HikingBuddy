@@ -1,6 +1,8 @@
 import { useSearchLocation } from '@utils/zustand';
 import styled from 'styled-components';
 import color from '@utils/theme';
+import { schedulesDB } from '@utils/firestore.js';
+import { useAuth } from '@clerk/clerk-react';
 
 const SearchLocationContainer = styled.div`
   position: absolute;
@@ -17,24 +19,22 @@ const SearchLocationContainer = styled.div`
   justify-content: space-between;
   transition-duration: 1s;
 `;
-
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  h4 {
-    width: 200px;
-    letter-spacing: 1px;
-    font-size: 0.875rem;
-  }
 `;
-
+const LocationName = styled.h4`
+  width: 200px;
+  letter-spacing: 1px;
+  font-size: 0.875rem;
+`;
 const LatLngwrapper = styled.div`
   display: flex;
   align-items: center;
-  span {
-    font-size: 0.875rem;
-  }
+`;
+const LatLng = styled.span`
+  font-size: 0.875rem;
 `;
 const WGS84_small = styled.small`
   font-size: 0.625rem;
@@ -54,29 +54,43 @@ const AddToSchedule_btn = styled.button`
     cursor: pointer;
   }
 `;
-const SearchedLocationInfo = () => {
+
+const LocationDetails = () => {
+  const { userId } = useAuth();
+
   const location = useSearchLocation((state) => state.location);
   const geopoint = useSearchLocation((state) => state.geopoint);
   const isSearchValid = useSearchLocation((state) => state.isSearchValid);
+  // const uniqueId = geopoint.lat.toString() + geopoint.lng.toString();
+
+  const handleAddLocation = () => {
+    schedulesDB.addLocation(userId, geopoint, location);
+  };
 
   return (
     <>
       {location && (
         <SearchLocationContainer>
           <ContentWrapper>
-            <h4>{location}</h4>
+            <LocationName>
+              {isSearchValid ? location : '此處無法安排行程'}
+            </LocationName>
             <LatLngwrapper>
               <WGS84_small>WGS84</WGS84_small>
-              <span>
+              <LatLng>
                 {` (${geopoint.lat.toFixed(5)}, ${geopoint.lng.toFixed(5)})`}
-              </span>
+              </LatLng>
             </LatLngwrapper>
           </ContentWrapper>
-          {isSearchValid && <AddToSchedule_btn>新增</AddToSchedule_btn>}
+          {isSearchValid && (
+            <AddToSchedule_btn onClick={handleAddLocation}>
+              新增
+            </AddToSchedule_btn>
+          )}
         </SearchLocationContainer>
       )}
     </>
   );
 };
 
-export default SearchedLocationInfo;
+export default LocationDetails;
