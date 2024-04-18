@@ -34,14 +34,14 @@ const StyledMapContainer = styled(MapContainer)`
 
 const SearchedPositionMarker = () => {
   const {
+    geoJSON,
+    geopoint,
     setGeoJSON,
     setLocation,
     setGeopoint,
     setSearchValid,
     setSearchInvalid,
   } = useSearchLocation();
-  const geoJSON = useSearchLocation((state) => state.geoJSON);
-  const geopoint = useSearchLocation((state) => state.geopoint);
 
   // useMapEvent should be used in MapContainer, get latlng and the marker
   useMapEvent('click', (e) => {

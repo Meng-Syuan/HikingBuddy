@@ -56,6 +56,7 @@ const SingleLocation = ({ name, id }) => {
           };
         }
       }
+      console.log('no change');
       return itinerary;
     });
     setItineraries(updateItineraries);

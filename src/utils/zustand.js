@@ -33,6 +33,8 @@ export const useScheduleArrangement = create((set) => ({
     },
   ],
   newItinerary: null,
+  geopoints: [],
   setItineraries: (itineraries) => set({ itineraries }),
   setNewItinerary: (newItinerary) => set({ newItinerary }),
+  addGeopoints: (geopoints) => set((prevState) => [...prevState]),
 }));

@@ -26,5 +26,6 @@ dist-ssr
 firestore.rules
 storage.rules
 .firebaserc
+.firebase
 
 .prettierrc

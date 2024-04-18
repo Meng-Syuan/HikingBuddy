@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import CalendarDate from './CalendarDate';
 import color from '@theme';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 import { schedulesDB } from '@utils/firestore';
 import { useAuth } from '@clerk/clerk-react';
@@ -65,31 +65,45 @@ const Schedules = () => {
   const [scheduleBlocks, setScheduleBlocks] = useState([]);
   const [isSortEnd, setIsSortEnd] = useState(false);
 
+  const getTemporaryLocations = useCallback(async () => {
+    const temporaryLocations = await schedulesDB.getTemporaryLocations(userId);
+
+    if (temporaryLocations) {
+      const items = temporaryLocations.map((location) => ({
+        id: location.itineraryId,
+        name: location.location,
+      }));
+
+      setBaseBlock([
+        {
+          id: 'base_block',
+          items,
+        },
+      ]);
+    }
+  }, [userId]);
+
   //get temporary schedule from db when first loading
   useEffect(() => {
-    const getTemporaryLocations = async (userId) => {
-      const temporaryLocations = await schedulesDB.getTemporaryLocations(
-        userId
-      );
-      if (temporaryLocations) {
-        const items = temporaryLocations.map((location) => ({
-          id: location.itineraryId,
-          name: location.location,
-        }));
-        setBaseBlock([
-          {
-            id: 'base_block',
-            items,
-          },
-        ]);
-      }
-    };
-    getTemporaryLocations(userId);
+    getTemporaryLocations();
   }, []);
+
   //setScheduleBlocks when base block change(add new location / get data from db)
   useEffect(() => {
-    if (baseBlock) {
+    if (!baseBlock) return;
+    if (scheduleBlocks.length <= 1) {
+      console.log('setScheduleBlocks');
       setScheduleBlocks(baseBlock);
+    }
+    if (scheduleBlocks.length > 1) {
+      const updateScheduleBlocks = scheduleBlocks.map((block) => {
+        if (block.id === 'base_block') {
+          return { id: 'base_block', items: [...baseBlock[0].items] };
+        } else {
+          return block;
+        }
+      });
+      setScheduleBlocks(updateScheduleBlocks);
     }
   }, [baseBlock]);
 
@@ -102,6 +116,7 @@ const Schedules = () => {
         items: [],
       };
     });
+    getTemporaryLocations();
     setScheduleBlocks([...generatedBlock, ...baseBlock]);
   }, [selectedDates]);
 
@@ -122,13 +137,13 @@ const Schedules = () => {
 
   //get itineraries details and set to global state management
   useEffect(() => {
-    // console.log(scheduleBlocks);
     const itinerariesDetails = scheduleBlocks.reduce((acc, curr) => {
       curr.items.forEach((item) => {
         acc.push({
           itineraryId: item.id,
           location: item.name,
           date: item.date,
+          datetime: item.datetime,
         });
       });
       return acc;
@@ -140,9 +155,7 @@ const Schedules = () => {
   useEffect(() => {
     if (!newItinerary) return;
 
-    //initial state
     if (scheduleBlocks.length === 0) {
-      console.log('新增第一筆');
       console.log(newItinerary);
       setBaseBlock([
         {
@@ -157,28 +170,31 @@ const Schedules = () => {
       ]);
       setNewItinerary(null);
     } else {
-      console.log('已經有base資料，再新增進來');
       const newItem = {
         id: newItinerary.itineraryId,
         name: newItinerary.location,
       };
-      const updateBaseBlocks = scheduleBlocks.map((block) => {
-        if (block.id === 'base_block') {
-          return {
-            id: 'base_block',
-            items: [...block.items, { ...newItem }],
-          };
-        }
-        return block;
-      });
-      setScheduleBlocks(updateBaseBlocks);
-      console.log('setScheduleBlocks complete');
+      const originalBaseBlocks = scheduleBlocks.filter(
+        (block) => block.id === 'base_block'
+      );
+      const updateNewBaseBlock = [
+        ...originalBaseBlocks[0].items,
+        { ...newItem },
+      ];
+      setBaseBlock([
+        {
+          id: 'base_block',
+          items: [...updateNewBaseBlock],
+        },
+      ]);
     }
   }, [newItinerary]);
 
   useEffect(() => {
+    console.log('itinerary');
     console.log(itineraries);
   }, [itineraries]);
+
   const handleSortEnd = (blockId, items) => {
     setScheduleBlocks((prevBlocks) =>
       prevBlocks.map((block) => {

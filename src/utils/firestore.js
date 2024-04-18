@@ -86,15 +86,6 @@ export const schedulesDB = {
     datetime
   ) {},
 
-  async addDateTime(
-    method,
-    userId,
-    isActive,
-    isTemporary,
-    latlng,
-    location,
-    datetime
-  ) {},
   async addNote() {},
 
   async getTemporaryLocations(userId) {
@@ -207,7 +198,7 @@ export const schedulesDB = {
       });
     }
   },
-};
+}; //加條件判斷
 
 //single
 export const getFirestoreData = async () => {
