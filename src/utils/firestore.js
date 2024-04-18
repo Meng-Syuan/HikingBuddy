@@ -1,4 +1,3 @@
-import { update } from 'firebase/database';
 import db from './firebaseConfig.js';
 import {
   collection,
@@ -11,7 +10,10 @@ import {
   query,
   where,
   GeoPoint,
+  onSnapshot,
 } from 'firebase/firestore';
+import { useState, useEffect, useRef } from 'react';
+import { useScheduleArrangement } from './zustand.js';
 
 export const usersDB = {
   async setUsersDB(userId, display_name) {
@@ -35,7 +37,6 @@ export const usersDB = {
 export const schedulesDB = {
   schedulesRef: collection(db, 'schedules'),
   async addLocation(userId, geopoint, location) {
-    // const schedulesRef = collection(db, 'schedules');
     try {
       const q = query(
         this.schedulesRef,
@@ -51,8 +52,10 @@ export const schedulesDB = {
         const newDocRef = await addDoc(this.schedulesRef, {
           isActive: false,
           isTemporary: true,
+          isFinished: false,
           userId,
         });
+        await updateDoc(newDocRef, { scheduleId: newDocRef.id });
         const itinerariesRef = collection(newDocRef, 'itineraries');
         const itinerariesDocRef = await addDoc(itinerariesRef, newItinerary);
         const itineraryId = itinerariesDocRef.id;
@@ -94,7 +97,7 @@ export const schedulesDB = {
   ) {},
   async addNote() {},
 
-  async getLocations(userId) {
+  async getTemporaryLocations(userId) {
     try {
       const q = query(
         this.schedulesRef,
@@ -112,6 +115,96 @@ export const schedulesDB = {
       return locations;
     } catch (error) {
       console.log('Failed to get schedules data: ' + error);
+    }
+  },
+
+  newItineraryListener(userId) {
+    const unsubscribersRef = useRef([]);
+    const { setNewItinerary } = useScheduleArrangement();
+
+    useEffect(() => {
+      const q = query(
+        this.schedulesRef,
+        where('userId', '==', userId),
+        where('isTemporary', '==', true)
+      );
+
+      const checkQuery = async () => {
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          const unsubscribeSchedules = onSnapshot(
+            this.schedulesRef,
+            (snapshot) => {
+              snapshot.docChanges().forEach((change) => {
+                if (change.type === 'added') {
+                  const doc = change.doc;
+                  const data = doc.data();
+                  if (data.userId === userId && data.isTemporary === true) {
+                    const itinerariesRef = collection(doc.ref, 'itineraries');
+                    const unsubscribeItineraries = onSnapshot(
+                      itinerariesRef,
+                      (itinerariesSnapshot) => {
+                        itinerariesSnapshot.docChanges().forEach((change) => {
+                          if (change.type === 'modified') {
+                            console.log('modified itineraries');
+                            console.log('setNewItinerary...');
+                            setNewItinerary(change.doc.data());
+                          }
+                        });
+                      }
+                    );
+                    unsubscribersRef.current.push(unsubscribeItineraries);
+                  }
+                }
+              });
+            }
+          );
+          unsubscribersRef.current.push(unsubscribeSchedules);
+        } else {
+          querySnapshot.forEach((documentSnapshot) => {
+            const itinerariesRef = collection(
+              documentSnapshot.ref,
+              'itineraries'
+            );
+            const unsubscribeItineraries = onSnapshot(
+              itinerariesRef,
+              (itinerariesSnapshot) => {
+                itinerariesSnapshot.docChanges().forEach((change) => {
+                  if (change.type === 'modified') {
+                    console.log('modified itineraries');
+                    console.log('setNewItinerary...');
+                    setNewItinerary(change.doc.data());
+                  }
+                });
+              }
+            );
+            unsubscribersRef.current.push(unsubscribeItineraries);
+          });
+        }
+      };
+      checkQuery();
+
+      return () => {
+        unsubscribersRef.current.forEach((unsubscribe) => {
+          unsubscribe();
+        });
+      };
+    }, []);
+  },
+
+  async setTemporaryToFalse(userId) {
+    const q = query(
+      this.schedulesRef,
+      where('userId', '==', userId),
+      where('isTemporary', '==', true)
+    );
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const scheduleRef = querySnapshot.docs[0].ref;
+      await updateDoc(scheduleRef, {
+        isTemporary: false,
+      });
     }
   },
 };

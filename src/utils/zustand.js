@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export const useSearchLocation = create((set, get) => ({
+export const useSearchLocation = create((set) => ({
   geoJSON: null,
   location: null,
   geopoint: null,
@@ -14,11 +14,25 @@ export const useSearchLocation = create((set, get) => ({
   setSearchResults: (searchResults) => set({ searchResults }),
 }));
 
-export const useSearchLocations = create((set, get) => ({
+export const useSearchLocations = create((set) => ({
   searchLocations: null,
   isLocationChecked: false,
   setSearchLocations: (searchLocations) => set({ searchLocations }),
   resetSearchLocations: () => set({ searchLocations: null }),
   checkLocation: () => set({ isLocationChecked: true }),
   choosingLocation: () => set({ isLocationChecked: false }),
+}));
+
+export const useScheduleArrangement = create((set) => ({
+  itineraries: [
+    {
+      itineraryId: '',
+      location: '',
+      date: '',
+      datetime: '',
+    },
+  ],
+  newItinerary: null,
+  setItineraries: (itineraries) => set({ itineraries }),
+  setNewItinerary: (newItinerary) => set({ newItinerary }),
 }));

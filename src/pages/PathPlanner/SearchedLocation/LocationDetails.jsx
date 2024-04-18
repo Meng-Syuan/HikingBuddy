@@ -57,11 +57,7 @@ const AddToSchedule_btn = styled.button`
 
 const LocationDetails = () => {
   const { userId } = useAuth();
-
-  const location = useSearchLocation((state) => state.location);
-  const geopoint = useSearchLocation((state) => state.geopoint);
-  const isSearchValid = useSearchLocation((state) => state.isSearchValid);
-  // const uniqueId = geopoint.lat.toString() + geopoint.lng.toString();
+  const { location, geopoint, isSearchValid } = useSearchLocation();
 
   const handleAddLocation = () => {
     schedulesDB.addLocation(userId, geopoint, location);

@@ -2,16 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './index.css';
-import GlobalStyle from './assets/GlobalStyle.js';
+import GlobalStyle from './assets/GlobalStyle';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import App from './App.jsx';
 import Home from './pages/Home/Home.jsx';
 import Profile from './pages/Profile/Profile.jsx';
-import PathPlanner from './pages/PathPlanner/PathPlanner.jsx';
+import PathPlanner from './pages/PathPlanner';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  // <React.StrictMode>
+  <>
     <GlobalStyle />
     <BrowserRouter>
       <Routes>
@@ -22,5 +23,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         </Route>
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>
+  </>
+
+  // </React.StrictMode>
 );

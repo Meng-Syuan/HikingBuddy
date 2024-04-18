@@ -5,14 +5,28 @@ import {
   Popup,
   useMapEvent,
 } from 'react-leaflet';
-import styled from 'styled-components';
 import 'leaflet/dist/leaflet.css';
+import styled from 'styled-components';
 import getGeoJSON from '@utils/osmApi';
 import { useSearchLocation } from '@utils/zustand';
 import { useEffect } from 'react';
 //components
 import SearchInputField from './SearchedLocation/SearchInput';
 import SearchedLocationInfo from './SearchedLocation/LocationDetails';
+
+//Adjust for invisible Marker after deploying due to webpack building
+import L from 'leaflet';
+import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
+import iconUrl from 'leaflet/dist/images/marker-icon.png';
+import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl,
+  iconUrl,
+  shadowUrl,
+});
 
 const StyledMapContainer = styled(MapContainer)`
   height: calc(100vh - 100px);
