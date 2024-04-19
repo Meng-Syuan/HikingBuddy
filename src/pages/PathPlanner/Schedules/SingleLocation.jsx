@@ -35,36 +35,16 @@ const DeleteButton = styled.button`
 `;
 
 const SingleLocation = ({ name, id }) => {
-  const { itineraries, setItineraries } = useScheduleArrangement();
-  const [timeStr, setTimeStr] = useState('');
+  const { updateItinerariesWithDatetime } = useScheduleArrangement();
   const [timeDiff, setTimeDiff] = useState('');
 
   useEffect(() => {
-    if (!timeDiff) return;
-    const updateItineraries = itineraries.map((itinerary) => {
-      if (id === itinerary.itineraryId) {
-        if (isNaN(itinerary.date)) {
-          console.log('timeDiff change');
-          return {
-            ...itinerary,
-            datetime: timeDiff,
-          };
-        } else {
-          return {
-            ...itinerary,
-            datetime: itinerary.date + timeDiff,
-          };
-        }
-      }
-      console.log('no change');
-      return itinerary;
-    });
-    setItineraries(updateItineraries);
-    console.log('setItineraries with time diff');
+    if (timeDiff) {
+      updateItinerariesWithDatetime(id, timeDiff);
+    }
   }, [timeDiff]);
 
   const handleTimeChange = (selectedDateTime, timeStr) => {
-    setTimeStr(timeStr);
     const todayMidnight_timestamp = new Date().setHours(0, 0, 0);
     const diffTimestamp =
       selectedDateTime[0].getTime() - todayMidnight_timestamp;
@@ -82,7 +62,7 @@ const SingleLocation = ({ name, id }) => {
   return (
     <ContentWrapper>
       <Flatpickr options={timePickerOptions}>
-        <input type="text" value={timeStr} data-input readOnly />
+        <input type="text" data-input readOnly />
       </Flatpickr>
       <Location_Name>{name}</Location_Name>
       <DeleteButton>刪除</DeleteButton>

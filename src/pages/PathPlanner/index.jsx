@@ -6,7 +6,6 @@ import 'leaflet/dist/leaflet.css';
 import { useAuth } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import { schedulesDB } from '@utils/firestore';
-import { useScheduleArrangement } from '@utils/zustand';
 
 const PlannerContainer = styled.main`
   display: flex;
@@ -25,9 +24,8 @@ const SchedulesWrapper = styled.aside`
 const PathPlanner = () => {
   const { isSignedIn, userId } = useAuth();
   const navigate = useNavigate();
-  const { setNewItinerary } = useScheduleArrangement();
 
-  schedulesDB.newItineraryListener(userId);
+  schedulesDB.useNewItineraryListener(userId);
 
   // 之後用 CSS 修改彈出式視窗
   if (!isSignedIn) {

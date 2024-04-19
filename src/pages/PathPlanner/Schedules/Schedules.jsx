@@ -58,8 +58,16 @@ const sortableOptions = {
 
 const Schedules = () => {
   const { userId } = useAuth();
-  const { setItineraries, itineraries, newItinerary, setNewItinerary } =
-    useScheduleArrangement();
+  const {
+    setItineraries,
+    itineraries,
+    newItinerary,
+    setNewItinerary,
+    setGeopoints,
+    tripName,
+    setTripName,
+    updateItinerariesWithDates,
+  } = useScheduleArrangement();
   const [selectedDates, setSelectedDates] = useState([]);
   const [baseBlock, setBaseBlock] = useState(null);
   const [scheduleBlocks, setScheduleBlocks] = useState([]);
@@ -69,21 +77,37 @@ const Schedules = () => {
     const temporaryLocations = await schedulesDB.getTemporaryLocations(userId);
 
     if (temporaryLocations) {
+      //for UI render
       const items = temporaryLocations.map((location) => ({
         id: location.itineraryId,
         name: location.location,
       }));
-
       setBaseBlock([
         {
           id: 'base_block',
           items,
         },
       ]);
+      //manage global state
+      const geopoints = temporaryLocations.map((location) => {
+        return {
+          lat: location.geopoint._lat,
+          lng: location.geopoint._long,
+          id: location.itineraryId,
+          name: location.location,
+        };
+      });
+      setGeopoints(geopoints);
+
+      const itineraries = temporaryLocations.map((location) => ({
+        itineraryId: location.itineraryId,
+        location: location.location,
+      }));
+      setItineraries(itineraries);
     }
   }, [userId]);
 
-  //get temporary schedule from db when first loading
+  //get temporary schedule and set the global itineraries state from db when first loading
   useEffect(() => {
     getTemporaryLocations();
   }, []);
@@ -92,7 +116,6 @@ const Schedules = () => {
   useEffect(() => {
     if (!baseBlock) return;
     if (scheduleBlocks.length <= 1) {
-      console.log('setScheduleBlocks');
       setScheduleBlocks(baseBlock);
     }
     if (scheduleBlocks.length > 1) {
@@ -130,25 +153,28 @@ const Schedules = () => {
         }));
         return { ...block, items: updateItemsWithDate };
       });
+
       setScheduleBlocks(updateBlocks);
       setIsSortEnd(false);
     }
   }, [isSortEnd]);
 
-  //get itineraries details and set to global state management
+  //update date properties to itineraries
   useEffect(() => {
-    const itinerariesDetails = scheduleBlocks.reduce((acc, curr) => {
-      curr.items.forEach((item) => {
-        acc.push({
-          itineraryId: item.id,
-          location: item.name,
-          date: item.date,
-          datetime: item.datetime,
+    // console.log('scheduleBlocks');
+    // console.log(scheduleBlocks);
+    if (scheduleBlocks.length > 1) {
+      const itinerariesWithDates = scheduleBlocks.reduce((acc, curr) => {
+        curr.items.forEach((item) => {
+          acc.push({
+            itineraryId: item.id,
+            date: item.date,
+          });
         });
-      });
-      return acc;
-    }, []);
-    setItineraries(itinerariesDetails);
+        return acc;
+      }, []);
+      updateItinerariesWithDates(itinerariesWithDates);
+    }
   }, [scheduleBlocks]);
 
   //set the new location on time
@@ -156,7 +182,6 @@ const Schedules = () => {
     if (!newItinerary) return;
 
     if (scheduleBlocks.length === 0) {
-      console.log(newItinerary);
       setBaseBlock([
         {
           id: 'base_block',
@@ -191,10 +216,9 @@ const Schedules = () => {
   }, [newItinerary]);
 
   useEffect(() => {
-    console.log('itinerary');
+    console.log('itineraries');
     console.log(itineraries);
   }, [itineraries]);
-
   const handleSortEnd = (blockId, items) => {
     setScheduleBlocks((prevBlocks) =>
       prevBlocks.map((block) => {
@@ -206,7 +230,9 @@ const Schedules = () => {
     );
     setIsSortEnd(true);
   };
-
+  const handleTripNameChange = (e) => {
+    setTripName(e.target.value);
+  };
   return (
     <>
       <TripName>
@@ -215,6 +241,8 @@ const Schedules = () => {
           id="tripName"
           type="text"
           placeholder="未命名的路線名稱"
+          value={tripName}
+          onChange={handleTripNameChange}
         />
       </TripName>
       <CalendarDate selectDates={setSelectedDates} />

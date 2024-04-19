@@ -24,17 +24,59 @@ export const useSearchLocations = create((set) => ({
 }));
 
 export const useScheduleArrangement = create((set) => ({
+  tripName: '',
   itineraries: [
     {
       itineraryId: '',
-      location: '',
       date: '',
       datetime: '',
     },
   ],
   newItinerary: null,
   geopoints: [],
+
+  setTripName: (tripName) => set({ tripName }),
+
   setItineraries: (itineraries) => set({ itineraries }),
+
+  updateItinerariesWithDates: (itinerariesWithDates) =>
+    set((state) => {
+      const updatedItineraries = state.itineraries.map((itinerary) => {
+        const matchingItem = itinerariesWithDates.find(
+          (item) => item.itineraryId === itinerary.itineraryId
+        );
+        return { ...itinerary, date: matchingItem.date };
+      });
+      return { itineraries: updatedItineraries };
+    }),
+
+  updateItinerariesWithDatetime: (id, timeDiff) =>
+    set((state) => {
+      const updatedItineraries = state.itineraries.map((itinerary) => {
+        if (id === itinerary.itineraryId) {
+          if (isNaN(itinerary.date)) {
+            return {
+              ...itinerary,
+              datetime: timeDiff,
+            };
+          } else {
+            return {
+              ...itinerary,
+              datetime: itinerary.date + timeDiff,
+            };
+          }
+        } else {
+          return itinerary;
+        }
+      });
+      return { itineraries: updatedItineraries };
+    }),
+
   setNewItinerary: (newItinerary) => set({ newItinerary }),
-  addGeopoints: (geopoints) => set((prevState) => [...prevState]),
+
+  setGeopoints: (geopoints) => set({ geopoints }),
+  addGeopoint: (lat, lng, id, name) =>
+    set((state) => ({
+      geopoints: [...state.geopoints, { lat, lng, id, name }],
+    })),
 }));

@@ -109,7 +109,7 @@ export const schedulesDB = {
     }
   },
 
-  newItineraryListener(userId) {
+  useNewItineraryListener(userId) {
     const unsubscribersRef = useRef([]);
     const { setNewItinerary } = useScheduleArrangement();
 
@@ -138,8 +138,6 @@ export const schedulesDB = {
                       (itinerariesSnapshot) => {
                         itinerariesSnapshot.docChanges().forEach((change) => {
                           if (change.type === 'modified') {
-                            console.log('modified itineraries');
-                            console.log('setNewItinerary...');
                             setNewItinerary(change.doc.data());
                           }
                         });
@@ -163,8 +161,6 @@ export const schedulesDB = {
               (itinerariesSnapshot) => {
                 itinerariesSnapshot.docChanges().forEach((change) => {
                   if (change.type === 'modified') {
-                    console.log('modified itineraries');
-                    console.log('setNewItinerary...');
                     setNewItinerary(change.doc.data());
                   }
                 });
@@ -184,21 +180,33 @@ export const schedulesDB = {
     }, []);
   },
 
-  async setTemporaryToFalse(userId) {
+  async useSaveSchedule(userId, tripName, itineraries) {
     const q = query(
       this.schedulesRef,
       where('userId', '==', userId),
       where('isTemporary', '==', true)
     );
     const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-      const scheduleRef = querySnapshot.docs[0].ref;
-      await updateDoc(scheduleRef, {
-        isTemporary: false,
+    if (querySnapshot.empty) return;
+    const temporaryScheduleRef = querySnapshot.docs[0].ref;
+    await updateDoc(temporaryScheduleRef, {
+      isTemporary: false,
+      tripName,
+    });
+    const itinerariesPromise = itineraries.map((itinerary) => {
+      const itineraryDocRef = doc(
+        temporaryScheduleRef,
+        'itineraries',
+        itinerary.itineraryId
+      );
+      return updateDoc(itineraryDocRef, {
+        date: itinerary.date,
+        datetime: itinerary.datetime,
       });
-    }
+    });
+    await Promise.all(itinerariesPromise);
   },
-}; //加條件判斷
+};
 
 //single
 export const getFirestoreData = async () => {

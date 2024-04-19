@@ -8,11 +8,11 @@ import {
 import 'leaflet/dist/leaflet.css';
 import styled from 'styled-components';
 import getGeoJSON from '@utils/osmApi';
-import { useSearchLocation } from '@utils/zustand';
+import { useSearchLocation, useScheduleArrangement } from '@utils/zustand';
 import { useEffect } from 'react';
 //components
 import SearchInputField from './SearchedLocation/SearchInput';
-import SearchedLocationInfo from './SearchedLocation/LocationDetails';
+import SearchedResult from './SearchedLocation/SearchingResult';
 
 //Adjust for invisible Marker after deploying due to webpack building
 import L from 'leaflet';
@@ -31,6 +31,20 @@ L.Icon.Default.mergeOptions({
 const StyledMapContainer = styled(MapContainer)`
   height: calc(100vh - 100px);
 `;
+const TemporaryScheduleMarkers = () => {
+  const { geopoints } = useScheduleArrangement();
+  return (
+    geopoints &&
+    geopoints.map((geopoint) => (
+      <Marker
+        position={{ lat: geopoint.lat, lng: geopoint.lng }}
+        key={geopoint.id}
+      >
+        <Popup>{geopoint.name}</Popup>
+      </Marker>
+    ))
+  );
+};
 
 const SearchedPositionMarker = () => {
   const {
@@ -95,13 +109,14 @@ const PathPlannerMap = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {/* 改成自己的位置*****************改樣式!! */}
+        {/* 改成自己的位置*****************改樣式!!
         <Marker position={{ lat: 23.5, lng: 121 }}>
           <Popup>點地標可以出現文字哦</Popup>
-        </Marker>
+        </Marker> */}
+        <TemporaryScheduleMarkers />
         <SearchedPositionMarker />
       </StyledMapContainer>
-      <SearchedLocationInfo />
+      <SearchedResult />
     </>
   );
 };

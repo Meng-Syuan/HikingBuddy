@@ -1,4 +1,4 @@
-import { useSearchLocation } from '@utils/zustand';
+import { useSearchLocation, useScheduleArrangement } from '@utils/zustand';
 import styled from 'styled-components';
 import color from '@utils/theme';
 import { schedulesDB } from '@utils/firestore.js';
@@ -58,9 +58,16 @@ const AddToSchedule_btn = styled.button`
 const LocationDetails = () => {
   const { userId } = useAuth();
   const { location, geopoint, isSearchValid } = useSearchLocation();
+  const { geopoints, addGeopoint } = useScheduleArrangement();
 
   const handleAddLocation = () => {
     schedulesDB.addLocation(userId, geopoint, location);
+    addGeopoint(
+      geopoint.lat,
+      geopoint.lng,
+      geopoint.lat + geopoint.lng,
+      location
+    );
   };
 
   return (
