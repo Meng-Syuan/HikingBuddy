@@ -3,7 +3,7 @@ import CalendarDate from './CalendarDate';
 import color from '@theme';
 import { useState, useEffect, useCallback } from 'react';
 import { ReactSortable } from 'react-sortablejs';
-import { schedulesDB } from '@utils/firestore';
+import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import { useAuth } from '@clerk/clerk-react';
 import Location from './SingleLocation';
 import SaveScheduleBtn from './SaveScheduleBtn';
@@ -60,22 +60,22 @@ const Schedules = () => {
   const { userId } = useAuth();
   const {
     setItineraries,
-    itineraries,
     newItinerary,
     setNewItinerary,
     setGeopoints,
     tripName,
     setTripName,
     updateItinerariesWithDates,
+    itineraries,
   } = useScheduleArrangement();
+  const { useTemporaryLocations } = useSchedulesDB();
   const [selectedDates, setSelectedDates] = useState([]);
   const [baseBlock, setBaseBlock] = useState(null);
   const [scheduleBlocks, setScheduleBlocks] = useState([]);
   const [isSortEnd, setIsSortEnd] = useState(false);
 
   const getTemporaryLocations = useCallback(async () => {
-    const temporaryLocations = await schedulesDB.getTemporaryLocations(userId);
-
+    const temporaryLocations = await useTemporaryLocations();
     if (temporaryLocations) {
       //for UI render
       const items = temporaryLocations.map((location) => ({
@@ -161,8 +161,6 @@ const Schedules = () => {
 
   //update date properties to itineraries
   useEffect(() => {
-    // console.log('scheduleBlocks');
-    // console.log(scheduleBlocks);
     if (scheduleBlocks.length > 1) {
       const itinerariesWithDates = scheduleBlocks.reduce((acc, curr) => {
         curr.items.forEach((item) => {
@@ -219,6 +217,7 @@ const Schedules = () => {
     console.log('itineraries');
     console.log(itineraries);
   }, [itineraries]);
+
   const handleSortEnd = (blockId, items) => {
     setScheduleBlocks((prevBlocks) =>
       prevBlocks.map((block) => {

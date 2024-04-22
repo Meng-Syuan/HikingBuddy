@@ -8,8 +8,8 @@ import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import { signInWithCustomToken, updateProfile } from 'firebase/auth';
-import { auth } from '@utils/firebaseConfig.js';
-import { usersDB } from '@utils/firestore.js';
+import { auth } from '@utils/firebase/firebaseConfig.js';
+import useUsersDB from '@utils/hooks/useUsersDB';
 
 //components
 import ButtonWrapper from '../Button/ButtonWrapper';
@@ -43,10 +43,13 @@ const Img = styled.img`
 const SignIn = () => {
   const { user } = useUser();
   const { getToken, isLoaded, isSignedIn, userId } = useAuth();
-  //之後要打開
+  const { setUsersDB } = useUsersDB();
+  //之後要打開，用來寫入使用者資料
   // useEffect(() => {
   //   if (isLoaded && isSignedIn) {
   //     signInWithClerk();
+  //     console.log('signInWithClerk');
+  //     console.log(userId);
   //   }
   // }, [isLoaded, isSignedIn]);
 
@@ -58,7 +61,7 @@ const SignIn = () => {
       displayName: user.username,
     });
     //sync users data with firestore
-    await usersDB.setUsersDB(userId, user.username);
+    await setUsersDB(userId, user.username);
   };
 
   const userInfo = user
@@ -88,9 +91,18 @@ const SignIn = () => {
       {/*Manage account after sign-in */}
       <SignedIn>
         {userInfo && (
-          <ProfileBtn>
-            <Img src={user.imageUrl} alt="profile page entry" />
-          </ProfileBtn>
+          <NavLink
+            to="/profile"
+            style={({ isActive }) => {
+              return {
+                color: isActive ? `${color.primary}` : `${color.textColor}`,
+              };
+            }}
+          >
+            <ProfileBtn>
+              <Img src={user.imageUrl} alt="profile page entry" />
+            </ProfileBtn>
+          </NavLink>
         )}
       </SignedIn>
     </>

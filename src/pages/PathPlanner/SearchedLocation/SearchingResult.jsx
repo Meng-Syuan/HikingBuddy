@@ -1,7 +1,7 @@
 import { useSearchLocation, useScheduleArrangement } from '@utils/zustand';
 import styled from 'styled-components';
 import color from '@utils/theme';
-import { schedulesDB } from '@utils/firestore.js';
+import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import { useAuth } from '@clerk/clerk-react';
 
 const SearchLocationContainer = styled.div`
@@ -59,9 +59,10 @@ const LocationDetails = () => {
   const { userId } = useAuth();
   const { location, geopoint, isSearchValid } = useSearchLocation();
   const { geopoints, addGeopoint } = useScheduleArrangement();
+  const { addLocationToDB } = useSchedulesDB();
 
-  const handleAddLocation = () => {
-    schedulesDB.addLocation(userId, geopoint, location);
+  const handleAddLocation = async () => {
+    await addLocationToDB(geopoint, location);
     addGeopoint(
       geopoint.lat,
       geopoint.lng,

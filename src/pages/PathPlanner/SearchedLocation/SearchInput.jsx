@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import ButtonWrapper from '../../../assets/components/Button/ButtonWrapper';
+import ButtonWrapper from '../../../components/Button/ButtonWrapper';
 import hoverMixin from '@utils/hoverMixin';
 import searchIcon from '../../../assets/img/search.png';
 import searchIcon_hover from '../../../assets/img/search-hover.png';

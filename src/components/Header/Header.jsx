@@ -63,7 +63,9 @@ const Header = () => {
             {/* <span className="split">|</span> */}
             <ListItem>山閱足跡</ListItem>
             {/* <span className="split">|</span> */}
-            <ListItem>親愛的留守人</ListItem>
+            <ListItem>
+              <NavLink to="/protector">親愛的留守人</NavLink>
+            </ListItem>
           </UnorderedList>
         </Navigation>
         <SignIn />

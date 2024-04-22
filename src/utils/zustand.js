@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 
+//planning
 export const useSearchLocation = create((set) => ({
   geoJSON: null,
   location: null,
@@ -78,5 +79,30 @@ export const useScheduleArrangement = create((set) => ({
   addGeopoint: (lat, lng, id, name) =>
     set((state) => ({
       geopoints: [...state.geopoints, { lat, lng, id, name }],
+    })),
+}));
+
+//profile
+export const useUserData = create((set) => ({
+  userData: null,
+  futureSchedules: [],
+  pastSchedules: [],
+  setUserData: (userData) => set({ userData }),
+  setFutureSchedules: (futureSchedules) => set({ futureSchedules }),
+  setPastSchedules: (pastSchedules) => set({ pastSchedules }),
+}));
+
+export const useScheduleData = create((set) => ({
+  scheduleInfo: null,
+  scheduleDetails: null,
+  isProtectorActive: false,
+  locationNotes: {},
+  setScheduleInfo: (info) => set({ scheduleInfo: info }),
+  setScheduleDetails: (content) => set({ scheduleDetails: content }),
+  toggleIsProtectorActive: () =>
+    set((state) => ({ isProtectorActive: !state.isProtectorActive })),
+  setLocationNote: (id, value) =>
+    set((state) => ({
+      locationNotes: { ...state.locationNotes, [id]: value },
     })),
 }));

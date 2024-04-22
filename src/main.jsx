@@ -7,8 +7,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import App from './App.jsx';
 import Home from './pages/Home/Home.jsx';
-import Profile from './pages/Profile/Profile.jsx';
+import Profile from './pages/Profile';
+import ProfileHome from './pages/Profile/ProfileHome.jsx';
+import ScheduleDetails from './pages/Profile/scheduleDetails';
 import PathPlanner from './pages/PathPlanner';
+import Protector from './pages/Protector';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   // <React.StrictMode>
@@ -19,7 +22,18 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/" element={<App />}>
           <Route index element={<Home />} />
           <Route path="/path-planner" element={<PathPlanner />}></Route>
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={<Profile />}>
+            <Route index element={<ProfileHome />} />
+            <Route
+              path="/profile/schedule-details/:scheduleId"
+              element={<ScheduleDetails />}
+            />
+          </Route>
+
+          <Route
+            path="/protector/:encryptedScheduleId"
+            element={<Protector />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>
