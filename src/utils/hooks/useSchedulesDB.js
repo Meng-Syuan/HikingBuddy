@@ -210,23 +210,6 @@ const useSchedulesDB = () => {
     return currentScheduleRef.id;
   };
 
-  //protector????
-  const getActiveScheduleId = async () => {
-    try {
-      const q = query(
-        schedulesRef,
-        where('userId', '==', userId),
-        where('isActive', '==', true)
-      );
-      const querySnapshot = await getDocs(q);
-      if (querySnapshot.empty) return;
-      const activeScheduleId = querySnapshot.docs[0].id;
-      return activeScheduleId;
-    } catch (error) {
-      console.log('Error: ' + error);
-    }
-  };
-
   const useSortSchedulesDates = async () => {
     if (!userData.schedulesIDs) return;
     const schedulesIDs = userData.schedulesIDs;
@@ -326,7 +309,7 @@ const useSchedulesDB = () => {
     useTemporaryLocations,
     useNewItineraryListener,
     useSaveSchedule,
-    getActiveScheduleId,
+    // getActiveScheduleId,
     useSortSchedulesDates,
     getScheduleInfo,
     getScheduleDetails,

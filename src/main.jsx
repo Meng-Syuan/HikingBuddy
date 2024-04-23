@@ -29,7 +29,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               element={<ScheduleDetails />}
             />
           </Route>
-
           <Route
             path="/protector/:encryptedScheduleId"
             element={<Protector />}

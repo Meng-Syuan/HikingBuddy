@@ -52,22 +52,26 @@ const Split = styled.hr`
 
 const PersonalInfo = () => {
   const { userData, futureSchedules, pastSchedules } = useUserData();
-  const { useUsersData, getActiveScheduleId } = useUsersDB();
   const { useSortSchedulesDates } = useSchedulesDB();
   const [activeId, setActiveId] = useState('');
 
-  useUsersData();
+  // useEffect(() => {
+  //   if (!userData) return;
+  //   const fetchActiveScheduleId = async () => {
+  //     const id = await getActiveScheduleId(); //不用! 之後直接取useData 裡面的資料!
+  //     setActiveId(id);
+  //   };
+  //   fetchActiveScheduleId();
+  // }, [userData]);
   useEffect(() => {
     if (!userData) return;
-    const fetchActiveScheduleId = async () => {
-      const id = await getActiveScheduleId();
-      setActiveId(id);
-    };
-    fetchActiveScheduleId();
+    const id = userData.activeSchedule;
+    setActiveId(id);
   }, [userData]);
 
   useEffect(() => {
     if (!userData) return;
+    console.log(userData);
     useSortSchedulesDates();
   }, [userData]);
 

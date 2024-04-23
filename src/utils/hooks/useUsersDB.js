@@ -1,22 +1,28 @@
 import db from '../firebase/firebaseConfig.js';
-import { doc, setDoc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
-import { useState, useEffect, useRef } from 'react';
+import {
+  doc,
+  collection,
+  query,
+  where,
+  setDoc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from 'firebase/firestore';
 import { useAuth } from '@clerk/clerk-react';
-import { useUserData } from '../zustand.js';
 
 const useUsersDB = () => {
   const { userId } = useAuth();
   const userDocRef = userId ? doc(db, 'users', userId) : null;
-  const { userData, setUserData } = useUserData();
 
-  const setUsersDB = async (_userId_, _display_name_) => {
+  const setUsersDB = async (userId, display_name) => {
     try {
       if (userDocRef) {
         await setDoc(
           userDocRef,
           {
             userId,
-            username: _display_name_,
+            username: display_name,
           },
           { merge: true }
         );
@@ -51,36 +57,17 @@ const useUsersDB = () => {
     }
   };
 
-  const useUsersData = async () => {
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const docSnap = await getDoc(userDocRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            setUserData(data);
-          } else {
-            console.log('No this user info.');
-          }
-        } catch (error) {
-          console.log('Error: ' + error);
-        }
-      };
-      fetchData();
-    }, []);
-  };
-
-  const getActiveScheduleId = async () => {
+  const getUserData = async () => {
     try {
-      const userSnapshot = await getDoc(userDocRef);
-      if (userSnapshot.exists()) {
-        const activeScheduleId = userSnapshot.data().activeSchedule;
-        return activeScheduleId;
+      const docSnap = await getDoc(userDocRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        return data;
       } else {
-        console.log('No active schedule');
+        console.log('No this user info.');
       }
     } catch (error) {
-      console.log('Failed to get active scheduleId.');
+      console.log('Error: ' + error);
     }
   };
 
@@ -95,12 +82,43 @@ const useUsersDB = () => {
     }
   };
 
+  const updateHashedPassword = async (hashedPassword) => {
+    try {
+      await updateDoc(userDocRef, {
+        hashedPassword,
+      });
+    } catch (error) {
+      console.log('Error :' + error);
+    }
+  };
+
+  const getActiveScheduleIdByPassword = async (password) => {
+    try {
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('hashedPassword', '==', password));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        console.log('This password is invalid.');
+        return null;
+      } else {
+        const userDoc = querySnapshot.docs[0];
+        const activeScheduleId = userDoc.data().activeSchedule;
+        return activeScheduleId;
+      }
+    } catch (error) {
+      console.log('Failed to check protector validation.');
+      console.log(error);
+      return null;
+    }
+  };
+
   return {
     setUsersDB,
     useSaveScheduleToUsersDB,
-    useUsersData,
-    getActiveScheduleId,
+    getUserData,
     updateActiveSchedule,
+    updateHashedPassword,
+    getActiveScheduleIdByPassword,
   };
 };
 

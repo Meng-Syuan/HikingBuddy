@@ -86,9 +86,10 @@ export const useScheduleArrangement = create((set) => ({
 //profile
 export const useUserData = create((set) => ({
   userData: null,
+  activeScheduleId: null,
   futureSchedules: [],
   pastSchedules: [],
-  setUserData: (userData) => set({ userData }),
+  setUserData: (key, value) => set({ [key]: value }),
   setFutureSchedules: (futureSchedules) => set({ futureSchedules }),
   setPastSchedules: (pastSchedules) => set({ pastSchedules }),
 }));
@@ -100,15 +101,19 @@ export const useScheduleData = create((set) => ({
   locationNotes: {},
   gearChecklist: [],
   otherItemChecklist: [],
-  setScheduleData: (type, content) => set({ [type]: content }),
-
+  setScheduleData: (key, value) => set({ [key]: value }),
   addLocationNote: (id, value) =>
     set((state) => ({
       locationNotes: { ...state.locationNotes, [id]: value },
     })),
-  addNewItemToChecklist: (type, id) =>
+  addNewItemToChecklist: (key, id) =>
     set((state) => ({
-      [type]: [...state[type], { id, isChecked: false }],
+      [key]: [...state[key], { id, isChecked: false }],
     })),
   toggleActiveState: () => set((state) => ({ isActive: !state.isActive })),
+}));
+
+export const useProtectorPageData = create((set) => ({
+  hikerInfo: '',
+  setProtectorPageData: (key, value) => set({ [key]: value }),
 }));

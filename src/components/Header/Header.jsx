@@ -3,6 +3,9 @@ import color from '@theme';
 import logo from '/src/assets/img/logo.png';
 import { NavLink } from 'react-router-dom';
 import SignIn from './SignIn';
+import { useUserData } from '@utils/zustand';
+import { useEffect, useState } from 'react';
+import useUsersDB from '@utils/hooks/useUsersDB';
 
 const HeaderContainer = styled.header`
   height: 100px;
@@ -40,6 +43,24 @@ const UnorderedList = styled.ul`
 const ListItem = styled.li``;
 
 const Header = () => {
+  const { getUserData } = useUsersDB();
+  const { setUserData, activeScheduleId } = useUserData();
+  const [scheduleId, setScheduleId] = useState('no_active_schedule');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const data = await getUserData();
+      setUserData('userData', data);
+      setUserData('activeScheduleId', data.activeSchedule);
+    };
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    if (!activeScheduleId) return;
+    setScheduleId(activeScheduleId ?? 'no_active_schedule');
+  }, [activeScheduleId]);
+
   return (
     <HeaderContainer>
       <HeaderContent>
@@ -64,7 +85,7 @@ const Header = () => {
             <ListItem>山閱足跡</ListItem>
             {/* <span className="split">|</span> */}
             <ListItem>
-              <NavLink to="/protector">親愛的留守人</NavLink>
+              <NavLink to={`/protector/${scheduleId}`}>親愛的留守人</NavLink>
             </ListItem>
           </UnorderedList>
         </Navigation>

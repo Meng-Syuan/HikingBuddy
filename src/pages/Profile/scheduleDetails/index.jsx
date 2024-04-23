@@ -1,10 +1,11 @@
 import styled from 'styled-components';
-import color, { fieldWrapper } from '@utils/theme';
+import color from '@utils/theme';
 import { useEffect, useState } from 'react';
 import { sha256 } from 'js-sha256';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import useUsersDB from '@utils/hooks/useUsersDB';
-import { useScheduleData } from '@utils/zustand';
+import useProtectorsDB from '@utils/hooks/useProtectorsDB';
+import { useScheduleData, useUserData } from '@utils/zustand';
 import { useParams } from 'react-router-dom';
 
 import TripInfo from './TripInfo';
@@ -47,7 +48,6 @@ const StyledSplitLine = styled.hr`
 const ButtonWrapper = styled.div`
   width: 90%;
   position: relative;
-  /* border: 2px solid #000; */
   height: 30px;
 `;
 const StyledButton = styled.button`
@@ -67,7 +67,8 @@ const SetActiveBtn = styled.button`
 const ScheduleDetails = () => {
   const { getScheduleInfo, getScheduleDetails, updateScheduleContents } =
     useSchedulesDB();
-  const { getActiveScheduleId, updateActiveSchedule } = useUsersDB();
+  const { updateActiveSchedule, updateHashedPassword } = useUsersDB();
+  const { hashKey, setProtectorsData } = useProtectorsDB();
   const {
     scheduleInfo,
     locationNotes,
@@ -77,6 +78,7 @@ const ScheduleDetails = () => {
     otherItemChecklist,
     setScheduleData,
   } = useScheduleData();
+  const { setUserData, activeScheduleId } = useUserData();
   const scheduleId = useParams().scheduleId;
   const [tripsEditable, setTripsEditable] = useState(false);
 
@@ -87,13 +89,9 @@ const ScheduleDetails = () => {
   }, []);
 
   useEffect(() => {
-    if (!scheduleId) return;
-    const fetchActiveScheduleId = async () => {
-      const id = await getActiveScheduleId();
-      setScheduleData('isActive', id === scheduleId);
-    };
-    fetchActiveScheduleId();
-  }, [scheduleId]);
+    if (!scheduleId || !activeScheduleId) return;
+    setScheduleData('isActive', activeScheduleId === scheduleId);
+  }, [scheduleId, activeScheduleId]);
 
   useEffect(() => {
     if (!scheduleInfo) return;
@@ -121,12 +119,19 @@ const ScheduleDetails = () => {
     );
   };
 
-  const handleToggleProtectorFunc = (isActive) => {
+  const handleToggleProtectorFunc = async (isActive) => {
     toggleActiveState();
     if (!isActive) {
-      updateActiveSchedule('');
+      await updateActiveSchedule('');
+      await updateHashedPassword('');
+      setUserData('activeScheduleId', '');
     } else {
-      updateActiveSchedule(scheduleId);
+      await updateActiveSchedule(scheduleId);
+      await setProtectorsData(scheduleId);
+      const encryptedId = sha256(scheduleId);
+      const hashedPassword = sha256.hmac(encryptedId, hashKey);
+      await updateHashedPassword(hashedPassword);
+      setUserData('activeScheduleId', scheduleId);
     }
   };
   return (

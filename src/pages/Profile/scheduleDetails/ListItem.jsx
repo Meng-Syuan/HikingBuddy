@@ -16,7 +16,7 @@ const CheckBox = styled.div`
   border-radius: 10px;
   border: 1px solid ${color.borderColor};
   background-color: ${(props) =>
-    props.isChecked ? color.secondary : color.lightBackgroundColor};
+    props.ischecked === 'true' ? color.secondary : color.lightBackgroundColor};
 `;
 
 const ItemName = styled.span`
@@ -64,7 +64,7 @@ const ListItem = ({ isChecked, id, type }) => {
   return (
     <ItemWrapper>
       <CheckBox
-        isChecked={isChecked}
+        ischecked={isChecked.toString()}
         onClick={() => handleToggleCheckBox(id)}
       ></CheckBox>
       <ItemName>{id}</ItemName>

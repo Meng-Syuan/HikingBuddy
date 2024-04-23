@@ -11,7 +11,7 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 const StyledBackground = styled.div`
   min-height: calc(100vh - 100px);
   background-color: ${color.mainBackgound};
-  padding: 0 40px;
+  padding: 0 50px;
 `;
 
 function App() {

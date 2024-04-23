@@ -28,4 +28,9 @@ export const fieldWrapper = {
   marginBottom: '1rem',
 };
 
+export const inputFocusStyle = {
+  outline: 'none !important',
+  border: `1px solid ${color.secondary}`,
+  boxShadow: `0 0 6px ${color.secondary}`,
+};
 export default color;

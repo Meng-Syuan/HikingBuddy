@@ -47,7 +47,7 @@ const ProtectorSetting = ({ salt }) => {
     <SettingContainer>
       <TitleWrapper>
         <SharedListTitle>留守人功能</SharedListTitle>
-        <Note>記得要將留守人啟用才能編輯哦！</Note>
+        <Note>提醒：啟用才能編輯留守人頁面。</Note>
       </TitleWrapper>
 
       {isActive && (
@@ -58,7 +58,7 @@ const ProtectorSetting = ({ salt }) => {
             <CopyBtn>複製</CopyBtn>
           </UrlWrapper>
           <Note>
-            啟用留守人功能後，僅持有上述網址的人可透過上述網址看到您的行程資訊
+            功能啟動後，僅持有上述網址的人可透過上述網址看到您的行程資訊
           </Note>
         </ProtectorWrapper>
       )}
