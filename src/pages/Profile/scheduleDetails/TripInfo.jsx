@@ -1,14 +1,12 @@
 import styled from 'styled-components';
 import { lightFormat, format } from 'date-fns';
-import color, { textBorder } from '@utils/theme';
+import color, { textBorder, fieldWrapper } from '@utils/theme';
 import { useScheduleData } from '@utils/zustand';
 import { useEffect, useState } from 'react';
 import { SharedListTitle } from './index';
 
 export const TripInfoWrapper = styled.div`
-  width: 90%;
-  position: relative;
-  margin-bottom: 1rem;
+  ${fieldWrapper}
 `;
 
 const DateSplit = styled.div`
@@ -40,15 +38,24 @@ const LocationsContainer = styled.div``;
 const LocationWrapper = styled.div`
   display: flex;
   gap: 8px;
+  margin-bottom: 4px;
 `;
+
+const ItemWrapper = styled.div`
+  display: flex;
+  width: 45%;
+  gap: 8px;
+`;
+
 const Time = styled.span`
   ${textBorder};
   font-size: 0.875rem;
 `;
 const LocationName = styled.span`
   ${textBorder};
-  width: 30%;
   text-align: center;
+  flex: 1;
+  min-height: 28px;
 `;
 const NoteInput = styled.input`
   ${textBorder}
@@ -60,20 +67,17 @@ const NoteInput = styled.input`
 `;
 
 const TripInfo = ({ isEditable }) => {
-  const { scheduleInfo, scheduleDetails, locationNotes, setLocationNote } =
+  const { scheduleInfo, scheduleDetails, locationNotes, addLocationNote } =
     useScheduleData();
   const [sortedDates, setSortedDates] = useState(null);
   const [groupItineraries, setGroupItineraries] = useState(null);
 
   useEffect(() => {
     if (!scheduleDetails) return;
-    // console.log('scheduleDetails');
-    // console.log(scheduleDetails);
-    // console.log('scheduleInfo');
-    // console.log(scheduleInfo);
     const dates = scheduleDetails.map((itinerary) => itinerary.date);
-    dates.sort();
-    setSortedDates(dates);
+    const datesSet = [...new Set(dates)];
+    datesSet.sort();
+    setSortedDates(datesSet);
   }, [scheduleDetails]);
 
   useEffect(() => {
@@ -95,15 +99,9 @@ const TripInfo = ({ isEditable }) => {
       }
       return acc;
     }, []);
-    // console.log('groupItineraries........');
-    // console.log(groupItineraries);
     setGroupItineraries(groupItineraries);
   }, [sortedDates]);
 
-  useEffect(() => {
-    console.log('locationNotes');
-    console.log(locationNotes);
-  }, [locationNotes]);
   return (
     <TripInfoWrapper>
       <SharedListTitle>{scheduleInfo?.tripName}</SharedListTitle>
@@ -119,13 +117,15 @@ const TripInfo = ({ isEditable }) => {
                 {date.itineraries.map((itinerary) => {
                   return (
                     <LocationWrapper key={itinerary.id}>
-                      <Time>{itinerary.datetime}</Time>
-                      <LocationName>{itinerary.location}</LocationName>
+                      <ItemWrapper>
+                        <Time>{itinerary.datetime}</Time>
+                        <LocationName>{itinerary.location}</LocationName>
+                      </ItemWrapper>
                       {isEditable || locationNotes[itinerary.id] ? (
                         <NoteInput
                           id={itinerary.id}
                           onChange={(e) =>
-                            setLocationNote(itinerary.id, e.target.value)
+                            addLocationNote(itinerary.id, e.target.value)
                           }
                           value={locationNotes[itinerary.id] || ''}
                           readOnly={!isEditable}

@@ -14,13 +14,18 @@ const color = {
 
 export const textBorder = {
   borderRadius: '5px',
-  height: '28px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   border: `1px solid ${color.borderColor}`,
   padding: `4px 12px`,
   backgroundColor: `#fff`,
+};
+
+export const fieldWrapper = {
+  width: '90%',
+  position: 'relative',
+  marginBottom: '1rem',
 };
 
 export default color;

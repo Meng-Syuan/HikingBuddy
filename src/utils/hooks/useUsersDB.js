@@ -70,10 +70,37 @@ const useUsersDB = () => {
     }, []);
   };
 
+  const getActiveScheduleId = async () => {
+    try {
+      const userSnapshot = await getDoc(userDocRef);
+      if (userSnapshot.exists()) {
+        const activeScheduleId = userSnapshot.data().activeSchedule;
+        return activeScheduleId;
+      } else {
+        console.log('No active schedule');
+      }
+    } catch (error) {
+      console.log('Failed to get active scheduleId.');
+    }
+  };
+
+  const updateActiveSchedule = async (scheduleId) => {
+    try {
+      await updateDoc(userDocRef, {
+        activeSchedule: scheduleId,
+      });
+    } catch (error) {
+      console.log('Failed to update the active schedule.');
+      console.log(error);
+    }
+  };
+
   return {
     setUsersDB,
     useSaveScheduleToUsersDB,
     useUsersData,
+    getActiveScheduleId,
+    updateActiveSchedule,
   };
 };
 

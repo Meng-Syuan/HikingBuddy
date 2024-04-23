@@ -10,6 +10,7 @@ import {
   where,
   GeoPoint,
   onSnapshot,
+  writeBatch,
 } from 'firebase/firestore';
 import { useAuth } from '@clerk/clerk-react';
 import { useEffect, useRef } from 'react';
@@ -22,14 +23,8 @@ import { isFuture } from 'date-fns';
 
 const useSchedulesDB = () => {
   const { userId } = useAuth();
-  const {
-    userData,
-    futureSchedules,
-    setFutureSchedules,
-    pastSchedules,
-    setPastSchedules,
-  } = useUserData();
-  const { setScheduleInfo, setScheduleDetails } = useScheduleData();
+  const { userData, setFutureSchedules, setPastSchedules } = useUserData();
+  const { setScheduleData } = useScheduleData();
   const schedulesRef = collection(db, 'schedules');
   const q_temporarySchedule = query(
     schedulesRef,
@@ -46,7 +41,6 @@ const useSchedulesDB = () => {
       };
       if (querySnapshot.empty) {
         const newDocRef = await addDoc(schedulesRef, {
-          isActive: false,
           isTemporary: true,
           isFinished: false,
           userId,
@@ -160,6 +154,45 @@ const useSchedulesDB = () => {
       tripName,
       firstDay,
       lastDay,
+      gearChecklist: [
+        { id: '大背包', isChecked: false },
+        { id: '風雨衣、雨褲、鞋套', isChecked: false },
+        { id: '中層外套', isChecked: false },
+        { id: '保暖手套', isChecked: false },
+        { id: '遮陽帽', isChecked: false },
+        { id: '毛帽', isChecked: false },
+        { id: '頭燈+電池', isChecked: false },
+        { id: '登山杖', isChecked: false },
+        { id: '雙鍋組+瓦斯+爐頭+插匙', isChecked: false },
+        { id: '杯子', isChecked: false },
+        { id: '充氣枕頭、睡墊', isChecked: false },
+        { id: '拖鞋', isChecked: false },
+        { id: '護膝', isChecked: false },
+        { id: '濾水器、水袋', isChecked: false },
+        { id: '行動電源', isChecked: false },
+        { id: '充電線', isChecked: false },
+        { id: '打火機、牙刷', isChecked: false },
+        { id: '速乾毛巾', isChecked: false },
+      ],
+      otherItemChecklist: [
+        { id: '面紙、濕紙巾', isChecked: false },
+        { id: '夾鏈袋、垃圾袋', isChecked: false },
+        { id: '暖暖包', isChecked: false },
+        { id: '耳塞、眼罩', isChecked: false },
+        { id: '眼鏡/隱形眼鏡', isChecked: false },
+        { id: '座墊', isChecked: false },
+        { id: '行動糧食', isChecked: false },
+        { id: '茶包/咖啡包/湯包', isChecked: false },
+        { id: '登山計劃書', isChecked: false },
+        { id: '入山證正副本', isChecked: false },
+        { id: '身分證', isChecked: false },
+        { id: '健保卡', isChecked: false },
+        { id: '頭燈備用電池', isChecked: false },
+        { id: '救生毯', isChecked: false },
+        { id: '藥品', isChecked: false },
+        { id: '無線電', isChecked: false },
+        { id: '備用衣物（長袖、短袖、短褲、內褲、襪子）', isChecked: false },
+      ],
     });
     const itinerariesPromise = itineraries.map((itinerary) => {
       const itineraryDocRef = doc(
@@ -177,7 +210,7 @@ const useSchedulesDB = () => {
     return currentScheduleRef.id;
   };
 
-  //protector
+  //protector????
   const getActiveScheduleId = async () => {
     try {
       const q = query(
@@ -210,14 +243,14 @@ const useSchedulesDB = () => {
             id,
             firstDay,
             lastDay,
-            isEquipmentComfirmed: false,
+            isChecklistComfirmed: false,
           });
         } else {
           pastSchedules.push({
             id,
             firstDay,
             lastDay,
-            isEquipmentComfirmed: false,
+            isChecklistComfirmed: false,
           });
         }
       });
@@ -235,7 +268,7 @@ const useSchedulesDB = () => {
       const docSnap = await getDoc(scheduleDocRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setScheduleInfo(data);
+        setScheduleData('scheduleInfo', data);
       } else {
         console.log('No such schedule');
       }
@@ -252,25 +285,41 @@ const useSchedulesDB = () => {
       itinerariesSnapshot.forEach((doc) => {
         result.push(doc.data());
       });
-      setScheduleDetails(result);
+      setScheduleData('scheduleDetails', result);
     } catch (error) {
       console.log('Failed to fetch the current schedule details: ' + error);
     }
   };
 
-  const addNotesToSchedule = async (scheduleId, locationNotes) => {
+  const getLocationNotes = async () => {};
+
+  const updateScheduleContents = async (
+    scheduleId,
+    property,
+    content,
+    otherContent
+  ) => {
     try {
       const scheduleDocRef = doc(schedulesRef, scheduleId);
-      await updateDoc(scheduleDocRef, {
-        locationNotes: { ...locationNotes },
-      });
+      if (property === 'locationNotes') {
+        await updateDoc(scheduleDocRef, {
+          locationNotes: { ...content },
+        });
+      } else if (property === 'checklist') {
+        await updateDoc(scheduleDocRef, {
+          gearChecklist: [...content],
+          otherItemChecklist: [...otherContent],
+        });
+      } else if (property === 'isActive') {
+        await updateDoc(scheduleDocRef, {
+          isActive: content,
+        });
+      }
     } catch (error) {
-      console.log('Failed to add notes to current schedule.');
+      console.log('Failed to update contents to current schedule.');
       console.log(error);
     }
   };
-
-  const getLocationNotes = async () => {};
 
   return {
     addLocationToDB,
@@ -281,22 +330,37 @@ const useSchedulesDB = () => {
     useSortSchedulesDates,
     getScheduleInfo,
     getScheduleDetails,
-    addNotesToSchedule,
     getLocationNotes,
+    updateScheduleContents,
   };
 };
 
 export default useSchedulesDB;
-//選定一種方法：組件內用 useEffect，還是拉出來的 function 用 useEffect？
-//用 state 儲存值，還是 useRef？還是都丟出去給 component 用？
 //single
-export const getFirestoreData = async () => {
-  const docRef = doc(db, 'example', 'example-document');
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    console.log('Document data:', docSnap.data());
-  } else {
-    // docSnap.data() will be undefined in this case
-    console.log('No such document!');
-  }
-};
+// export const getFirestoreData = async () => {
+//   const docRef = doc(db, 'example', 'example-document');
+//   const docSnap = await getDoc(docRef);
+//   if (docSnap.exists()) {
+//     console.log('Document data:', docSnap.data());
+//   } else {
+//     // docSnap.data() will be undefined in this case
+//     console.log('No such document!');
+//   }
+// };
+
+//batch寫入
+// const updateActiveSchedule = async (id) => {
+//   try {
+//     const batch = writeBatch(db);
+//     const activeDocSnapshot = await getDocs(q_activeSchedule);
+//     activeDocSnapshot.forEach((doc) => {
+//       batch.update(doc.ref, { isActive: false });
+//     });
+
+//     const scheduleDocRef = doc(schedulesRef, id);
+//     await updateDoc(scheduleDocRef, { isActive: true });
+//   } catch (error) {
+//     console.log('Failed to batch update active status: ');
+//     console.log(error);
+//   }
+// };

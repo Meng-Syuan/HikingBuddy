@@ -1,14 +1,15 @@
 import styled from 'styled-components';
-import { lightFormat } from 'date-fns';
-import color from '@utils/theme';
+import color, { fieldWrapper } from '@utils/theme';
 import { useEffect, useState } from 'react';
 import { sha256 } from 'js-sha256';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
+import useUsersDB from '@utils/hooks/useUsersDB';
 import { useScheduleData } from '@utils/zustand';
 import { useParams } from 'react-router-dom';
 
 import TripInfo from './TripInfo';
 import ProtectorSetting from './ProtectorSetting';
+import CheckList from './CheckList';
 
 export const SharedListTitle = styled.h3`
   padding: 1.25rem 0.875rem 0.75rem;
@@ -16,6 +17,8 @@ export const SharedListTitle = styled.h3`
   font-weight: bold;
   color: ${color.textColor};
 `;
+
+//要用 shared 方式共享組件嗎？
 
 const ArticlesContainer = styled.section`
   display: flex;
@@ -47,65 +50,84 @@ const ButtonWrapper = styled.div`
   /* border: 2px solid #000; */
   height: 30px;
 `;
-const ToggleEditButton = styled.button`
+const StyledButton = styled.button`
   position: absolute;
-  right: 40%;
+  right: 20%;
 `;
+const ToggleEditButton = styled(StyledButton)``;
+
+const SaveChecklistEditionBtn = styled(StyledButton)``;
+
 const SetActiveBtn = styled.button`
   position: absolute;
   right: 10%;
+  top: -2.5rem;
 `;
 
-const ToggleProtectorButton = styled(ToggleEditButton)``;
 const ScheduleDetails = () => {
-  const { getScheduleInfo, getScheduleDetails, addNotesToSchedule } =
+  const { getScheduleInfo, getScheduleDetails, updateScheduleContents } =
     useSchedulesDB();
+  const { getActiveScheduleId, updateActiveSchedule } = useUsersDB();
   const {
     scheduleInfo,
-    scheduleDetails,
     locationNotes,
-    isProtectorActive,
-    toggleIsProtectorActive,
+    isActive,
+    toggleActiveState,
+    gearChecklist,
+    otherItemChecklist,
+    setScheduleData,
   } = useScheduleData();
   const scheduleId = useParams().scheduleId;
   const [tripsEditable, setTripsEditable] = useState(false);
-  const [proptectorEditable, setProptectorEditable] = useState(false);
 
+  //可能要改一下useEffect和 firebase 的關係，useEffect 要放哪裡，要return 值還是?
   useEffect(() => {
-    console.log('scheduleId:');
-    console.log(scheduleId, '---');
     getScheduleInfo(scheduleId);
     getScheduleDetails(scheduleId);
   }, []);
 
-  // useEffect(() => {
-  //   if (!scheduleInfo) return;
-  //   console.log('-----scheduleInfo------');
-  //   console.log(scheduleInfo);
-  // }, [scheduleInfo]);
-  // useEffect(() => {
-  //   if (!scheduleDetails) return;
-  //   console.log('-----scheduleDetails-------');
-  //   console.log(scheduleDetails);
-  // }, [scheduleDetails]);
+  useEffect(() => {
+    if (!scheduleId) return;
+    const fetchActiveScheduleId = async () => {
+      const id = await getActiveScheduleId();
+      setScheduleData('isActive', id === scheduleId);
+    };
+    fetchActiveScheduleId();
+  }, [scheduleId]);
 
   useEffect(() => {
-    console.log('isProtectorActive');
-    console.log(isProtectorActive);
-  }, [isProtectorActive]);
+    if (!scheduleInfo) return;
+    const gearChecklist = scheduleInfo.gearChecklist;
+    const otherItemChecklist = scheduleInfo.otherItemChecklist;
+    const locationNotes = scheduleInfo.locationNotes;
+    setScheduleData('locationNotes', locationNotes);
+    setScheduleData('gearChecklist', gearChecklist);
+    setScheduleData('otherItemChecklist', otherItemChecklist);
+  }, [scheduleInfo]);
 
   const handleTripsEdition = async () => {
     setTripsEditable((prevState) => !prevState);
     if (Object.keys(locationNotes).length > 0) {
-      await addNotesToSchedule(scheduleId, locationNotes);
+      await updateScheduleContents(scheduleId, 'locationNotes', locationNotes);
     }
   };
 
-  const handleProtectorEdition = async () => {
-    setProptectorEditable((prevState) => !prevState);
+  const handleSaveCheckList = async () => {
+    await updateScheduleContents(
+      scheduleId,
+      'checklist',
+      gearChecklist,
+      otherItemChecklist
+    );
   };
-  const handleToggleProtectorFunc = () => {
-    toggleIsProtectorActive();
+
+  const handleToggleProtectorFunc = (isActive) => {
+    toggleActiveState();
+    if (!isActive) {
+      updateActiveSchedule('');
+    } else {
+      updateActiveSchedule(scheduleId);
+    }
   };
   return (
     <ArticlesContainer>
@@ -125,27 +147,27 @@ const ScheduleDetails = () => {
       </ArticleWrapper>
 
       <StyledSplitLine></StyledSplitLine>
-      <ArticleWrapper>裝備清單</ArticleWrapper>
+
+      <ArticleWrapper>
+        <CheckList />
+        <ButtonWrapper>
+          <SaveChecklistEditionBtn onClick={handleSaveCheckList}>
+            儲存清單變更
+          </SaveChecklistEditionBtn>
+        </ButtonWrapper>
+      </ArticleWrapper>
+
       <StyledSplitLine />
       <ArticleWrapper>
-        <ProtectorSetting isActive={isProtectorActive} />
+        <ProtectorSetting salt={scheduleId} />
         <ButtonWrapper>
-          {proptectorEditable ? (
-            <ToggleProtectorButton onClick={handleProtectorEdition}>
-              設定密碼
-            </ToggleProtectorButton>
-          ) : (
-            <ToggleProtectorButton onClick={handleProtectorEdition}>
-              儲存變更
-            </ToggleProtectorButton>
-          )}
-          {isProtectorActive ? (
-            <SetActiveBtn onClick={handleToggleProtectorFunc}>
-              啟用留守人功能
+          {isActive ? (
+            <SetActiveBtn onClick={() => handleToggleProtectorFunc(false)}>
+              暫停
             </SetActiveBtn>
           ) : (
-            <SetActiveBtn onClick={handleToggleProtectorFunc}>
-              暫停留守人功能
+            <SetActiveBtn onClick={() => handleToggleProtectorFunc(true)}>
+              啟用
             </SetActiveBtn>
           )}
         </ButtonWrapper>

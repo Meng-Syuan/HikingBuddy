@@ -52,16 +52,26 @@ const Split = styled.hr`
 
 const PersonalInfo = () => {
   const { userData, futureSchedules, pastSchedules } = useUserData();
-  const { useUsersData } = useUsersDB();
+  const { useUsersData, getActiveScheduleId } = useUsersDB();
   const { useSortSchedulesDates } = useSchedulesDB();
+  const [activeId, setActiveId] = useState('');
 
   useUsersData();
+  useEffect(() => {
+    if (!userData) return;
+    const fetchActiveScheduleId = async () => {
+      const id = await getActiveScheduleId();
+      setActiveId(id);
+    };
+    fetchActiveScheduleId();
+  }, [userData]);
 
   useEffect(() => {
     if (!userData) return;
     useSortSchedulesDates();
   }, [userData]);
 
+  //comfirment?
   useEffect(() => {
     console.log('futureSchedules');
     console.log(futureSchedules);
@@ -84,7 +94,8 @@ const PersonalInfo = () => {
                 id={schedule.id}
                 firstDay={schedule.firstDay}
                 lastDay={schedule.lastDay}
-                isChecked={schedule.isEquipmentComfirmed}
+                isChecked={schedule.isChecklistComfirmed}
+                activeId={activeId}
               />
             ))}
         </FutureTrips>
@@ -98,7 +109,8 @@ const PersonalInfo = () => {
                 id={schedule.id}
                 firstDay={schedule.firstDay}
                 lastDay={schedule.lastDay}
-                isChecked={schedule.isEquipmentComfirmed}
+                isChecked={schedule.isChecklistComfirmed}
+                activeId={activeId}
               />
             ))}
         </PastTrips>

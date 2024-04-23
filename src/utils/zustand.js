@@ -7,6 +7,7 @@ export const useSearchLocation = create((set) => ({
   geopoint: null,
   isSearchValid: false,
   searchResults: null,
+  //一堆 set 的地方可以改掉!!
   setGeoJSON: (data) => set({ geoJSON: data }),
   setLocation: (location) => set({ location }),
   setGeopoint: (latlng) => set({ geopoint: latlng }),
@@ -95,14 +96,19 @@ export const useUserData = create((set) => ({
 export const useScheduleData = create((set) => ({
   scheduleInfo: null,
   scheduleDetails: null,
-  isProtectorActive: false,
+  isActive: null,
   locationNotes: {},
-  setScheduleInfo: (info) => set({ scheduleInfo: info }),
-  setScheduleDetails: (content) => set({ scheduleDetails: content }),
-  toggleIsProtectorActive: () =>
-    set((state) => ({ isProtectorActive: !state.isProtectorActive })),
-  setLocationNote: (id, value) =>
+  gearChecklist: [],
+  otherItemChecklist: [],
+  setScheduleData: (type, content) => set({ [type]: content }),
+
+  addLocationNote: (id, value) =>
     set((state) => ({
       locationNotes: { ...state.locationNotes, [id]: value },
     })),
+  addNewItemToChecklist: (type, id) =>
+    set((state) => ({
+      [type]: [...state[type], { id, isChecked: false }],
+    })),
+  toggleActiveState: () => set((state) => ({ isActive: !state.isActive })),
 }));
