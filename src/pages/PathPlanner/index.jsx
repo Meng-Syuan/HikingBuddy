@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import { useAuth } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
+import { useEffect } from 'react';
 
 const PlannerContainer = styled.main`
   display: flex;
@@ -25,22 +26,26 @@ const PathPlanner = () => {
   const { isSignedIn, userId } = useAuth();
   const { useNewItineraryListener } = useSchedulesDB();
   const navigate = useNavigate();
+  useEffect(() => {
+    if (!isSignedIn) {
+      alert(`請先登入 😊`);
+      navigate('/');
+    }
+  }, []);
 
   useNewItineraryListener();
 
   // 之後用 CSS 修改彈出式視窗
-  if (!isSignedIn) {
-    alert(`請先登入 😊`);
-    navigate('/');
-  }
 
   return (
     <>
       <PlannerContainer>
         <MapWrapper>{isSignedIn && <Map />}</MapWrapper>
-        <SchedulesWrapper>
-          <Schedules />
-        </SchedulesWrapper>
+        {isSignedIn && (
+          <SchedulesWrapper>
+            <Schedules />
+          </SchedulesWrapper>
+        )}
       </PlannerContainer>
     </>
   );

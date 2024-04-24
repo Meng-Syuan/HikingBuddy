@@ -41,8 +41,16 @@ const Note = styled.p`
 const ProtectorSetting = ({ salt }) => {
   const { isActive } = useScheduleData();
   const encryptedId = sha256(salt);
-  const hashedUrl = `https://localhost:5173/protector/${encryptedId}`;
+  const hashedUrl = `https://hikingbuddy-4abda.firebaseapp.com/protector/${encryptedId}`;
 
+  const handleCopyURL = async () => {
+    try {
+      await navigator.clipboard.writeText(hashedUrl);
+      alert('successfully');
+    } catch (error) {
+      alert('bad bad bad');
+    }
+  };
   return (
     <SettingContainer>
       <TitleWrapper>
@@ -53,9 +61,8 @@ const ProtectorSetting = ({ salt }) => {
       {isActive && (
         <ProtectorWrapper>
           <UrlWrapper>
-            <ProtectorUrlContent>{hashedUrl}</ProtectorUrlContent>
-            {/* <ProtectorUrlContent>{`https://hikingbuddy-4abda.firebaseapp.com/protector/${encryptedId}`}</ProtectorUrlContent> */}
-            <CopyBtn>複製</CopyBtn>
+            <ProtectorUrlContent>{`https://hikingbuddy-4abda.firebaseapp.com/protector/${encryptedId}`}</ProtectorUrlContent>
+            <CopyBtn onClick={handleCopyURL}>複製</CopyBtn>
           </UrlWrapper>
           <Note>
             功能啟動後，僅持有上述網址的人可透過上述網址看到您的行程資訊

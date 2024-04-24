@@ -309,7 +309,6 @@ const useSchedulesDB = () => {
     useTemporaryLocations,
     useNewItineraryListener,
     useSaveSchedule,
-    // getActiveScheduleId,
     useSortSchedulesDates,
     getScheduleInfo,
     getScheduleDetails,

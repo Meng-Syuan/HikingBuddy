@@ -115,5 +115,13 @@ export const useScheduleData = create((set) => ({
 
 export const useProtectorPageData = create((set) => ({
   hikerInfo: '',
+  hikerPhoto: '',
   setProtectorPageData: (key, value) => set({ [key]: value }),
+  updateHikerInfo: (key, value) =>
+    set((state) => ({
+      hikerInfo: {
+        ...state.hikerInfo,
+        [key]: value,
+      },
+    })),
 }));

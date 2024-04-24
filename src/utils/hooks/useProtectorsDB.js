@@ -20,13 +20,12 @@ const useProtectorsDB = () => {
   const setProtectorsData = async (scheduleId) => {
     try {
       const docRef = doc(protectorsRef, scheduleId);
-      await setDoc(docRef, {
-        //測試一開始不寫入的話會怎麼樣
-        backpack_color: '',
-        clothe_color: '',
-        hiker_photo: '',
-        message: '',
-      });
+      const snapshot = await getDoc(docRef);
+      if (!snapshot.exists()) {
+        await setDoc(docRef, {
+          hiker_photo: '',
+        });
+      }
     } catch (error) {
       console.log('Failed to set protectors data');
       console.log(error);
@@ -44,7 +43,25 @@ const useProtectorsDB = () => {
     }
   };
 
-  return { hashKey, setProtectorsData, getProtectorDoc };
+  const updateProtectorDoc = async (scheduleId, property, content) => {
+    try {
+      const docRef = doc(protectorsRef, scheduleId);
+      if (property === 'hiker_photo') {
+        await updateDoc(docRef, {
+          [property]: content,
+        });
+      } else {
+        await setDoc(docRef, {
+          ...content,
+        });
+      }
+    } catch (error) {
+      console.log('Failed to update hiker info.');
+      console.log(error);
+    }
+  };
+
+  return { hashKey, setProtectorsData, getProtectorDoc, updateProtectorDoc };
 };
 
 export default useProtectorsDB;

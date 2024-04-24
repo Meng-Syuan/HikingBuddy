@@ -26,6 +26,7 @@ const TabsWrapper = styled.section`
 const firestoreDocIdLength = 20;
 const Protector = () => {
   const [isEditable, setIsEditable] = useState(false);
+  const [isUrlValid, setIsUrlValid] = useState(false);
   const navigate = useNavigate();
   const scheduleId = useParams().encryptedScheduleId;
   const { isSignedIn } = useAuth();
@@ -48,21 +49,21 @@ const Protector = () => {
         if (id) {
           const hikerInfo = await getProtectorDoc(id);
           setProtectorPageData('hikerInfo', hikerInfo);
+          setProtectorPageData('hikerPhoto', hikerInfo.hiker_photo);
           setIsEditable(true);
-          console.log('登入狀態且有找到 active Schedule//////////');
-          console.log(id);
+          setIsUrlValid(true);
         } else {
           alert('請先到行程表下方啟用留守人功能 😊');
           navigate('/profile');
         }
       } else if (scheduleId.length > firestoreDocIdLength) {
         const id = await getActiveScheduleIdByPassword(hashedPassword);
-        console.log('activeSchedule//////////');
-        console.log(id);
         if (id) {
           const hikerInfo = await getProtectorDoc(id);
           setProtectorPageData('hikerInfo', hikerInfo);
+          setProtectorPageData('hikerPhoto', hikerInfo.hiker_photo);
           setIsEditable(false);
+          setIsUrlValid(true);
         } else {
           alert('此網址功能未生效');
           navigate('/');
@@ -79,7 +80,11 @@ const Protector = () => {
   return (
     <ProtectorContainer>
       <TabsWrapper></TabsWrapper>
-      <HikerInfo isEditable={isEditable}></HikerInfo>
+      <HikerInfo
+        isEditable={isEditable}
+        id={scheduleId}
+        valid={isUrlValid}
+      ></HikerInfo>
     </ProtectorContainer>
   );
 };
