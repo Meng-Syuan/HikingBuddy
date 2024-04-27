@@ -17,7 +17,7 @@ const SaveScheduleBtn = () => {
     gpxFileName,
   } = useScheduleArrangement();
   const { useSaveScheduleToUsersDB } = useUsersDB();
-  const { useSaveSchedule } = useSchedulesDB();
+  const { saveScheduleDetails } = useSchedulesDB();
   const navigate = useNavigate();
   const handleSaveClick = async () => {
     const isDatesNotCompleted = itineraries_dates.find(
@@ -29,7 +29,7 @@ const SaveScheduleBtn = () => {
 
     if (!isDatesNotCompleted && !isDatetimeNotCompelte && tripName) {
       alert('填寫完成');
-      await useSaveSchedule(
+      await saveScheduleDetails(
         temporaryScheduleId,
         itineraries_dates,
         itineraries_datetime,
@@ -39,11 +39,13 @@ const SaveScheduleBtn = () => {
       await useSaveScheduleToUsersDB(temporaryScheduleId);
       alert('儲存成功，到個人頁面查看');
       navigate('/profile');
-      setScheduleArrangement('itineraries_dates', null);
-      setScheduleArrangement('itineraries_datetime', null);
+      setScheduleArrangement('tripName', '');
+      setScheduleArrangement('itineraries_dates', []);
+      setScheduleArrangement('itineraries_datetime', []);
       setScheduleArrangement('temporaryScheduleId', null);
       setScheduleArrangement('gpxPoints', null);
-      setScheduleArrangement('gpxFileName', null);
+      setScheduleArrangement('gpxFileName', '');
+      setScheduleArrangement('mapMarkers', []);
     } else {
       console.log('填寫未完成');
       alert('請完成路線命名及日期、時間填寫');

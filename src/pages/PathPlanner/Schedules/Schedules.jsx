@@ -73,16 +73,16 @@ const Schedules = () => {
     setNewItinerary,
     tripName,
     setTripName,
-    itineraries_dates,
-    itineraries_datetime,
     gpxFileName,
   } = useScheduleArrangement();
   const {
     getTemporaryScheduleId,
     createNewSchedule,
     updateScheduleContents,
+    getScheduleInfo,
     getScheduleDetails,
     addGPXtoDB,
+    useNewItineraryListener,
   } = useSchedulesDB();
   const { getUploadFileUrl } = useUploadFile();
   const [selectedDates, setSelectedDates] = useState([]);
@@ -93,7 +93,15 @@ const Schedules = () => {
 
   const getTemporaryLocations = useCallback(async () => {
     const locations = await getScheduleDetails(temporaryScheduleId);
-    if (!locations) return;
+    if (!locations) {
+      setBaseBlock([
+        {
+          id: 'base_block',
+          items: [],
+        },
+      ]);
+      return;
+    }
 
     //for UI render
     const items = locations.map((location) => ({
@@ -106,10 +114,8 @@ const Schedules = () => {
         items,
       },
     ]);
-    //manage global state
-    // setScheduleArrangement('itineraries_datetime', items);//??
 
-    const geopoints = locations.map((location) => {
+    const mapMarkers = locations.map((location) => {
       return {
         lat: location.geopoint._lat,
         lng: location.geopoint._long,
@@ -117,16 +123,20 @@ const Schedules = () => {
         name: location.location,
       };
     });
-    setScheduleArrangement('geopoints', geopoints);
+    setScheduleArrangement('mapMarkers', mapMarkers);
   }, [temporaryScheduleId]);
+
+  useNewItineraryListener(temporaryScheduleId);
 
   useEffect(() => {
     const initializeSchedule = async () => {
       const id = await getTemporaryScheduleId();
+      console.log(id);
       if (!id) {
         const newDocId = await createNewSchedule();
         await updateScheduleContents(newDocId, 'scheduleId', newDocId);
         setScheduleArrangement('temporaryScheduleId', newDocId);
+        console.log(newDocId);
       } else {
         setScheduleArrangement('temporaryScheduleId', id);
       }
@@ -136,7 +146,15 @@ const Schedules = () => {
 
   useEffect(() => {
     if (!temporaryScheduleId) return;
-    getTemporaryLocations();
+    const fetchScheduleData = async () => {
+      await getTemporaryLocations();
+      const data = await getScheduleInfo(temporaryScheduleId);
+      if (data.gpxFileName) {
+        setScheduleArrangement('gpxFileName', data.gpxFileName);
+        setScheduleArrangement('gpxPoints', Object.values(data.gpxPoints));
+      }
+    };
+    fetchScheduleData();
   }, [temporaryScheduleId]);
 
   //setScheduleBlocks when base block change(add new location / get data from db)
@@ -159,15 +177,18 @@ const Schedules = () => {
 
   //generate blocks according to the dates selection
   useEffect(() => {
-    if (selectedDates.length === 0) return;
-    const generatedBlock = selectedDates.map((date) => {
-      return {
-        id: date,
-        items: [],
-      };
-    });
-    getTemporaryLocations();
-    setScheduleBlocks([...generatedBlock, ...baseBlock]);
+    const generateDateBlocks = async () => {
+      if (selectedDates.length === 0) return;
+      const generatedBlock = selectedDates.map((date) => {
+        return {
+          id: date,
+          items: [],
+        };
+      });
+      await getTemporaryLocations();
+      setScheduleBlocks([...generatedBlock, ...baseBlock]);
+    };
+    generateDateBlocks();
   }, [selectedDates]);
 
   //update scheduleBlocks after dragging
@@ -273,8 +294,6 @@ const Schedules = () => {
       point.lat,
       point.lon,
     ]);
-    // console.log('gpxPoints');
-    // console.log(gpxPoints);
 
     setScheduleArrangement('gpxPoints', gpxPoints);
     addGPXtoDB(temporaryScheduleId, gpxPoints);
@@ -294,7 +313,8 @@ const Schedules = () => {
 
   const handleUploadGPX = async (e) => {
     const file = e.target.files[0];
-    setScheduleArrangement('gpxFileName', file.name);
+    setScheduleArrangement('gpxFileName', file.name); //global state
+    await updateScheduleContents(temporaryScheduleId, 'gpxFileName', file.name); //DB
     const url = await getUploadFileUrl('gpx_file', file, temporaryScheduleId);
     const response = await fetch(url);
     const data = await response.text();

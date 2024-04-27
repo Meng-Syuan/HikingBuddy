@@ -34,10 +34,10 @@ const StyledMapContainer = styled(MapContainer)`
   height: calc(100vh - 100px);
 `;
 const TemporaryScheduleMarkers = () => {
-  const { geopoints } = useScheduleArrangement();
+  const { mapMarkers } = useScheduleArrangement();
   return (
-    geopoints &&
-    geopoints.map((geopoint) => (
+    mapMarkers &&
+    mapMarkers.map((geopoint) => (
       <Marker
         position={{ lat: geopoint.lat, lng: geopoint.lng }}
         key={geopoint.id}
@@ -104,8 +104,6 @@ const SearchedPositionMarker = () => {
 
 const PathPlannerMap = () => {
   const { gpxPoints } = useScheduleArrangement();
-  // console.log(gpxPoints);
-  // console.log('gpxPoints');
   return (
     <>
       <SearchInputField />

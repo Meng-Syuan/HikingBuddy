@@ -58,7 +58,7 @@ const AddToSchedule_btn = styled.button`
 const LocationDetails = () => {
   const { userId } = useAuth();
   const { location, geopoint, isSearchValid } = useSearchLocation();
-  const { temporaryScheduleId, geopoints, addGeopoint } =
+  const { temporaryScheduleId, mapMarkers, addGeopoint } =
     useScheduleArrangement();
   const { addLocationToDB } = useSchedulesDB();
 

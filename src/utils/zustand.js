@@ -33,59 +33,61 @@ export const useScheduleArrangement = create((set) => ({
   itineraries_dates: [],
   itineraries_datetime: [],
   newItinerary: null,
-  geopoints: [],
+  mapMarkers: [],
   setScheduleArrangement: (key, value) => set({ [key]: value }),
 
   setTripName: (tripName) => set({ tripName }),
 
   setItineraries: (itineraries) => set({ itineraries }),
 
-  updateItinerariesWithDates: (itineraries_dates) =>
-    set(() => {
-      // const updatedItineraries = state.itineraries.map((itinerary) => {
-      //   const matchingItem = itineraries_dates.find(
-      //     (item) => item.itineraryId === itinerary.itineraryId
-      //   );
-      //   return { ...itinerary, date: matchingItem.date };
-      // });
-      // return { itineraries_dates: updatedItineraries };
-      const updatedItineraries = itineraries_dates.map((itinerary) => ({
-        ...itinerary,
-        date: itinerary.date,
-      }));
-      return {
-        itineraries_dates: updatedItineraries,
-      };
-    }),
+  //可能可以刪掉？
+  // updateItinerariesWithDates: (itineraries_dates) =>
+  //   set(() => {
+  //     // const updatedItineraries = state.itineraries.map((itinerary) => {
+  //     //   const matchingItem = itineraries_dates.find(
+  //     //     (item) => item.itineraryId === itinerary.itineraryId
+  //     //   );
+  //     //   return { ...itinerary, date: matchingItem.date };
+  //     // });
+  //     // return { itineraries_dates: updatedItineraries };
+  //     const updatedItineraries = itineraries_dates.map((itinerary) => ({
+  //       ...itinerary,
+  //       date: itinerary.date,
+  //     }));
+  //     return {
+  //       itineraries_dates: updatedItineraries,
+  //     };
+  //   }),
 
-  updateItinerariesWithDatetime: (id, timeDiff) =>
-    set((state) => {
-      const updatedItineraries = state.itineraries.map((itinerary) => {
-        if (id === itinerary.itineraryId) {
-          if (isNaN(itinerary.date)) {
-            return {
-              ...itinerary,
-              datetime: timeDiff,
-            };
-          } else {
-            return {
-              ...itinerary,
-              datetime: itinerary.date + timeDiff,
-            };
-          }
-        } else {
-          return itinerary;
-        }
-      });
-      return { itineraries: updatedItineraries };
-    }),
+  //可能可以刪掉
+  // updateItinerariesWithDatetime: (id, timeDiff) =>
+  //   set((state) => {
+  //     const updatedItineraries = state.itineraries.map((itinerary) => {
+  //       if (id === itinerary.itineraryId) {
+  //         if (isNaN(itinerary.date)) {
+  //           return {
+  //             ...itinerary,
+  //             datetime: timeDiff,
+  //           };
+  //         } else {
+  //           return {
+  //             ...itinerary,
+  //             datetime: itinerary.date + timeDiff,
+  //           };
+  //         }
+  //       } else {
+  //         return itinerary;
+  //       }
+  //     });
+  //     return { itineraries: updatedItineraries };
+  //   }),
 
   setNewItinerary: (newItinerary) => set({ newItinerary }),
 
-  setGeopoints: (geopoints) => set({ geopoints }),
+  setGeopoints: (mapMarkers) => set({ mapMarkers }),
   addGeopoint: (lat, lng, id, name) =>
     set((state) => ({
-      geopoints: [...state.geopoints, { lat, lng, id, name }],
+      mapMarkers: [...state.mapMarkers, { lat, lng, id, name }],
     })),
 }));
 

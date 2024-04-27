@@ -24,6 +24,7 @@ const useSchedulesDB = () => {
   const { userId } = useAuth();
   const { userData, setFutureSchedules, setPastSchedules } = useUserData();
   const { setScheduleData } = useScheduleData();
+  const { setNewItinerary } = useScheduleArrangement();
   const schedulesRef = collection(db, 'schedules');
   const q_temporarySchedule = query(
     schedulesRef,
@@ -48,85 +49,110 @@ const useSchedulesDB = () => {
       console.log('Error: ' + error);
     }
   };
-  const useTemporaryLocations = async () => {
-    try {
-      const querySnapshot = await getDocs(q_temporarySchedule);
-      if (querySnapshot.empty) return;
-      const doc = querySnapshot.docs[0];
-      const itinerariesRef = collection(doc.ref, 'itineraries');
-      const itinerariesSnapshot = await getDocs(itinerariesRef);
-      const locations = itinerariesSnapshot.docs.map((itineraryDoc) =>
-        itineraryDoc.data()
-      );
-      return locations;
-    } catch (error) {
-      console.log('Failed to get schedules data: ' + error);
-    }
-  };
-  const useNewItineraryListener = () => {
-    const unsubscribersRef = useRef([]);
-    const { setNewItinerary } = useScheduleArrangement();
 
+  //以下可能可以不用!
+  // const useTemporaryLocations = async () => {
+  //   try {
+  //     const querySnapshot = await getDocs(q_temporarySchedule);
+  //     if (querySnapshot.empty) return;
+  //     const doc = querySnapshot.docs[0];
+  //     const itinerariesRef = collection(doc.ref, 'itineraries');
+  //     const itinerariesSnapshot = await getDocs(itinerariesRef);
+  //     const locations = itinerariesSnapshot.docs.map((itineraryDoc) =>
+  //       itineraryDoc.data()
+  //     );
+  //     return locations;
+  //   } catch (error) {
+  //     console.log('Failed to get schedules data: ' + error);
+  //   }
+  // };
+
+  const useNewItineraryListener = (id) => {
     useEffect(() => {
-      //check where to add listener
-      const checkQuery = async () => {
-        const querySnapshot = await getDocs(q_temporarySchedule);
-        if (querySnapshot.empty) {
-          const unsubscribeSchedules = onSnapshot(schedulesRef, (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-              if (change.type === 'added') {
-                const doc = change.doc;
-                const data = change.doc.data();
-                if (data.userId === userId && data.isTemporary === true) {
-                  const itinerariesRef = collection(doc.ref, 'itineraries');
-                  const unsubscribeItineraries = onSnapshot(
-                    itinerariesRef,
-                    (itinerariesSnapshot) => {
-                      itinerariesSnapshot.docChanges().forEach((change) => {
-                        if (change.type === 'modified') {
-                          setNewItinerary(change.doc.data());
-                        }
-                      });
-                    }
-                  );
-                  unsubscribersRef.current.push(unsubscribeItineraries);
-                }
-              }
-            });
-          });
-          unsubscribersRef.current.push(unsubscribeSchedules);
-        } else {
-          querySnapshot.forEach((documentSnapshot) => {
-            const itinerariesRef = collection(
-              documentSnapshot.ref,
-              'itineraries'
-            );
-            const unsubscribeItineraries = onSnapshot(
-              itinerariesRef,
-              (itinerariesSnapshot) => {
-                itinerariesSnapshot.docChanges().forEach((change) => {
-                  console.log('modified');
-
-                  if (change.type === 'modified') {
-                    setNewItinerary(change.doc.data());
-                  }
-                });
-              }
-            );
-            unsubscribersRef.current.push(unsubscribeItineraries);
-          });
-        }
-      };
-      checkQuery();
-
-      return () => {
-        unsubscribersRef.current.forEach((unsubscribe) => {
-          unsubscribe();
+      if (!id) return;
+      const itinerariesRef = collection(schedulesRef, id, 'itineraries');
+      const unsubscribe = onSnapshot(itinerariesRef, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === 'modified') {
+            const data = change.doc.data();
+            setNewItinerary(data);
+            console.log(data);
+          }
         });
+      });
+      return () => {
+        unsubscribe();
       };
     }, []);
   };
-  const useSaveSchedule = async (
+
+  //以下要被取代!
+  // const useNewItineraryListener = () => {
+  //   const unsubscribersRef = useRef([]);
+  //   const { setNewItinerary } = useScheduleArrangement();
+
+  //   useEffect(() => {
+  //     //check where to add listener
+  //     const checkQuery = async () => {
+  //       const querySnapshot = await getDocs(q_temporarySchedule);
+  //       if (querySnapshot.empty) {
+  //         const unsubscribeSchedules = onSnapshot(schedulesRef, (snapshot) => {
+  //           snapshot.docChanges().forEach((change) => {
+  //             if (change.type === 'added') {
+  //               const doc = change.doc;
+  //               const data = change.doc.data();
+  //               if (data.userId === userId && data.isTemporary === true) {
+  //                 const itinerariesRef = collection(doc.ref, 'itineraries');
+  //                 const unsubscribeItineraries = onSnapshot(
+  //                   itinerariesRef,
+  //                   (itinerariesSnapshot) => {
+  //                     itinerariesSnapshot.docChanges().forEach((change) => {
+  //                       if (change.type === 'modified') {
+  //                         console.log('原本沒有location data，這是第一筆');
+  //                         setNewItinerary(change.doc.data());
+  //                       }
+  //                     });
+  //                   }
+  //                 );
+  //                 unsubscribersRef.current.push(unsubscribeItineraries);
+  //               }
+  //             }
+  //           });
+  //         });
+  //         unsubscribersRef.current.push(unsubscribeSchedules);
+  //       } else {
+  //         querySnapshot.forEach((documentSnapshot) => {
+  //           const itinerariesRef = collection(
+  //             documentSnapshot.ref,
+  //             'itineraries'
+  //           );
+  //           const unsubscribeItineraries = onSnapshot(
+  //             itinerariesRef,
+  //             (itinerariesSnapshot) => {
+  //               itinerariesSnapshot.docChanges().forEach((change) => {
+  //                 console.log('modified');
+
+  //                 if (change.type === 'modified') {
+  //                   console.log('這是第二筆以後的 location data');
+  //                   setNewItinerary(change.doc.data());
+  //                 }
+  //               });
+  //             }
+  //           );
+  //           unsubscribersRef.current.push(unsubscribeItineraries);
+  //         });
+  //       }
+  //     };
+  //     checkQuery();
+
+  //     return () => {
+  //       unsubscribersRef.current.forEach((unsubscribe) => {
+  //         unsubscribe();
+  //       });
+  //     };
+  //   }, []);
+  // };
+  const saveScheduleDetails = async (
     id,
     itineraries_dates,
     itineraries_datetime,
@@ -183,9 +209,21 @@ const useSchedulesDB = () => {
         { id: '備用衣物（長袖、短袖、短褲、內褲、襪子）', isChecked: false },
       ],
     });
-    //可以改用 batch 寫嗎？
-    const datesPromises = itineraries_dates.map((itinerary) => {
-      const itineraryDocRef = doc(docRef, 'itineraries', itinerary.itineraryId);
+    const mergedItineraries = [];
+    itineraries_dates.forEach((dateItem) => {
+      const item = itineraries_datetime.find(
+        (datetimeItem) => datetimeItem.itineraryId === dateItem.itineraryId
+      );
+      if (item) {
+        mergedItineraries.push({
+          id: item.itineraryId,
+          date: dateItem.date,
+          datetime: item.datetime,
+        });
+      }
+    });
+    const itinerariesPromise = mergedItineraries.map((itinerary) => {
+      const itineraryDocRef = doc(docRef, 'itineraries', itinerary.id);
       return updateDoc(itineraryDocRef, {
         date: itinerary.date,
       });
@@ -197,7 +235,7 @@ const useSchedulesDB = () => {
         datetime: itinerary.datetime,
       });
     });
-    await Promise.all(datetimePromises);
+    await Promise.all(itinerariesPromise);
   };
 
   const useSortSchedulesDates = async () => {
@@ -242,6 +280,7 @@ const useSchedulesDB = () => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setScheduleData('scheduleInfo', data);
+        return data;
       } else {
         console.log('No such schedule');
       }
@@ -276,8 +315,6 @@ const useSchedulesDB = () => {
         itinerariesSnapshot.forEach((doc) => {
           locations.push(doc.data());
         });
-        // console.log('temporary schedule locations');
-        // console.log(locations);
         return locations;
       }
     } catch (error) {
@@ -358,9 +395,8 @@ const useSchedulesDB = () => {
     createNewSchedule,
     addLocationToDB,
     addGPXtoDB,
-    useTemporaryLocations,
     useNewItineraryListener,
-    useSaveSchedule,
+    saveScheduleDetails,
     useSortSchedulesDates,
     getScheduleInfo,
     getScheduleDetails,
