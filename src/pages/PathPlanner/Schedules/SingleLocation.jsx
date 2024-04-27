@@ -3,6 +3,7 @@ import color from '@utils/theme.js';
 import Flatpickr from 'react-flatpickr';
 import { useState, useEffect } from 'react';
 import { useScheduleArrangement } from '@utils/zustand';
+import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 
 const ContentWrapper = styled.div`
   min-height: 30px;
@@ -34,10 +35,16 @@ const DeleteButton = styled.button`
   border: none;
 `;
 
-const SingleLocation = ({ name, id }) => {
-  const { setScheduleArrangement, itineraries_dates, itineraries_datetime } =
-    useScheduleArrangement();
+const SingleLocation = ({ name, id, deletionId, setDeletion }) => {
+  const {
+    temporaryScheduleId,
+    setScheduleArrangement,
+    itineraries_dates,
+    itineraries_datetime,
+  } = useScheduleArrangement();
+  const { deleteItinerary } = useSchedulesDB();
   const [timeDiff, setTimeDiff] = useState('');
+  // const [deletionId, setDeletionId] = useState(null);
 
   useEffect(() => {
     //initialization
@@ -49,35 +56,57 @@ const SingleLocation = ({ name, id }) => {
       }));
       setScheduleArrangement('itineraries_datetime', initialDatetimes);
     } else {
-      //update according to new location or new date
-      const newItinerary = itineraries_dates.find((itinerary) => {
-        return !itineraries_datetime.some(
-          (object) => object.itineraryId === itinerary.itineraryId
-        );
-      });
-      if (newItinerary) {
-        let newItineraries_datetime = itineraries_datetime.map((itinerary) => ({
-          itineraryId: itinerary.itineraryId,
-          date: itinerary.date,
-          datetime: itinerary.datetime,
-        }));
-        newItineraries_datetime.push(newItinerary);
-        setScheduleArrangement('itineraries_datetime', newItineraries_datetime);
-      } else {
-        const newItineraries_datetime = itineraries_datetime.map(
-          (itinerary) => {
-            const matchingItem = itineraries_dates.find(
-              (item) => item.itineraryId === itinerary.itineraryId
-            );
-            return {
-              ...itinerary,
-              date: matchingItem.date,
-              //use new datetime; cause matchingItem is founded by itineraries_datetime, which doesn't have datetime property
+      //update according to new location or new date / deletion
+      if (!deletionId) {
+        console.log('deletionId不存在，我沒有刪除任何東西');
+        const newItinerary = itineraries_dates.find((itinerary) => {
+          return !itineraries_datetime.some(
+            (object) => object.itineraryId === itinerary.itineraryId
+          );
+        });
+        if (newItinerary) {
+          console.log('有新增的地點');
+          const newItineraries_datetime = itineraries_datetime.map(
+            (itinerary) => ({
+              itineraryId: itinerary.itineraryId,
+              date: itinerary.date,
               datetime: itinerary.datetime,
-            };
-          }
+            })
+          );
+          newItineraries_datetime.push(newItinerary);
+          setScheduleArrangement(
+            'itineraries_datetime',
+            newItineraries_datetime
+          );
+          console.log('新項目已經寫進 datetime裡面');
+        } else {
+          console.log('沒有新項目，但是有更新時間，以下是當前的 deletionId');
+          console.log(deletionId);
+          const newItineraries_datetime = itineraries_datetime.map(
+            (itinerary) => {
+              const matchingItem = itineraries_dates.find(
+                (item) => item.itineraryId === itinerary.itineraryId
+              );
+              return {
+                ...itinerary,
+                date: matchingItem.date,
+                //use new datetime; cause matchingItem is founded by itineraries_datetime, which doesn't have datetime property
+                datetime: itinerary.datetime,
+              };
+            }
+          );
+          setScheduleArrangement(
+            'itineraries_datetime',
+            newItineraries_datetime
+          );
+        }
+      } else {
+        console.log('我有刪掉東西，製作新的 datetime');
+        const newItineraries_datetime = itineraries_datetime.filter(
+          (itinerary) => itinerary.itineraryId !== deletionId
         );
         setScheduleArrangement('itineraries_datetime', newItineraries_datetime);
+        setDeletion(null);
       }
     }
   }, [itineraries_dates]);
@@ -104,7 +133,10 @@ const SingleLocation = ({ name, id }) => {
     setTimeDiff(diffTimestamp);
   };
 
-  const handleDeletion = (id) => {};
+  const handleDeleteItinerary = (id) => {
+    setDeletion(id);
+    deleteItinerary(temporaryScheduleId, id);
+  };
   const timePickerOptions = {
     enableTime: true,
     noCalendar: true,
@@ -120,7 +152,9 @@ const SingleLocation = ({ name, id }) => {
         <input type="text" data-input readOnly />
       </Flatpickr>
       <Location_Name>{name}</Location_Name>
-      <DeleteButton onClick={() => handleDeletion(id)}>刪除</DeleteButton>
+      <DeleteButton onClick={() => handleDeleteItinerary(id)}>
+        刪除
+      </DeleteButton>
     </ContentWrapper>
   );
 };

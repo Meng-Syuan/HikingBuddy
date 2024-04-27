@@ -10,9 +10,10 @@ import {
   where,
   GeoPoint,
   onSnapshot,
+  deleteDoc,
 } from 'firebase/firestore';
 import { useAuth } from '@clerk/clerk-react';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import {
   useScheduleArrangement,
   useUserData,
@@ -66,6 +67,10 @@ const useSchedulesDB = () => {
   //     console.log('Failed to get schedules data: ' + error);
   //   }
   // };
+  const deleteItinerary = async (id, itineraryId) => {
+    const deletionDoc = doc(schedulesRef, id, 'itineraries', itineraryId);
+    await deleteDoc(deletionDoc);
+  };
 
   const useNewItineraryListener = (id) => {
     useEffect(() => {
@@ -289,19 +294,6 @@ const useSchedulesDB = () => {
     }
   };
 
-  // const getScheduleDetails = async (id) => {
-  //   try {
-  //     const itinerariesRef = collection(schedulesRef, id, 'itineraries');
-  //     const itinerariesSnapshot = await getDocs(itinerariesRef);
-  //     const result = [];
-  //     itinerariesSnapshot.forEach((doc) => {
-  //       result.push(doc.data());
-  //     });
-  //     setScheduleData('scheduleDetails', result);
-  //   } catch (error) {
-  //     console.log('Failed to fetch the current schedule details: ' + error);
-  //   }
-  // };
   const getScheduleDetails = async (id) => {
     try {
       console.log(id);
@@ -395,6 +387,7 @@ const useSchedulesDB = () => {
     createNewSchedule,
     addLocationToDB,
     addGPXtoDB,
+    deleteItinerary,
     useNewItineraryListener,
     saveScheduleDetails,
     useSortSchedulesDates,

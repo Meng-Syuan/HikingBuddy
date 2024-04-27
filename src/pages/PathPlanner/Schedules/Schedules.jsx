@@ -74,6 +74,8 @@ const Schedules = () => {
     tripName,
     setTripName,
     gpxFileName,
+    itineraries_dates,
+    itineraries_datetime,
   } = useScheduleArrangement();
   const {
     getTemporaryScheduleId,
@@ -88,8 +90,10 @@ const Schedules = () => {
   const [selectedDates, setSelectedDates] = useState([]);
   const [baseBlock, setBaseBlock] = useState(null);
   const [scheduleBlocks, setScheduleBlocks] = useState([]);
-  const [isSortEnd, setIsSortEnd] = useState(false);
   const [gpxContent, setGPXContent] = useState('');
+
+  const [isSortEnd, setIsSortEnd] = useState(false);
+  const [deletionId, setDeletionId] = useState(null);
 
   const getTemporaryLocations = useCallback(async () => {
     const locations = await getScheduleDetails(temporaryScheduleId);
@@ -215,8 +219,6 @@ const Schedules = () => {
           acc.push({
             itineraryId: item.id,
             date: item.date,
-            // datetime: item.datetime,
-            // location: item.name,
           });
         });
         return acc;
@@ -263,29 +265,6 @@ const Schedules = () => {
     }
   }, [newItinerary]);
 
-  ////////
-  /////////
-  ////////
-  /////////
-  ///////
-  // useEffect(() => {
-  //   if (!scheduleBlocks) return;
-  //   console.log('scheduleBlocks');
-  //   console.log(scheduleBlocks);
-  // }, [scheduleBlocks]);
-  // useEffect(() => {
-  //   console.log('itineraries_dates');
-  //   console.log(itineraries_dates);
-  // }, [itineraries_dates]);
-  // useEffect(() => {
-  //   console.log('===itineraries_datetime====');
-  //   console.log(itineraries_datetime);
-  // }, [itineraries_datetime]);
-  ////////
-  ///////
-  ////////
-  ///////////
-
   useEffect(() => {
     if (!gpxContent) return;
     const gpx = new gpxParser();
@@ -298,6 +277,34 @@ const Schedules = () => {
     setScheduleArrangement('gpxPoints', gpxPoints);
     addGPXtoDB(temporaryScheduleId, gpxPoints);
   }, [gpxContent]);
+
+  useEffect(() => {
+    if (!deletionId) return;
+    console.log('deletionId');
+    console.log(deletionId);
+    const updatedBlocks = scheduleBlocks.map((block) => {
+      const remainingItems = block.items.filter(
+        (item) => item.id !== deletionId
+      );
+      return { ...block, items: remainingItems };
+    });
+    setScheduleBlocks(updatedBlocks);
+  }, [deletionId]);
+
+  useEffect(() => {
+    console.log('scheduleBlocks.........');
+    console.log(scheduleBlocks);
+  }, [scheduleBlocks]);
+
+  useEffect(() => {
+    console.log('.........itineraries_dates......');
+    console.log(itineraries_dates);
+  }, [itineraries_dates]);
+
+  useEffect(() => {
+    console.log('.itineraries_datetime.');
+    console.log(itineraries_datetime);
+  }, [itineraries_datetime]);
 
   const handleSortEnd = (blockId, items) => {
     setScheduleBlocks((prevBlocks) =>
@@ -355,7 +362,15 @@ const Schedules = () => {
               list={block.items}
             >
               {block.items.map((item) => (
-                <Location key={item.id} name={item.name} id={item.id} />
+                <Location
+                  key={item.id}
+                  name={item.name}
+                  id={item.id}
+                  deletionId={deletionId}
+                  setDeletion={setDeletionId}
+                  scheduleBlocks={scheduleBlocks}
+                  setBlocks={setScheduleBlocks}
+                />
               ))}
             </ReactSortable>
           </ScheduleBlock>
