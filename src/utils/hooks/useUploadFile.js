@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid';
 import { storage } from '@utils/firebase/firebaseConfig';
 import {
   getDownloadURL,

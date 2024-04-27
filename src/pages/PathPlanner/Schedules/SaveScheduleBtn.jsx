@@ -7,24 +7,45 @@ import { useNavigate } from 'react-router-dom';
 
 const StyledBtn = styled.button``;
 
-const StoreScheduleBtn = () => {
-  const { userId } = useAuth();
-  const { tripName, itineraries, setItineraries } = useScheduleArrangement();
+const SaveScheduleBtn = () => {
+  const {
+    temporaryScheduleId,
+    tripName,
+    itineraries_dates,
+    itineraries_datetime,
+    setScheduleArrangement,
+    gpxFileName,
+  } = useScheduleArrangement();
   const { useSaveScheduleToUsersDB } = useUsersDB();
-  const { useSaveSchedule } = useSchedulesDB();
+  const { saveScheduleDetails } = useSchedulesDB();
   const navigate = useNavigate();
   const handleSaveClick = async () => {
-    const isNotCompleted = itineraries.find(
-      (itinerary) => isNaN(itinerary.date) || !itinerary.datetime
+    const isDatesNotCompleted = itineraries_dates.find(
+      (itinerary) => isNaN(itinerary.date) || !itinerary.date
+    );
+    const isDatetimeNotCompelte = itineraries_datetime.find(
+      (itinerary) => isNaN(itinerary.datetime) || !itinerary.datetime
     );
 
-    if (!isNotCompleted && tripName) {
-      console.log('填寫完成');
-      const scheduleId = await useSaveSchedule(itineraries, tripName);
-      await useSaveScheduleToUsersDB(scheduleId);
+    if (!isDatesNotCompleted && !isDatetimeNotCompelte && tripName) {
+      alert('填寫完成');
+      await saveScheduleDetails(
+        temporaryScheduleId,
+        itineraries_dates,
+        itineraries_datetime,
+        tripName,
+        gpxFileName
+      );
+      await useSaveScheduleToUsersDB(temporaryScheduleId);
       alert('儲存成功，到個人頁面查看');
       navigate('/profile');
-      setItineraries(null);
+      setScheduleArrangement('tripName', '');
+      setScheduleArrangement('itineraries_dates', []);
+      setScheduleArrangement('itineraries_datetime', []);
+      setScheduleArrangement('temporaryScheduleId', null);
+      setScheduleArrangement('gpxPoints', null);
+      setScheduleArrangement('gpxFileName', '');
+      setScheduleArrangement('mapMarkers', []);
     } else {
       console.log('填寫未完成');
       alert('請完成路線命名及日期、時間填寫');
@@ -33,4 +54,4 @@ const StoreScheduleBtn = () => {
   return <StyledBtn onClick={handleSaveClick}>儲存行程表</StyledBtn>;
 };
 
-export default StoreScheduleBtn;
+export default SaveScheduleBtn;

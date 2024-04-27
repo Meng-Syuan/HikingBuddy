@@ -35,28 +35,83 @@ const DeleteButton = styled.button`
 `;
 
 const SingleLocation = ({ name, id }) => {
-  const { updateItinerariesWithDatetime } = useScheduleArrangement();
+  const { setScheduleArrangement, itineraries_dates, itineraries_datetime } =
+    useScheduleArrangement();
   const [timeDiff, setTimeDiff] = useState('');
 
   useEffect(() => {
-    if (timeDiff) {
-      updateItinerariesWithDatetime(id, timeDiff);
+    //initialization
+    if (itineraries_datetime.length === 0) {
+      const initialDatetimes = itineraries_dates.map((itinerary) => ({
+        itineraryId: itinerary.itineraryId,
+        date: itinerary.date,
+        datetime: itinerary.date,
+      }));
+      setScheduleArrangement('itineraries_datetime', initialDatetimes);
+    } else {
+      //update according to new location or new date
+      const newItinerary = itineraries_dates.find((itinerary) => {
+        return !itineraries_datetime.some(
+          (object) => object.itineraryId === itinerary.itineraryId
+        );
+      });
+      if (newItinerary) {
+        let newItineraries_datetime = itineraries_datetime.map((itinerary) => ({
+          itineraryId: itinerary.itineraryId,
+          date: itinerary.date,
+          datetime: itinerary.datetime,
+        }));
+        newItineraries_datetime.push(newItinerary);
+        setScheduleArrangement('itineraries_datetime', newItineraries_datetime);
+      } else {
+        const newItineraries_datetime = itineraries_datetime.map(
+          (itinerary) => {
+            const matchingItem = itineraries_dates.find(
+              (item) => item.itineraryId === itinerary.itineraryId
+            );
+            return {
+              ...itinerary,
+              date: matchingItem.date,
+              //use new datetime; cause matchingItem is founded by itineraries_datetime, which doesn't have datetime property
+              datetime: itinerary.datetime,
+            };
+          }
+        );
+        setScheduleArrangement('itineraries_datetime', newItineraries_datetime);
+      }
     }
+  }, [itineraries_dates]);
+
+  useEffect(() => {
+    if (!timeDiff) return;
+    const updatedItineraries = itineraries_datetime.map((itinerary) => {
+      if (id === itinerary.itineraryId) {
+        return {
+          ...itinerary,
+          datetime: itinerary.date + timeDiff,
+        };
+      } else {
+        return itinerary;
+      }
+    });
+    setScheduleArrangement('itineraries_datetime', updatedItineraries);
   }, [timeDiff]);
 
-  const handleTimeChange = (selectedDateTime, timeStr) => {
-    const todayMidnight_timestamp = new Date().setHours(0, 0, 0);
+  const handleTimeChange = (selectedDateTime) => {
+    const todayMidnight_timestamp = new Date().setHours(0, 0, 0, 0);
     const diffTimestamp =
       selectedDateTime[0].getTime() - todayMidnight_timestamp;
     setTimeDiff(diffTimestamp);
   };
+
+  const handleDeletion = (id) => {};
   const timePickerOptions = {
     enableTime: true,
     noCalendar: true,
     dateFormat: 'H:i',
     time_24hr: true,
     wrap: true,
-    onChange: handleTimeChange,
+    onChange: (e) => handleTimeChange(e),
   };
 
   return (
@@ -65,7 +120,7 @@ const SingleLocation = ({ name, id }) => {
         <input type="text" data-input readOnly />
       </Flatpickr>
       <Location_Name>{name}</Location_Name>
-      <DeleteButton>刪除</DeleteButton>
+      <DeleteButton onClick={() => handleDeletion(id)}>刪除</DeleteButton>
     </ContentWrapper>
   );
 };

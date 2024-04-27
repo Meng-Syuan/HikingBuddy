@@ -23,8 +23,7 @@ const SchedulesWrapper = styled.section`
 `;
 
 const PathPlanner = () => {
-  const { isSignedIn, userId } = useAuth();
-  const { useNewItineraryListener } = useSchedulesDB();
+  const { isSignedIn } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
     if (!isSignedIn) {
@@ -32,10 +31,6 @@ const PathPlanner = () => {
       navigate('/');
     }
   }, []);
-
-  useNewItineraryListener();
-
-  // 之後用 CSS 修改彈出式視窗
 
   return (
     <>
