@@ -10,7 +10,6 @@ import {
   where,
   GeoPoint,
   onSnapshot,
-  writeBatch,
 } from 'firebase/firestore';
 import { useAuth } from '@clerk/clerk-react';
 import { useEffect, useRef } from 'react';
@@ -32,31 +31,16 @@ const useSchedulesDB = () => {
     where('isTemporary', '==', true)
   );
 
-  const addLocationToDB = async (geopoint, location) => {
+  const addLocationToDB = async (id, geopoint, location) => {
     try {
-      const querySnapshot = await getDocs(q_temporarySchedule);
       const newItinerary = {
         geopoint: new GeoPoint(geopoint.lat, geopoint.lng),
         location,
       };
-      if (querySnapshot.empty) {
-        const newDocRef = await addDoc(schedulesRef, {
-          isTemporary: true,
-          isFinished: false,
-          userId,
-        });
-        await updateDoc(newDocRef, { scheduleId: newDocRef.id });
-        const itinerariesRef = collection(newDocRef, 'itineraries');
-        const itinerariesDocRef = await addDoc(itinerariesRef, newItinerary);
-        const itineraryId = itinerariesDocRef.id;
-        await updateDoc(itinerariesDocRef, { itineraryId });
-      } else {
-        const doc = querySnapshot.docs[0];
-        const itinerariesRef = collection(doc.ref, 'itineraries');
-        const itinerariesDocRef = await addDoc(itinerariesRef, newItinerary);
-        const itineraryId = itinerariesDocRef.id;
-        await updateDoc(itinerariesDocRef, { itineraryId });
-      }
+      const itinerariesRef = collection(schedulesRef, id, 'itineraries');
+      const itinerariesDocRef = await addDoc(itinerariesRef, newItinerary);
+      const itineraryId = itinerariesDocRef.id;
+      await updateDoc(itinerariesDocRef, { itineraryId });
       console.log(
         'Created a new document in itineraries collection successfully.'
       );
@@ -74,7 +58,7 @@ const useSchedulesDB = () => {
       const locations = itinerariesSnapshot.docs.map((itineraryDoc) =>
         itineraryDoc.data()
       );
-      return locations; //把 component 內的程式碼 useEffect 拉到這邊來寫？
+      return locations;
     } catch (error) {
       console.log('Failed to get schedules data: ' + error);
     }
@@ -142,14 +126,19 @@ const useSchedulesDB = () => {
       };
     }, []);
   };
-  const useSaveSchedule = async (itineraries, tripName) => {
-    const dates = itineraries.map((itinerary) => itinerary.date);
+  const useSaveSchedule = async (
+    id,
+    itineraries_dates,
+    itineraries_datetime,
+    tripName,
+    gpxFileName
+  ) => {
+    const dates = itineraries_dates.map((itinerary) => itinerary.date);
     const firstDay = Math.min(...dates);
     const lastDay = Math.max(...dates);
-    const querySnapshot = await getDocs(q_temporarySchedule);
-    if (querySnapshot.empty) return;
-    const currentScheduleRef = querySnapshot.docs[0].ref;
-    await updateDoc(currentScheduleRef, {
+    const docRef = doc(schedulesRef, id);
+    await updateDoc(docRef, {
+      gpxFileName,
       isTemporary: false,
       tripName,
       firstDay,
@@ -194,20 +183,21 @@ const useSchedulesDB = () => {
         { id: '備用衣物（長袖、短袖、短褲、內褲、襪子）', isChecked: false },
       ],
     });
-    const itinerariesPromise = itineraries.map((itinerary) => {
-      const itineraryDocRef = doc(
-        currentScheduleRef,
-        'itineraries',
-        itinerary.itineraryId
-      );
+    //可以改用 batch 寫嗎？
+    const datesPromises = itineraries_dates.map((itinerary) => {
+      const itineraryDocRef = doc(docRef, 'itineraries', itinerary.itineraryId);
       return updateDoc(itineraryDocRef, {
         date: itinerary.date,
+      });
+    });
+    await Promise.all(datesPromises);
+    const datetimePromises = itineraries_datetime.map((itinerary) => {
+      const itineraryDocRef = doc(docRef, 'itineraries', itinerary.id);
+      return updateDoc(itineraryDocRef, {
         datetime: itinerary.datetime,
       });
     });
-    await Promise.all(itinerariesPromise);
-    //add new schedule id to users DB
-    return currentScheduleRef.id;
+    await Promise.all(datetimePromises);
   };
 
   const useSortSchedulesDates = async () => {
@@ -260,21 +250,80 @@ const useSchedulesDB = () => {
     }
   };
 
+  // const getScheduleDetails = async (id) => {
+  //   try {
+  //     const itinerariesRef = collection(schedulesRef, id, 'itineraries');
+  //     const itinerariesSnapshot = await getDocs(itinerariesRef);
+  //     const result = [];
+  //     itinerariesSnapshot.forEach((doc) => {
+  //       result.push(doc.data());
+  //     });
+  //     setScheduleData('scheduleDetails', result);
+  //   } catch (error) {
+  //     console.log('Failed to fetch the current schedule details: ' + error);
+  //   }
+  // };
   const getScheduleDetails = async (id) => {
     try {
+      console.log(id);
       const itinerariesRef = collection(schedulesRef, id, 'itineraries');
       const itinerariesSnapshot = await getDocs(itinerariesRef);
-      const result = [];
-      itinerariesSnapshot.forEach((doc) => {
-        result.push(doc.data());
-      });
-      setScheduleData('scheduleDetails', result);
+      if (itinerariesSnapshot.empty) {
+        console.log('no temporary schedule');
+        return null;
+      } else {
+        const locations = [];
+        itinerariesSnapshot.forEach((doc) => {
+          locations.push(doc.data());
+        });
+        // console.log('temporary schedule locations');
+        // console.log(locations);
+        return locations;
+      }
     } catch (error) {
       console.log('Failed to fetch the current schedule details: ' + error);
     }
   };
 
-  const getLocationNotes = async () => {};
+  const getTemporaryScheduleId = async () => {
+    try {
+      const querySnapshot = await getDocs(q_temporarySchedule);
+      if (querySnapshot.empty) {
+        return null;
+      } else {
+        const result = querySnapshot.docs[0].id;
+        return result;
+      }
+    } catch (error) {
+      console.log('Failed to get temporarySchedule docs.');
+    }
+  };
+
+  const createNewSchedule = async () => {
+    try {
+      const newDocRef = await addDoc(schedulesRef, {
+        isTemporary: true,
+        isFinished: false,
+        userId,
+      });
+      return newDocRef.id;
+    } catch (error) {
+      console.log('Failed to createNewSchedule');
+      console.log(error);
+    }
+  };
+
+  const addGPXtoDB = async (scheduleId, gpxPoints) => {
+    try {
+      const docRef = doc(schedulesRef, scheduleId);
+      await updateDoc(docRef, {
+        gpxPoints: { ...gpxPoints },
+      });
+    } catch (error) {
+      alert('Failed to add GPX to schedules DB. Check the console');
+      console.log(error);
+    }
+  };
 
   const updateScheduleContents = async (
     scheduleId,
@@ -293,9 +342,9 @@ const useSchedulesDB = () => {
           gearChecklist: [...content],
           otherItemChecklist: [...otherContent],
         });
-      } else if (property === 'isActive') {
+      } else {
         await updateDoc(scheduleDocRef, {
-          isActive: content,
+          [property]: content,
         });
       }
     } catch (error) {
@@ -305,14 +354,16 @@ const useSchedulesDB = () => {
   };
 
   return {
+    getTemporaryScheduleId,
+    createNewSchedule,
     addLocationToDB,
+    addGPXtoDB,
     useTemporaryLocations,
     useNewItineraryListener,
     useSaveSchedule,
     useSortSchedulesDates,
     getScheduleInfo,
     getScheduleDetails,
-    getLocationNotes,
     updateScheduleContents,
   };
 };

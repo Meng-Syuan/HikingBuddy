@@ -4,10 +4,11 @@ import color from '@theme';
 import { useState, useEffect, useCallback } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
-import { useAuth } from '@clerk/clerk-react';
+import useUploadFile from '@utils/hooks/useUploadFile';
 import Location from './SingleLocation';
 import SaveScheduleBtn from './SaveScheduleBtn';
 import { useScheduleArrangement } from '@utils/zustand';
+import gpxParser from 'gpxparser';
 
 const TripName = styled.div`
   display: flex;
@@ -47,6 +48,14 @@ const ScheduleBlock = styled.div`
   }
 `;
 
+const UploadGpxButton = styled.button`
+  border: 2px solid #000;
+`;
+
+const GPXfileWrapper = styled.div``;
+
+const GPXfileName = styled.span``;
+
 const sortableOptions = {
   animation: 100,
   fallbackOnBody: true,
@@ -57,60 +66,78 @@ const sortableOptions = {
 };
 
 const Schedules = () => {
-  const { userId } = useAuth();
   const {
-    setItineraries,
+    setScheduleArrangement,
+    temporaryScheduleId,
     newItinerary,
     setNewItinerary,
-    setGeopoints,
     tripName,
     setTripName,
-    updateItinerariesWithDates,
-    itineraries,
+    itineraries_dates,
+    itineraries_datetime,
+    gpxFileName,
   } = useScheduleArrangement();
-  const { useTemporaryLocations } = useSchedulesDB();
+  const {
+    getTemporaryScheduleId,
+    createNewSchedule,
+    updateScheduleContents,
+    getScheduleDetails,
+    addGPXtoDB,
+  } = useSchedulesDB();
+  const { getUploadFileUrl } = useUploadFile();
   const [selectedDates, setSelectedDates] = useState([]);
   const [baseBlock, setBaseBlock] = useState(null);
   const [scheduleBlocks, setScheduleBlocks] = useState([]);
   const [isSortEnd, setIsSortEnd] = useState(false);
+  const [gpxContent, setGPXContent] = useState('');
 
   const getTemporaryLocations = useCallback(async () => {
-    const temporaryLocations = await useTemporaryLocations();
-    if (temporaryLocations) {
-      //for UI render
-      const items = temporaryLocations.map((location) => ({
+    const locations = await getScheduleDetails(temporaryScheduleId);
+    if (!locations) return;
+
+    //for UI render
+    const items = locations.map((location) => ({
+      id: location.itineraryId,
+      name: location.location,
+    }));
+    setBaseBlock([
+      {
+        id: 'base_block',
+        items,
+      },
+    ]);
+    //manage global state
+    // setScheduleArrangement('itineraries_datetime', items);//??
+
+    const geopoints = locations.map((location) => {
+      return {
+        lat: location.geopoint._lat,
+        lng: location.geopoint._long,
         id: location.itineraryId,
         name: location.location,
-      }));
-      setBaseBlock([
-        {
-          id: 'base_block',
-          items,
-        },
-      ]);
-      //manage global state
-      const geopoints = temporaryLocations.map((location) => {
-        return {
-          lat: location.geopoint._lat,
-          lng: location.geopoint._long,
-          id: location.itineraryId,
-          name: location.location,
-        };
-      });
-      setGeopoints(geopoints);
+      };
+    });
+    setScheduleArrangement('geopoints', geopoints);
+  }, [temporaryScheduleId]);
 
-      const itineraries = temporaryLocations.map((location) => ({
-        itineraryId: location.itineraryId,
-        location: location.location,
-      }));
-      setItineraries(itineraries);
-    }
-  }, [userId]);
-
-  //get temporary schedule and set the global itineraries state from db when first loading
   useEffect(() => {
-    getTemporaryLocations();
+    const initializeSchedule = async () => {
+      const id = await getTemporaryScheduleId();
+      if (!id) {
+        const newDocId = await createNewSchedule();
+        await updateScheduleContents(newDocId, 'scheduleId', newDocId);
+        setScheduleArrangement('temporaryScheduleId', newDocId);
+      } else {
+        setScheduleArrangement('temporaryScheduleId', id);
+      }
+    };
+    initializeSchedule();
   }, []);
+
+  useEffect(() => {
+    if (!temporaryScheduleId) return;
+    getTemporaryLocations();
+  }, [temporaryScheduleId]);
 
   //setScheduleBlocks when base block change(add new location / get data from db)
   useEffect(() => {
@@ -151,7 +178,7 @@ const Schedules = () => {
           ...item,
           date: block.id,
         }));
-        return { ...block, items: updateItemsWithDate };
+        return { ...block, items: updateItemsWithDate }; //keep id, renew date property
       });
 
       setScheduleBlocks(updateBlocks);
@@ -159,19 +186,21 @@ const Schedules = () => {
     }
   }, [isSortEnd]);
 
-  //update date properties to itineraries
+  //update date properties to itineraries_dates
   useEffect(() => {
     if (scheduleBlocks.length > 1) {
-      const itinerariesWithDates = scheduleBlocks.reduce((acc, curr) => {
+      const itineraries_dates = scheduleBlocks.reduce((acc, curr) => {
         curr.items.forEach((item) => {
           acc.push({
             itineraryId: item.id,
             date: item.date,
+            // datetime: item.datetime,
+            // location: item.name,
           });
         });
         return acc;
       }, []);
-      updateItinerariesWithDates(itinerariesWithDates);
+      setScheduleArrangement('itineraries_dates', itineraries_dates);
     }
   }, [scheduleBlocks]);
 
@@ -213,10 +242,43 @@ const Schedules = () => {
     }
   }, [newItinerary]);
 
+  ////////
+  /////////
+  ////////
+  /////////
+  ///////
+  // useEffect(() => {
+  //   if (!scheduleBlocks) return;
+  //   console.log('scheduleBlocks');
+  //   console.log(scheduleBlocks);
+  // }, [scheduleBlocks]);
+  // useEffect(() => {
+  //   console.log('itineraries_dates');
+  //   console.log(itineraries_dates);
+  // }, [itineraries_dates]);
+  // useEffect(() => {
+  //   console.log('===itineraries_datetime====');
+  //   console.log(itineraries_datetime);
+  // }, [itineraries_datetime]);
+  ////////
+  ///////
+  ////////
+  ///////////
+
   useEffect(() => {
-    console.log('itineraries');
-    console.log(itineraries);
-  }, [itineraries]);
+    if (!gpxContent) return;
+    const gpx = new gpxParser();
+    gpx.parse(gpxContent);
+    const gpxPoints = gpx.tracks[0].points.map((point) => [
+      point.lat,
+      point.lon,
+    ]);
+    // console.log('gpxPoints');
+    // console.log(gpxPoints);
+
+    setScheduleArrangement('gpxPoints', gpxPoints);
+    addGPXtoDB(temporaryScheduleId, gpxPoints);
+  }, [gpxContent]);
 
   const handleSortEnd = (blockId, items) => {
     setScheduleBlocks((prevBlocks) =>
@@ -229,8 +291,14 @@ const Schedules = () => {
     );
     setIsSortEnd(true);
   };
-  const handleTripNameChange = (e) => {
-    setTripName(e.target.value);
+
+  const handleUploadGPX = async (e) => {
+    const file = e.target.files[0];
+    setScheduleArrangement('gpxFileName', file.name);
+    const url = await getUploadFileUrl('gpx_file', file, temporaryScheduleId);
+    const response = await fetch(url);
+    const data = await response.text();
+    setGPXContent(data);
   };
   return (
     <>
@@ -241,37 +309,51 @@ const Schedules = () => {
           type="text"
           placeholder="未命名的路線名稱"
           value={tripName}
-          onChange={handleTripNameChange}
+          onChange={(e) => setTripName(e.target.value)}
         />
       </TripName>
       <CalendarDate selectDates={setSelectedDates} />
 
-      {scheduleBlocks.map((block, index) => (
-        <ScheduleBlock key={block.id}>
-          {index < scheduleBlocks.length - 1 && (
-            <>
-              <Day>
-                <hr />
-                <h6>{`第${index + 1}天`}</h6>
-                <hr />
-              </Day>
-            </>
-          )}
-          <ReactSortable
-            className="sortable"
-            {...sortableOptions}
-            setList={(items) => {
-              handleSortEnd(block.id, items);
-            }}
-            list={block.items}
-          >
-            {block.items.map((item) => (
-              <Location key={item.id} name={item.name} id={item.id} />
-            ))}
-          </ReactSortable>
-        </ScheduleBlock>
-      ))}
+      {scheduleBlocks.length > 0 &&
+        scheduleBlocks.map((block, index) => (
+          <ScheduleBlock key={block.id}>
+            {index < scheduleBlocks.length - 1 && (
+              <>
+                <Day>
+                  <hr />
+                  <h6>{`第${index + 1}天`}</h6>
+                  <hr />
+                </Day>
+              </>
+            )}
+            <ReactSortable
+              className="sortable"
+              {...sortableOptions}
+              setList={(items) => {
+                handleSortEnd(block.id, items);
+              }}
+              list={block.items}
+            >
+              {block.items.map((item) => (
+                <Location key={item.id} name={item.name} id={item.id} />
+              ))}
+            </ReactSortable>
+          </ScheduleBlock>
+        ))}
       <SaveScheduleBtn />
+      <input
+        type="file"
+        accept=".gpx"
+        onChange={handleUploadGPX}
+        id="gpxUpload"
+        style={{ display: 'none' }}
+      />
+      <GPXfileWrapper>
+        <GPXfileName>{gpxFileName}</GPXfileName>
+        <UploadGpxButton as="label" htmlFor="gpxUpload">
+          上傳 GPX 檔案
+        </UploadGpxButton>
+      </GPXfileWrapper>
     </>
   );
 };

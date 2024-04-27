@@ -26,30 +26,36 @@ export const useSearchLocations = create((set) => ({
 }));
 
 export const useScheduleArrangement = create((set) => ({
+  temporaryScheduleId: null,
+  gpxPoints: null,
+  gpxFileName: '',
   tripName: '',
-  itineraries: [
-    {
-      itineraryId: '',
-      date: '',
-      datetime: '',
-    },
-  ],
+  itineraries_dates: [],
+  itineraries_datetime: [],
   newItinerary: null,
   geopoints: [],
+  setScheduleArrangement: (key, value) => set({ [key]: value }),
 
   setTripName: (tripName) => set({ tripName }),
 
   setItineraries: (itineraries) => set({ itineraries }),
 
-  updateItinerariesWithDates: (itinerariesWithDates) =>
-    set((state) => {
-      const updatedItineraries = state.itineraries.map((itinerary) => {
-        const matchingItem = itinerariesWithDates.find(
-          (item) => item.itineraryId === itinerary.itineraryId
-        );
-        return { ...itinerary, date: matchingItem.date };
-      });
-      return { itineraries: updatedItineraries };
+  updateItinerariesWithDates: (itineraries_dates) =>
+    set(() => {
+      // const updatedItineraries = state.itineraries.map((itinerary) => {
+      //   const matchingItem = itineraries_dates.find(
+      //     (item) => item.itineraryId === itinerary.itineraryId
+      //   );
+      //   return { ...itinerary, date: matchingItem.date };
+      // });
+      // return { itineraries_dates: updatedItineraries };
+      const updatedItineraries = itineraries_dates.map((itinerary) => ({
+        ...itinerary,
+        date: itinerary.date,
+      }));
+      return {
+        itineraries_dates: updatedItineraries,
+      };
     }),
 
   updateItinerariesWithDatetime: (id, timeDiff) =>

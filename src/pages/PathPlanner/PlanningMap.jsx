@@ -2,6 +2,7 @@ import {
   MapContainer,
   TileLayer,
   Marker,
+  Polyline,
   Popup,
   useMapEvent,
 } from 'react-leaflet';
@@ -10,6 +11,7 @@ import styled from 'styled-components';
 import getGeoJSON from '@utils/osmApi';
 import { useSearchLocation, useScheduleArrangement } from '@utils/zustand';
 import { useEffect } from 'react';
+
 //components
 import SearchInputField from './SearchedLocation/SearchInput';
 import SearchedResult from './SearchedLocation/SearchingResult';
@@ -101,6 +103,9 @@ const SearchedPositionMarker = () => {
 };
 
 const PathPlannerMap = () => {
+  const { gpxPoints } = useScheduleArrangement();
+  // console.log(gpxPoints);
+  // console.log('gpxPoints');
   return (
     <>
       <SearchInputField />
@@ -113,6 +118,10 @@ const PathPlannerMap = () => {
         <Marker position={{ lat: 23.5, lng: 121 }}>
           <Popup>點地標可以出現文字哦</Popup>
         </Marker> */}
+        {gpxPoints && (
+          <Polyline pathOptions={{ color: '#8b572a' }} positions={gpxPoints} />
+        )}
+
         <TemporaryScheduleMarkers />
         <SearchedPositionMarker />
       </StyledMapContainer>

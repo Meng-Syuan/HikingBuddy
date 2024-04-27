@@ -35,8 +35,6 @@ const PathPlanner = () => {
 
   useNewItineraryListener();
 
-  // 之後用 CSS 修改彈出式視窗
-
   return (
     <>
       <PlannerContainer>
