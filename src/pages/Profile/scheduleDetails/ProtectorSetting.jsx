@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { sha256 } from 'js-sha256';
 import color, { fieldWrapper } from '@utils/theme';
-import { useScheduleData } from '@utils/zustand';
+import { useScheduleState } from '@utils/zustand';
 import { SharedListTitle } from './index';
 
 const TitleWrapper = styled.div`
@@ -39,7 +39,7 @@ const Note = styled.p`
 `;
 
 const ProtectorSetting = ({ salt }) => {
-  const { isActive } = useScheduleData();
+  const { isActive } = useScheduleState();
   const encryptedId = sha256(salt);
   const hashedUrl = `https://hikingbuddy-4abda.firebaseapp.com/protector/${encryptedId}`;
 

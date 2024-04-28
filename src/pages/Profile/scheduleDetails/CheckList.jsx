@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { lightFormat, format } from 'date-fns';
 import color, { fieldWrapper } from '@utils/theme';
-import { useScheduleData } from '@utils/zustand';
+import { useScheduleState } from '@utils/zustand';
 import { useEffect, useState } from 'react';
 import { SharedListTitle } from './index';
 import ListItem from './ListItem';
@@ -44,7 +44,7 @@ const AddIBtn = styled.button`
 `;
 const CheckList = () => {
   const { gearChecklist, otherItemChecklist, addNewItemToChecklist } =
-    useScheduleData();
+    useScheduleState();
   const [newGearItemInput, setNewGearItemInput] = useState('');
   const [newOtherItemInput, setNewOtherItemInput] = useState('');
 

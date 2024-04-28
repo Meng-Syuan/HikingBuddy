@@ -1,8 +1,6 @@
 import styled from 'styled-components';
-import { lightFormat, format } from 'date-fns';
 import color, { textBorder } from '@utils/theme';
-import { useScheduleData } from '@utils/zustand';
-import { useEffect, useState } from 'react';
+import { useScheduleState } from '@utils/zustand';
 
 const ItemWrapper = styled.div`
   padding: 5px;
@@ -25,8 +23,8 @@ const ItemName = styled.span`
 
 const DeleteBtn = styled.button``;
 const ListItem = ({ isChecked, id, type }) => {
-  const { gearChecklist, otherItemChecklist, setScheduleData } =
-    useScheduleData();
+  const { gearChecklist, otherItemChecklist, setScheduleState } =
+    useScheduleState();
 
   const handleToggleCheckBox = (id) => {
     if (type === 'gearChecklist') {
@@ -37,7 +35,7 @@ const ListItem = ({ isChecked, id, type }) => {
           return item;
         }
       });
-      setScheduleData('gearChecklist', updatedCheckList);
+      setScheduleState('gearChecklist', updatedCheckList);
     } else {
       const updatedCheckList = otherItemChecklist.map((item) => {
         if (id === item.id) {
@@ -46,19 +44,19 @@ const ListItem = ({ isChecked, id, type }) => {
           return item;
         }
       });
-      setScheduleData('otherItemChecklist', updatedCheckList);
+      setScheduleState('otherItemChecklist', updatedCheckList);
     }
   };
 
   const handleDeleteItem = (id) => {
     if (type === 'gearChecklist') {
       const remainingChecklist = gearChecklist.filter((item) => id !== item.id);
-      setScheduleData('gearChecklist', remainingChecklist);
+      setScheduleState('gearChecklist', remainingChecklist);
     } else {
       const remainingChecklist = otherItemChecklist.filter(
         (item) => id !== item.id
       );
-      setScheduleData('otherItemChecklist', remainingChecklist);
+      setScheduleState('otherItemChecklist', remainingChecklist);
     }
   };
   return (

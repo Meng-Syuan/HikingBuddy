@@ -12,7 +12,6 @@ const TripWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 2px 10px;
-  /* background-color: ${color.lightBackgroundColor}; */
   border: 1px solid #d9d9d9;
 
   position: relative;

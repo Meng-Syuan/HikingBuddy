@@ -5,7 +5,7 @@ import { sha256 } from 'js-sha256';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import useUsersDB from '@utils/hooks/useUsersDB';
 import useProtectorsDB from '@utils/hooks/useProtectorsDB';
-import { useScheduleData, useUserData } from '@utils/zustand';
+import { useScheduleState, useUserState } from '@utils/zustand';
 import { useParams } from 'react-router-dom';
 
 import TripInfo from './TripInfo';
@@ -76,9 +76,9 @@ const ScheduleDetails = () => {
     toggleActiveState,
     gearChecklist,
     otherItemChecklist,
-    setScheduleData,
-  } = useScheduleData();
-  const { setUserData, activeScheduleId } = useUserData();
+    setScheduleState,
+  } = useScheduleState();
+  const { setUserState, activeScheduleId } = useUserState();
   const scheduleId = useParams().scheduleId;
   const [tripsEditable, setTripsEditable] = useState(false);
 
@@ -90,7 +90,7 @@ const ScheduleDetails = () => {
 
   useEffect(() => {
     if (!scheduleId || !activeScheduleId) return;
-    setScheduleData('isActive', activeScheduleId === scheduleId);
+    setScheduleState('isActive', activeScheduleId === scheduleId);
   }, [scheduleId, activeScheduleId]);
 
   useEffect(() => {
@@ -98,9 +98,9 @@ const ScheduleDetails = () => {
     const gearChecklist = scheduleInfo.gearChecklist;
     const otherItemChecklist = scheduleInfo.otherItemChecklist;
     const locationNotes = scheduleInfo.locationNotes;
-    setScheduleData('locationNotes', locationNotes);
-    setScheduleData('gearChecklist', gearChecklist);
-    setScheduleData('otherItemChecklist', otherItemChecklist);
+    setScheduleState('locationNotes', locationNotes);
+    setScheduleState('gearChecklist', gearChecklist);
+    setScheduleState('otherItemChecklist', otherItemChecklist);
   }, [scheduleInfo]);
 
   const handleTripsEdition = async () => {
@@ -124,14 +124,14 @@ const ScheduleDetails = () => {
     if (!isActive) {
       await updateActiveSchedule('');
       await updateHashedPassword('');
-      setUserData('activeScheduleId', '');
+      setUserState('activeScheduleId', '');
     } else {
       await updateActiveSchedule(scheduleId);
       await setProtectorsData(scheduleId);
       const encryptedId = sha256(scheduleId);
       const hashedPassword = sha256.hmac(encryptedId, hashKey);
       await updateHashedPassword(hashedPassword);
-      setUserData('activeScheduleId', scheduleId);
+      setUserState('activeScheduleId', scheduleId);
     }
   };
   return (

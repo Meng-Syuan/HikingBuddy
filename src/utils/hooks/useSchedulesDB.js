@@ -14,17 +14,12 @@ import {
 } from 'firebase/firestore';
 import { useAuth } from '@clerk/clerk-react';
 import { useEffect } from 'react';
-import {
-  useScheduleArrangement,
-  useUserData,
-  useScheduleData,
-} from '../zustand.js';
+import { useScheduleArrangement, useScheduleState } from '../zustand.js';
 import { isFuture } from 'date-fns';
 
 const useSchedulesDB = () => {
   const { userId } = useAuth();
-  const { userData, setFutureSchedules, setPastSchedules } = useUserData();
-  const { setScheduleData } = useScheduleData();
+  const { setScheduleState } = useScheduleState();
   const { setNewItinerary } = useScheduleArrangement();
   const schedulesRef = collection(db, 'schedules');
   const q_temporarySchedule = query(
@@ -243,7 +238,7 @@ const useSchedulesDB = () => {
     await Promise.all(itinerariesPromise);
   };
 
-  const useSortSchedulesDates = async () => {
+  const sortSchedulesDates = async (userData) => {
     if (!userData.schedulesIDs) return;
     const schedulesIDs = userData.schedulesIDs;
     const futureSchedules = [];
@@ -252,6 +247,7 @@ const useSchedulesDB = () => {
       const promises = schedulesIDs.map(async (id) => {
         const scheduleRef = doc(schedulesRef, id);
         const docSnap = await getDoc(scheduleRef);
+        const tripName = docSnap.data().tripName;
         const lastDay = docSnap.data().lastDay;
         const firstDay = docSnap.data().firstDay;
         if (isFuture(lastDay)) {
@@ -266,13 +262,15 @@ const useSchedulesDB = () => {
             id,
             firstDay,
             lastDay,
+            tripName,
             isChecklistComfirmed: false,
           });
         }
       });
       await Promise.all(promises);
-      setFutureSchedules(futureSchedules.sort((a, b) => a.lastDay - b.lastDay));
-      setPastSchedules(pastSchedules.sort((a, b) => (b.lastDay = a.lastDay)));
+      futureSchedules.sort((a, b) => a.lastDay - b.lastDay);
+      pastSchedules.sort((a, b) => b.lastDay - a.lastDay);
+      return { futureSchedules, pastSchedules };
     } catch (error) {
       console.log('Failed to group schedules : ' + error);
     }
@@ -284,7 +282,7 @@ const useSchedulesDB = () => {
       const docSnap = await getDoc(scheduleDocRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setScheduleData('scheduleInfo', data);
+        setScheduleState('scheduleInfo', data);
         return data;
       } else {
         console.log('No such schedule');
@@ -390,7 +388,7 @@ const useSchedulesDB = () => {
     deleteItinerary,
     useNewItineraryListener,
     saveScheduleDetails,
-    useSortSchedulesDates,
+    sortSchedulesDates,
     getScheduleInfo,
     getScheduleDetails,
     updateScheduleContents,

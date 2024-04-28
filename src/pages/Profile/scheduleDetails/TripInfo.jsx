@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { lightFormat, format } from 'date-fns';
 import color, { textBorder, fieldWrapper } from '@utils/theme';
-import { useScheduleData } from '@utils/zustand';
+import { useScheduleState } from '@utils/zustand';
 import { useEffect, useState } from 'react';
 import { SharedListTitle } from './index';
 
@@ -68,7 +68,7 @@ const NoteInput = styled.input`
 
 const TripInfo = ({ isEditable }) => {
   const { scheduleInfo, scheduleDetails, locationNotes, addLocationNote } =
-    useScheduleData();
+    useScheduleState();
   const [sortedDates, setSortedDates] = useState(null);
   const [groupItineraries, setGroupItineraries] = useState(null);
 

@@ -8,12 +8,8 @@ import {
   updateDoc,
   deleteDoc,
 } from 'firebase/firestore';
-import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@clerk/clerk-react';
-import { useUserData } from '../zustand.js';
 
 const useProtectorsDB = () => {
-  //   const { userId } = useAuth();
   const hashKey = 'HIKING_BUDDY_protector';
   const protectorsRef = collection(db, 'protectors');
 
