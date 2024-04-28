@@ -2,28 +2,42 @@ import styled from 'styled-components';
 import color from '@utils/theme';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import useUsersDB from '@utils/hooks/useUsersDB';
+import useUploadFile from '@utils/hooks/useUploadFile';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@clerk/clerk-react';
-import { useUserData } from '@utils/zustand';
+import { useUserState } from '@utils/zustand';
 import Trip from './MinifyTrip';
 
 const PersonalInfoWrapper = styled.section`
   flex: 0 0 320px;
-  border: 2px blue solid;
   min-height: calc(100vh - 100px);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  padding: 10px 25px;
+  padding: 20px 25px;
+  background-color: ${color.lightBackgroundColor};
 `;
 
 const UserPhoto = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Tip = styled.span`
+  position: absolute;
+  font-size: 0.75rem;
+  top: 50%;
+  z-index: 1;
+`;
+
+const Image = styled.img`
   width: 220px;
   height: 220px;
-  background-color: #fff;
+  object-fit: contain;
 `;
-const UploadBtn = styled.button``;
 
 const TripsWrapper = styled.div`
   flex: 1;
@@ -49,20 +63,19 @@ const Split = styled.hr`
   background-color: #888;
   margin: 5px;
 `;
-
+const default_photo = `https://react.semantic-ui.com/images/wireframe/image.png`;
 const PersonalInfo = () => {
-  const { userData, futureSchedules, pastSchedules } = useUserData();
-  const { useSortSchedulesDates } = useSchedulesDB();
-  const [activeId, setActiveId] = useState('');
+  const { userData, userPhoto, futureSchedules, pastSchedules, setUserState } =
+    useUserState();
 
-  // useEffect(() => {
-  //   if (!userData) return;
-  //   const fetchActiveScheduleId = async () => {
-  //     const id = await getActiveScheduleId(); //不用! 之後直接取useData 裡面的資料!
-  //     setActiveId(id);
-  //   };
-  //   fetchActiveScheduleId();
-  // }, [userData]);
+  const { sortSchedulesDates } = useSchedulesDB();
+  const { getUploadFileUrl } = useUploadFile();
+  const { updateUserDoc } = useUsersDB();
+  const [activeId, setActiveId] = useState('');
+  const [imgUpload, setImgUpload] = useState('');
+
+  const previewURL = imgUpload || userPhoto || default_photo;
+
   useEffect(() => {
     if (!userData) return;
     const id = userData.activeSchedule;
@@ -72,22 +85,32 @@ const PersonalInfo = () => {
   useEffect(() => {
     if (!userData) return;
     console.log(userData);
-    useSortSchedulesDates();
+    const sortDates = async () => {
+      const sortedResult = await sortSchedulesDates(userData);
+      setUserState('futureSchedules', sortedResult.futureSchedules);
+      setUserState('pastSchedules', sortedResult.pastSchedules);
+    };
+    sortDates();
   }, [userData]);
 
-  //comfirment?
-  useEffect(() => {
-    console.log('futureSchedules');
-    console.log(futureSchedules);
-    console.log('pastSchedules');
-    console.log(pastSchedules);
-  }, [futureSchedules, pastSchedules]);
-
+  const handleUploadUserPhoto = async (e) => {
+    const file = e.target.files[0];
+    const url = await getUploadFileUrl('user_photo', file, userData.userId);
+    setImgUpload(url);
+    await updateUserDoc('userPhoto', url);
+  };
   return (
     <PersonalInfoWrapper>
-      <UserPhoto>
-        使用者照片，很重要嗎？
-        <UploadBtn>你確定？</UploadBtn>
+      <input
+        type="file"
+        accept="image/png,image/jpeg"
+        id="userPhoto"
+        style={{ display: 'none' }}
+        onChange={handleUploadUserPhoto}
+      ></input>
+      <UserPhoto as="label" htmlFor="userPhoto">
+        <Image src={previewURL} alt="user photo in profile" />
+        {!userPhoto && <Tip>點選並上傳</Tip>}
       </UserPhoto>
       <TripsWrapper>
         <FutureTrips>
@@ -105,7 +128,6 @@ const PersonalInfo = () => {
         </FutureTrips>
         <Split></Split>
         <PastTrips>
-          過去的
           {pastSchedules.length > 0 &&
             pastSchedules.map((schedule) => (
               <Trip
