@@ -92,24 +92,25 @@ export const useScheduleArrangement = create((set) => ({
 }));
 
 //profile
-export const useUserData = create((set) => ({
+export const useUserState = create((set) => ({
   userData: null,
+  userPhoto: '',
   activeScheduleId: null,
   futureSchedules: [],
   pastSchedules: [],
-  setUserData: (key, value) => set({ [key]: value }),
-  setFutureSchedules: (futureSchedules) => set({ futureSchedules }),
-  setPastSchedules: (pastSchedules) => set({ pastSchedules }),
+  setUserState: (key, value) => set({ [key]: value }),
+  // setFutureSchedules: (futureSchedules) => set({ futureSchedules }),
+  // setPastSchedules: (pastSchedules) => set({ pastSchedules }),
 }));
 
-export const useScheduleData = create((set) => ({
+export const useScheduleState = create((set) => ({
   scheduleInfo: null,
   scheduleDetails: null,
   isActive: null,
   locationNotes: {},
   gearChecklist: [],
   otherItemChecklist: [],
-  setScheduleData: (key, value) => set({ [key]: value }),
+  setScheduleState: (key, value) => set({ [key]: value }),
   addLocationNote: (id, value) =>
     set((state) => ({
       locationNotes: { ...state.locationNotes, [id]: value },
@@ -132,4 +133,16 @@ export const useProtectorPageData = create((set) => ({
         [key]: value,
       },
     })),
+}));
+
+export const usePostState = create((set) => ({
+  isTemporaryPost: false,
+  postId: '', //required
+  tripName: '',
+  title: '',
+  content: '',
+  photosUrls: null,
+  mainPhoto: '',
+  markers: [],
+  setPostState: (key, value) => set({ [key]: value }),
 }));
