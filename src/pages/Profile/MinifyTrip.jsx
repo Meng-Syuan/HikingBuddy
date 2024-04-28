@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { lightFormat } from 'date-fns';
 import color from '@utils/theme';
 import { useNavigate } from 'react-router-dom';
-import { useUserData } from '@utils/zustand';
+import { useUserState } from '@utils/zustand';
 
 const TripWrapper = styled.div`
   width: 90%;
@@ -12,7 +12,9 @@ const TripWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 2px 10px;
-  background-color: ${color.lightBackgroundColor};
+  /* background-color: ${color.lightBackgroundColor}; */
+  border: 1px solid #d9d9d9;
+
   position: relative;
   &:hover {
     cursor: pointer;
@@ -26,7 +28,7 @@ const CheckBox = styled.div`
   height: 15px;
   border-radius: 50%;
   background-color: ${(props) =>
-    props.isChecked === 'true' ? color.secondary : color.borderColor};
+    props.ischecked === 'true' ? color.secondary : color.borderColor};
 `;
 const Content = styled.div`
   letter-spacing: 1px;
@@ -39,7 +41,7 @@ const Badge = styled.div`
   font-size: 0.6rem;
 `;
 const MinifyTrip = ({ id, firstDay, lastDay, isChecked }) => {
-  const { activeScheduleId } = useUserData();
+  const { activeScheduleId } = useUserState();
   const navigate = useNavigate();
   const firstDayContent = lightFormat(firstDay, 'M/d');
   const lastDayContent = lightFormat(lastDay, 'M/d');
@@ -50,7 +52,7 @@ const MinifyTrip = ({ id, firstDay, lastDay, isChecked }) => {
   };
   return (
     <TripWrapper onClick={showScheduleDetails}>
-      <CheckBox isChecked={isChecked}></CheckBox>
+      <CheckBox ischecked={isChecked.toString()}></CheckBox>
       <Content>{content}</Content>
       {id === activeScheduleId && <Badge>radix badge</Badge>}
       <DeleteBtn>刪除</DeleteBtn>

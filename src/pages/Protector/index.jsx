@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useUserData, useProtectorPageData } from '@utils/zustand';
+import { useUserState, useProtectorPageData } from '@utils/zustand';
 import { useAuth } from '@clerk/clerk-react';
 
 import HikerInfo from './HikerInfo';
@@ -31,7 +31,7 @@ const Protector = () => {
   const scheduleId = useParams().encryptedScheduleId;
   const { isSignedIn } = useAuth();
 
-  const { userData } = useUserData();
+  const { userData } = useUserState();
   const { hashKey, getProtectorDoc } = useProtectorsDB();
   const { getActiveScheduleIdByPassword } = useUsersDB();
   const { setProtectorPageData } = useProtectorPageData();

@@ -2,19 +2,19 @@ import styled from 'styled-components';
 import color from '@utils/theme';
 //components
 import PersonalInfo from './PersonalInfo';
+import Post from './Post';
 
-const StyledArticle = styled.article`
-  background-color: ${color.lightBackgroundColor};
-  position: relative;
-  left: 40px;
+const ProfileWrapper = styled.section`
+  display: flex;
+  gap: 20px;
+  padding: 0 10px;
 `;
-
 const ProfileHome = () => {
   return (
-    <>
-      <StyledArticle>發文功能</StyledArticle>
+    <ProfileWrapper>
+      <Post />
       <PersonalInfo />
-    </>
+    </ProfileWrapper>
   );
 };
 

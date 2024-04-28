@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import color, { inputFocusStyle } from '@theme';
 import { useProtectorPageData } from '@utils/zustand';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import useUploadFile from '@utils/hooks/useUploadFile';
 import useProtectorsDB from '@utils/hooks/useProtectorsDB';
 
@@ -34,26 +34,11 @@ const Image = styled.img`
   object-fit: contain;
 `;
 
-const Tip = styled.div`
+const Tip = styled.span`
   position: absolute;
   font-size: 0.75rem;
   top: 50%;
   z-index: 1;
-`;
-
-const UploadBtn = styled.button`
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  padding: 8px;
-  background-color: #fff;
-  border-radius: 5px;
-  border: 2px solid #000;
-  &:hover {
-    cursor: pointer;
-    background-color: ${color.secondary};
-    color: #fff;
-  }
 `;
 
 const InfoWrapper = styled.div`
@@ -104,16 +89,13 @@ const SaveEditionBtn = styled.button`
   left: 30%;
 `;
 
+const default_photo = `https://react.semantic-ui.com/images/wireframe/image.png`;
+
 const HikerInfo = ({ isEditable, id, valid }) => {
   const { getUploadFileUrl } = useUploadFile();
   const { updateProtectorDoc } = useProtectorsDB();
   const { hikerInfo, hikerPhoto, updateHikerInfo, setProtectorPageData } =
     useProtectorPageData();
-  const [imgUpload, setImgUpload] = useState('');
-
-  // const previewURL = useRef(
-  //   `https://react.semantic-ui.com/images/wireframe/image.png`
-  // );
 
   useEffect(() => {
     if (!hikerInfo) return;
@@ -121,21 +103,10 @@ const HikerInfo = ({ isEditable, id, valid }) => {
     console.log(hikerPhoto);
   }, [hikerInfo, hikerPhoto]);
 
-  // useEffect(() => {
-  //   if (!hikerPhoto) return;
-  //   previewURL.current = imgUpload
-  //     ? URL.createObjectURL(imgUpload)
-  //     : hikerPhoto ||
-  //       `https://react.semantic-ui.com/images/wireframe/image.png`;
-  // }, [hikerPhoto]);
-
-  const previewURL = imgUpload
-    ? URL.createObjectURL(imgUpload)
-    : hikerPhoto || `https://react.semantic-ui.com/images/wireframe/image.png`;
+  const previewURL = hikerPhoto || default_photo;
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    setImgUpload(file);
     const url = await getUploadFileUrl('hiker_photo', file, id);
     setProtectorPageData('hikerPhoto', url); //renew global state
     await updateProtectorDoc(id, 'hiker_photo', url); //renew protectorsDB

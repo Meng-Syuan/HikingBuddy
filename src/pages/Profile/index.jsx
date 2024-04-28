@@ -3,21 +3,20 @@ import styled from 'styled-components';
 //components
 import { Outlet } from 'react-router-dom';
 
-const StyledProfileContainer = styled.main`
+const ProfileContainer = styled.main`
   width: 1050px;
   background-color: #d9d9d9;
-  display: flex;
-  justify-content: space-between; //待修改
   position: relative;
   left: 50%;
   transform: translateX(-50%);
 `;
 
 const Profile = () => {
+  //判斷登入狀態!!
   return (
-    <StyledProfileContainer>
+    <ProfileContainer>
       <Outlet />
-    </StyledProfileContainer>
+    </ProfileContainer>
   );
 };
 
