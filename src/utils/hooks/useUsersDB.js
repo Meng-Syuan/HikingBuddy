@@ -92,6 +92,47 @@ const useUsersDB = () => {
     }
   };
 
+  const updateUserDoc = async (property, content) => {
+    try {
+      await updateDoc(userDocRef, { [property]: content });
+    } catch (error) {
+      console.log('Failed to update userDoc info: ');
+      console.log(error);
+    }
+  };
+
+  const addUserInfo = async (property, postId) => {
+    try {
+      const userSnapshot = await getDoc(userDocRef);
+      if (userSnapshot.exists()) {
+        const data = userSnapshot.data()[property];
+        if (!data) {
+          await updateDoc(userDocRef, {
+            [property]: [postId],
+          });
+        } else {
+          data.push(postId);
+          await updateDoc(userDocRef, {
+            [property]: data,
+          });
+        }
+      }
+    } catch (error) {
+      console.log(`Failed to update user's ${property}:  `);
+      console.log(error);
+    }
+  };
+
+  const setMarkersDoc = async (postId, content) => {
+    const markersDoc = doc(userDocRef, 'markers', postId);
+    try {
+      await setDoc(markersDoc, content);
+    } catch (error) {
+      console.log('Failed to renew markers for this post.');
+      console.log(error);
+    }
+  };
+
   const getActiveScheduleIdByPassword = async (password) => {
     try {
       const usersRef = collection(db, 'users');
@@ -112,13 +153,36 @@ const useUsersDB = () => {
     }
   };
 
+  const deleteTargetData = async (property, item) => {
+    try {
+      const docSnap = await getDoc(userDocRef);
+      if (docSnap.exists()) {
+        const targetData = docSnap.data()[property];
+        const updatedItems = targetData.filter((value) => value !== item);
+        await updateDoc(userDocRef, {
+          [property]: updatedItems,
+        });
+        console.log(`Successfully delete ${item} from ${property}.`);
+      } else {
+        console.log('No this user info.');
+      }
+    } catch (error) {
+      console.log(`Failed to delete the user ${item} in ${property}`);
+      console.log(error);
+    }
+  };
+
   return {
     setUsersDB,
     useSaveScheduleToUsersDB,
     getUserData,
     updateActiveSchedule,
     updateHashedPassword,
+    updateUserDoc,
+    addUserInfo,
+    setMarkersDoc,
     getActiveScheduleIdByPassword,
+    deleteTargetData,
   };
 };
 

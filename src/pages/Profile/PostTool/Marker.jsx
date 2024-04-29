@@ -32,10 +32,7 @@ const Marker = () => {
   }, [markers]);
 
   useEffect(() => {
-    const markers = selections.map((selection) => ({
-      id: selection.id,
-      geopoint: selection.geopoint,
-    }));
+    const markers = selections.map((selection) => selection.geopoint);
     setPostState('markers', markers);
   }, [selections]);
 

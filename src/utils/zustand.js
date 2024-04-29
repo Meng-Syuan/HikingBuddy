@@ -99,8 +99,16 @@ export const useUserState = create((set) => ({
   futureSchedules: [],
   pastSchedules: [],
   setUserState: (key, value) => set({ [key]: value }),
-  // setFutureSchedules: (futureSchedules) => set({ futureSchedules }),
-  // setPastSchedules: (pastSchedules) => set({ pastSchedules }),
+  deletePastTrip: (id) =>
+    set((state) => {
+      const updatePastTrips = state.pastSchedules.filter(
+        (trip) => trip.id !== id
+      );
+      return {
+        ...state,
+        pastSchedules: updatePastTrips,
+      };
+    }),
 }));
 
 export const useScheduleState = create((set) => ({
@@ -141,7 +149,7 @@ export const usePostState = create((set) => ({
   tripName: '',
   title: '',
   content: '',
-  photosUrls: null,
+  allUploadPhotos: [],
   mainPhoto: '',
   markers: [],
   setPostState: (key, value) => set({ [key]: value }),

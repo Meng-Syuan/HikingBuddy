@@ -5,7 +5,8 @@ const Button = styled.div`
   height: 40px;
 `;
 const ScratchBtn = () => {
-  return <Button>暫存按鈕</Button>;
+  const handleTempPost = async () => {};
+  return <Button onClick={handleTempPost}>暫存按鈕</Button>;
 };
 
 export default ScratchBtn;
