@@ -98,15 +98,14 @@ export const useUserState = create((set) => ({
   activeScheduleId: null,
   futureSchedules: [],
   pastSchedules: [],
+  userPostsIds: [],
   setUserState: (key, value) => set({ [key]: value }),
-  deletePastTrip: (id) =>
+  deleteTrip: (schedules, id) =>
     set((state) => {
-      const updatePastTrips = state.pastSchedules.filter(
-        (trip) => trip.id !== id
-      );
+      const updateTrips = state[schedules].filter((trip) => trip.id !== id);
       return {
         ...state,
-        pastSchedules: updatePastTrips,
+        [schedules]: updateTrips,
       };
     }),
 }));
@@ -144,7 +143,6 @@ export const useProtectorPageData = create((set) => ({
 }));
 
 export const usePostState = create((set) => ({
-  isTemporaryPost: false,
   postId: '', //required
   tripName: '',
   title: '',
@@ -153,4 +151,9 @@ export const usePostState = create((set) => ({
   mainPhoto: '',
   markers: [],
   setPostState: (key, value) => set({ [key]: value }),
+}));
+
+export const usePostReadState = create((set) => ({
+  // userPostsIds: [],
+  // setPostReadState: (key, value) => set({ [key]: value }),
 }));

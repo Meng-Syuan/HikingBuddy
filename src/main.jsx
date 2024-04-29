@@ -12,6 +12,8 @@ import ProfileHome from './pages/Profile/ProfileHome.jsx';
 import ScheduleDetails from './pages/Profile/scheduleDetails';
 import PathPlanner from './pages/PathPlanner';
 import Protector from './pages/Protector';
+import PostLists from './pages/PostsList';
+import Post from './pages/PostsList/postContet';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   // <React.StrictMode>
@@ -28,6 +30,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               path="/profile/schedule-details/:scheduleId"
               element={<ScheduleDetails />}
             />
+          </Route>
+          <Route path="/posts" element={<PostLists />} end>
+            <Route path="/posts/:postId" element={<Post />} />
           </Route>
           <Route
             path="/protector/:encryptedScheduleId"

@@ -60,7 +60,7 @@ const Split = styled.hr`
   width: 100%;
   border: none;
   background-color: #888;
-  margin: 5px;
+  margin: 1rem 5px;
 `;
 const default_photo = `https://react.semantic-ui.com/images/wireframe/image.png`;
 
@@ -110,12 +110,14 @@ const PersonalInfo = () => {
                 id={schedule.id}
                 firstDay={schedule.firstDay}
                 lastDay={schedule.lastDay}
+                tripName={schedule.tripName}
                 isChecked={schedule.isChecklistComfirmed}
                 activeId={activeId}
+                type="futureSchedules"
               />
             ))}
         </FutureTrips>
-        <Split></Split>
+        <Split />
         <PastTrips>
           {pastSchedules.length > 0 &&
             pastSchedules.map((schedule) => (
@@ -124,8 +126,10 @@ const PersonalInfo = () => {
                 id={schedule.id}
                 firstDay={schedule.firstDay}
                 lastDay={schedule.lastDay}
+                tripName={schedule.tripName}
                 isChecked={schedule.isChecklistComfirmed}
                 activeId={activeId}
+                type="pastSchedules"
               />
             ))}
         </PastTrips>

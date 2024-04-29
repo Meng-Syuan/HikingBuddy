@@ -3,9 +3,17 @@ import { usePostState, useUserState } from '@utils/zustand';
 import usePostsDB from '@utils/hooks/usePostsDB';
 import useUsersDB from '@utils/hooks/useUsersDB';
 
-const Button = styled.div`
-  width: 40px;
-  height: 40px;
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IconButton } from '@mui/material';
+import { Tooltip } from 'react-tippy';
+import 'react-tippy/dist/tippy.css';
+
+const IconWrapper = styled(IconButton)`
+  &:hover {
+    color: #0161bb;
+    cursor: pointer;
+  }
 `;
 
 const ReleaseBtn = () => {
@@ -19,7 +27,7 @@ const ReleaseBtn = () => {
     content,
     setPostState,
   } = usePostState();
-  const { deletePastTrip } = useUserState();
+  const { deleteTrip } = useUserState();
   const { publishPost } = usePostsDB();
   const { addUserInfo, setMarkersDoc, deleteTargetData } = useUsersDB();
 
@@ -31,7 +39,7 @@ const ReleaseBtn = () => {
     await publishPost(postId, title, parsedContent, mainPhoto);
     await addUserInfo('posts', postId);
     await deleteTargetData('schedulesIDs', postId);
-    deletePastTrip(postId);
+    deleteTrip('pastSchedules', postId);
     if (markers.length > 0) {
       await setMarkersDoc(postId, { ...markers });
     }
@@ -115,7 +123,15 @@ const ReleaseBtn = () => {
     }
   };
 
-  return <Button onClick={handlePublication}>發文按鈕</Button>;
+  return (
+    <>
+      <Tooltip title="發布文章" position="top" size="small" theme="transparent">
+        <IconWrapper onClick={handlePublication}>
+          <FontAwesomeIcon icon={faPaperPlane} size="lg" className="icon" />
+        </IconWrapper>
+      </Tooltip>
+    </>
+  );
 };
 
 export default ReleaseBtn;

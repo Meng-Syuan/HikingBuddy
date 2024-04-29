@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { SharedListTitle } from './index';
 import ListItem from './ListItem';
 
+//#region
 const ChecklistsWrapper = styled.div`
   ${fieldWrapper}
 `;
@@ -42,6 +43,8 @@ const ItemInput = styled.input`
 const AddIBtn = styled.button`
   margin: 0.5rem;
 `;
+//#endregion
+
 const CheckList = () => {
   const { gearChecklist, otherItemChecklist, addNewItemToChecklist } =
     useScheduleState();

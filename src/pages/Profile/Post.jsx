@@ -12,7 +12,7 @@ import useUploadFile from '@utils/hooks/useUploadFile';
 import TripSelection from './PostTool/TripSelection';
 import Marker from './PostTool/Marker';
 import ReleaseBtn from './PostTool/ReleaseBtn';
-import ScratchBtn from './PostTool/ScratchBtn';
+import TempSave from './PostTool/TempSave';
 
 //#region
 
@@ -59,6 +59,12 @@ const UploadFile = styled.div`
   &:hover {
     cursor: ${(props) =>
       props.islimit === 'true' ? 'not-allowed' : 'pointer'};
+  }
+  .uploadImg {
+    color: #6f6f6f;
+    &:hover {
+      color: ${(props) => (props.islimit === 'true' ? '' : '#0161bb')};
+    }
   }
 `;
 const PreviewPhotos = styled.div`
@@ -238,8 +244,9 @@ const Post = () => {
               >
                 <FontAwesomeIcon
                   icon={faImage}
-                  style={{ color: '#6f6f6f' }}
                   size="2x"
+                  className="uploadImg"
+                  islimit={(allUploadPhotos.length >= uploadLimit).toString()}
                 />
               </UploadFile>
             </Tooltip>
@@ -255,7 +262,7 @@ const Post = () => {
             <Marker />
           </ToolWrapper>
           <ButtonWrapper>
-            <ScratchBtn />
+            <TempSave />
             <ReleaseBtn />
           </ButtonWrapper>
         </ToolBar>

@@ -83,75 +83,9 @@ const useSchedulesDB = () => {
       return () => {
         unsubscribe();
       };
-    }, []);
+    }, [id]);
   };
 
-  //以下要被取代!
-  // const useNewItineraryListener = () => {
-  //   const unsubscribersRef = useRef([]);
-  //   const { setNewItinerary } = useScheduleArrangement();
-
-  //   useEffect(() => {
-  //     //check where to add listener
-  //     const checkQuery = async () => {
-  //       const querySnapshot = await getDocs(q_temporarySchedule);
-  //       if (querySnapshot.empty) {
-  //         const unsubscribeSchedules = onSnapshot(schedulesRef, (snapshot) => {
-  //           snapshot.docChanges().forEach((change) => {
-  //             if (change.type === 'added') {
-  //               const doc = change.doc;
-  //               const data = change.doc.data();
-  //               if (data.userId === userId && data.isTemporary === true) {
-  //                 const itinerariesRef = collection(doc.ref, 'itineraries');
-  //                 const unsubscribeItineraries = onSnapshot(
-  //                   itinerariesRef,
-  //                   (itinerariesSnapshot) => {
-  //                     itinerariesSnapshot.docChanges().forEach((change) => {
-  //                       if (change.type === 'modified') {
-  //                         console.log('原本沒有location data，這是第一筆');
-  //                         setNewItinerary(change.doc.data());
-  //                       }
-  //                     });
-  //                   }
-  //                 );
-  //                 unsubscribersRef.current.push(unsubscribeItineraries);
-  //               }
-  //             }
-  //           });
-  //         });
-  //         unsubscribersRef.current.push(unsubscribeSchedules);
-  //       } else {
-  //         querySnapshot.forEach((documentSnapshot) => {
-  //           const itinerariesRef = collection(
-  //             documentSnapshot.ref,
-  //             'itineraries'
-  //           );
-  //           const unsubscribeItineraries = onSnapshot(
-  //             itinerariesRef,
-  //             (itinerariesSnapshot) => {
-  //               itinerariesSnapshot.docChanges().forEach((change) => {
-  //                 console.log('modified');
-
-  //                 if (change.type === 'modified') {
-  //                   console.log('這是第二筆以後的 location data');
-  //                   setNewItinerary(change.doc.data());
-  //                 }
-  //               });
-  //             }
-  //           );
-  //           unsubscribersRef.current.push(unsubscribeItineraries);
-  //         });
-  //       }
-  //     };
-  //     checkQuery();
-
-  //     return () => {
-  //       unsubscribersRef.current.forEach((unsubscribe) => {
-  //         unsubscribe();
-  //       });
-  //     };
-  //   }, []);
-  // };
   const saveScheduleDetails = async (
     id,
     itineraries_dates,
@@ -226,12 +160,6 @@ const useSchedulesDB = () => {
       const itineraryDocRef = doc(docRef, 'itineraries', itinerary.id);
       return updateDoc(itineraryDocRef, {
         date: itinerary.date,
-      });
-    });
-    await Promise.all(datesPromises);
-    const datetimePromises = itineraries_datetime.map((itinerary) => {
-      const itineraryDocRef = doc(docRef, 'itineraries', itinerary.id);
-      return updateDoc(itineraryDocRef, {
         datetime: itinerary.datetime,
       });
     });
@@ -255,6 +183,7 @@ const useSchedulesDB = () => {
             id,
             firstDay,
             lastDay,
+            tripName,
             isChecklistComfirmed: false,
           });
         } else {

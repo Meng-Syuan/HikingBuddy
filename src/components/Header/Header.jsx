@@ -46,7 +46,8 @@ const ListItem = styled.li``;
 const Header = () => {
   const { getUserData } = useUsersDB();
   const { sortSchedulesDates } = useSchedulesDB();
-  const { setUserState, activeScheduleId, userData } = useUserState();
+  const { setUserState, activeScheduleId, userData, userPostsIds } =
+    useUserState();
   const [scheduleId, setScheduleId] = useState('no_active_schedule');
 
   useEffect(() => {
@@ -55,18 +56,15 @@ const Header = () => {
       setUserState('userData', data);
       setUserState('userPhoto', data?.userPhoto);
       setUserState('activeScheduleId', data.activeSchedule);
+      setUserState('userPostsIds', data?.posts);
+      console.log('allUserData');
+      console.log(data);
     };
     fetchUserData();
   }, []);
 
   useEffect(() => {
-    if (!activeScheduleId) return;
-    setScheduleId(activeScheduleId ?? 'no_active_schedule');
-  }, [activeScheduleId]);
-
-  useEffect(() => {
     if (!userData) return;
-    console.log(userData);
     const sortDates = async () => {
       const sortedResult = await sortSchedulesDates(userData);
       console.log(sortedResult);
@@ -75,6 +73,11 @@ const Header = () => {
     };
     sortDates();
   }, [userData]);
+
+  useEffect(() => {
+    if (!activeScheduleId) return;
+    setScheduleId(activeScheduleId ?? 'no_active_schedule');
+  }, [activeScheduleId]);
 
   return (
     <HeaderContainer>
@@ -97,10 +100,30 @@ const Header = () => {
               </NavLink>
             </ListItem>
             {/* <span className="split">|</span> */}
-            <ListItem>山閱足跡</ListItem>
+            <ListItem>
+              <NavLink
+                to="/posts"
+                style={({ isActive }) => {
+                  return {
+                    color: isActive ? `${color.primary}` : `${color.textColor}`,
+                  };
+                }}
+              >
+                山閱足跡
+              </NavLink>
+            </ListItem>
             {/* <span className="split">|</span> */}
             <ListItem>
-              <NavLink to={`/protector/${scheduleId}`}>親愛的留守人</NavLink>
+              <NavLink
+                to={`/protector/${scheduleId}`}
+                style={({ isActive }) => {
+                  return {
+                    color: isActive ? `${color.primary}` : `${color.textColor}`,
+                  };
+                }}
+              >
+                親愛的留守人
+              </NavLink>
             </ListItem>
           </UnorderedList>
         </Navigation>
