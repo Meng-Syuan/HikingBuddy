@@ -4,10 +4,9 @@ import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import useUsersDB from '@utils/hooks/useUsersDB';
 import useUploadFile from '@utils/hooks/useUploadFile';
 import { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/clerk-react';
 import { useUserState } from '@utils/zustand';
 import Trip from './MinifyTrip';
-
+//#region
 const PersonalInfoWrapper = styled.section`
   flex: 0 0 320px;
   min-height: calc(100vh - 100px);
@@ -64,11 +63,12 @@ const Split = styled.hr`
   margin: 5px;
 `;
 const default_photo = `https://react.semantic-ui.com/images/wireframe/image.png`;
+
+//#endregion
 const PersonalInfo = () => {
-  const { userData, userPhoto, futureSchedules, pastSchedules, setUserState } =
+  const { userData, userPhoto, futureSchedules, pastSchedules } =
     useUserState();
 
-  const { sortSchedulesDates } = useSchedulesDB();
   const { getUploadFileUrl } = useUploadFile();
   const { updateUserDoc } = useUsersDB();
   const [activeId, setActiveId] = useState('');
@@ -80,17 +80,6 @@ const PersonalInfo = () => {
     if (!userData) return;
     const id = userData.activeSchedule;
     setActiveId(id);
-  }, [userData]);
-
-  useEffect(() => {
-    if (!userData) return;
-    console.log(userData);
-    const sortDates = async () => {
-      const sortedResult = await sortSchedulesDates(userData);
-      setUserState('futureSchedules', sortedResult.futureSchedules);
-      setUserState('pastSchedules', sortedResult.pastSchedules);
-    };
-    sortDates();
   }, [userData]);
 
   const handleUploadUserPhoto = async (e) => {

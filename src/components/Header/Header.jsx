@@ -6,6 +6,7 @@ import SignIn from './SignIn';
 import { useUserState } from '@utils/zustand';
 import { useEffect, useState } from 'react';
 import useUsersDB from '@utils/hooks/useUsersDB';
+import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 
 const HeaderContainer = styled.header`
   height: 100px;
@@ -44,7 +45,8 @@ const ListItem = styled.li``;
 
 const Header = () => {
   const { getUserData } = useUsersDB();
-  const { setUserState, activeScheduleId } = useUserState();
+  const { sortSchedulesDates } = useSchedulesDB();
+  const { setUserState, activeScheduleId, userData } = useUserState();
   const [scheduleId, setScheduleId] = useState('no_active_schedule');
 
   useEffect(() => {
@@ -61,6 +63,18 @@ const Header = () => {
     if (!activeScheduleId) return;
     setScheduleId(activeScheduleId ?? 'no_active_schedule');
   }, [activeScheduleId]);
+
+  useEffect(() => {
+    if (!userData) return;
+    console.log(userData);
+    const sortDates = async () => {
+      const sortedResult = await sortSchedulesDates(userData);
+      console.log(sortedResult);
+      setUserState('futureSchedules', sortedResult.futureSchedules);
+      setUserState('pastSchedules', sortedResult.pastSchedules);
+    };
+    sortDates();
+  }, [userData]);
 
   return (
     <HeaderContainer>
