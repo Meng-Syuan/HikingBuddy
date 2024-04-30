@@ -29,7 +29,33 @@ const usePostsDB = () => {
     }
   };
 
-  // getPostsList
+  const getPostsList = async (postIds) => {
+    const postsContent = [];
+    try {
+      const postPromises = postIds.map(async (postId) => {
+        const postRef = doc(postsRef, postId);
+        const docSnap = await getDoc(postRef);
+        const data = docSnap.data();
+        const title = data.title;
+        const createTime = data.createAt;
+        const mainPhoto = data.mainPhoto;
+        const content = data.parsedContent;
+        const id = data.postId;
+        postsContent.push({
+          id,
+          title,
+          createTime,
+          mainPhoto,
+          content,
+        });
+      });
+      await Promise.all(postPromises);
+      return postsContent;
+    } catch (error) {
+      console.log(`Failed to fetch all posts from ${postIds}: `);
+      console.log(error);
+    }
+  };
 
   const publishPost = async (postId, title, parsedContent, mainPhoto) => {
     const docRef = doc(postsRef, postId);
@@ -74,7 +100,7 @@ const usePostsDB = () => {
     }
   };
 
-  return { getPostData, publishPost, saveTempPost };
+  return { getPostData, publishPost, saveTempPost, getPostsList };
 };
 
 export default usePostsDB;

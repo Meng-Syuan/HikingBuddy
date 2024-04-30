@@ -99,6 +99,7 @@ export const useUserState = create((set) => ({
   futureSchedules: [],
   pastSchedules: [],
   userPostsIds: [],
+  postsData: [],
   setUserState: (key, value) => set({ [key]: value }),
   deleteTrip: (schedules, id) =>
     set((state) => {
@@ -153,7 +154,11 @@ export const usePostState = create((set) => ({
   setPostState: (key, value) => set({ [key]: value }),
 }));
 
-export const usePostReadState = create((set) => ({
-  // userPostsIds: [],
-  // setPostReadState: (key, value) => set({ [key]: value }),
+export const usePostReadingState = create((set) => ({
+  id: '',
+  title: '',
+  content: '',
+  mainPhoto: '',
+  createTime: null,
+  setPostReadingState: (key, value) => set({ [key]: value }),
 }));
