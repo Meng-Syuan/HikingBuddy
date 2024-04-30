@@ -93,7 +93,6 @@ const TripInfo = ({ isEditable }) => {
             id: itinerary.itineraryId,
             location: itinerary.location,
             datetime: lightFormat(itinerary.datetime, 'HH:mm'),
-            note: '',
           })),
         });
       }
@@ -123,6 +122,7 @@ const TripInfo = ({ isEditable }) => {
                       </ItemWrapper>
                       {isEditable || locationNotes[itinerary.id] ? (
                         <NoteInput
+                          key={itinerary.id}
                           id={itinerary.id}
                           onChange={(e) =>
                             addLocationNote(itinerary.id, e.target.value)

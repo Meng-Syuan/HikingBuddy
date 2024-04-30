@@ -2,8 +2,9 @@ import styled from 'styled-components';
 import { lightFormat } from 'date-fns';
 import color from '@utils/theme';
 import { useNavigate } from 'react-router-dom';
-import { useUserState } from '@utils/zustand';
+import { useUserState, useScheduleState } from '@utils/zustand';
 import useUsersDB from '@utils/hooks/useUsersDB';
+import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
@@ -47,7 +48,9 @@ const Badge = styled.div`
 `;
 const MinifyTrip = ({ id, firstDay, lastDay, tripName, isChecked, type }) => {
   const { deleteTargetData } = useUsersDB();
+  const { getScheduleInfo, getScheduleDetails } = useSchedulesDB();
   const { activeScheduleId, deleteTrip } = useUserState();
+  const { setScheduleState } = useScheduleState();
   const navigate = useNavigate();
   const firstDayContent = lightFormat(firstDay, 'M/d');
   const lastDayContent = lightFormat(lastDay, 'M/d');
@@ -66,7 +69,11 @@ const MinifyTrip = ({ id, firstDay, lastDay, tripName, isChecked, type }) => {
     await deleteTargetData('schedulesIDs', id);
   };
 
-  const showScheduleDetails = () => {
+  const showScheduleDetails = async () => {
+    const info = await getScheduleInfo(id);
+    const details = await getScheduleDetails(id);
+    setScheduleState('scheduleInfo', info);
+    setScheduleState('scheduleDetails', details);
     navigate(`/profile/schedule-details/${id}`);
   };
 

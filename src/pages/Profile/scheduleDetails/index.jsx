@@ -19,8 +19,6 @@ export const SharedListTitle = styled.h3`
   color: ${color.textColor};
 `;
 
-//要用 shared 方式共享組件嗎？
-
 const ArticlesContainer = styled.section`
   display: flex;
   flex-direction: column;
@@ -79,13 +77,17 @@ const ScheduleDetails = () => {
     setScheduleState,
   } = useScheduleState();
   const { setUserState, activeScheduleId } = useUserState();
-  const scheduleId = useParams().scheduleId;
+  const { scheduleId } = useParams();
   const [tripsEditable, setTripsEditable] = useState(false);
 
-  //可能要改一下useEffect和 firebase 的關係，useEffect 要放哪裡，要return 值還是?
   useEffect(() => {
-    getScheduleInfo(scheduleId);
-    getScheduleDetails(scheduleId);
+    const fetchScheduleData = async () => {
+      const info = await getScheduleInfo(scheduleId);
+      const details = await getScheduleDetails(scheduleId);
+      setScheduleState('scheduleInfo', info);
+      setScheduleState('scheduleDetails', details);
+    };
+    fetchScheduleData();
   }, []);
 
   useEffect(() => {
@@ -97,7 +99,7 @@ const ScheduleDetails = () => {
     if (!scheduleInfo) return;
     const gearChecklist = scheduleInfo.gearChecklist;
     const otherItemChecklist = scheduleInfo.otherItemChecklist;
-    const locationNotes = scheduleInfo.locationNotes;
+    const locationNotes = scheduleInfo.locationNotes || {};
     setScheduleState('locationNotes', locationNotes);
     setScheduleState('gearChecklist', gearChecklist);
     setScheduleState('otherItemChecklist', otherItemChecklist);
