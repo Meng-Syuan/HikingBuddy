@@ -40,48 +40,6 @@ export const useScheduleArrangement = create((set) => ({
 
   setItineraries: (itineraries) => set({ itineraries }),
 
-  //可能可以刪掉？
-  // updateItinerariesWithDates: (itineraries_dates) =>
-  //   set(() => {
-  //     // const updatedItineraries = state.itineraries.map((itinerary) => {
-  //     //   const matchingItem = itineraries_dates.find(
-  //     //     (item) => item.itineraryId === itinerary.itineraryId
-  //     //   );
-  //     //   return { ...itinerary, date: matchingItem.date };
-  //     // });
-  //     // return { itineraries_dates: updatedItineraries };
-  //     const updatedItineraries = itineraries_dates.map((itinerary) => ({
-  //       ...itinerary,
-  //       date: itinerary.date,
-  //     }));
-  //     return {
-  //       itineraries_dates: updatedItineraries,
-  //     };
-  //   }),
-
-  //可能可以刪掉
-  // updateItinerariesWithDatetime: (id, timeDiff) =>
-  //   set((state) => {
-  //     const updatedItineraries = state.itineraries.map((itinerary) => {
-  //       if (id === itinerary.itineraryId) {
-  //         if (isNaN(itinerary.date)) {
-  //           return {
-  //             ...itinerary,
-  //             datetime: timeDiff,
-  //           };
-  //         } else {
-  //           return {
-  //             ...itinerary,
-  //             datetime: itinerary.date + timeDiff,
-  //           };
-  //         }
-  //       } else {
-  //         return itinerary;
-  //       }
-  //     });
-  //     return { itineraries: updatedItineraries };
-  //   }),
-
   setNewItinerary: (newItinerary) => set({ newItinerary }),
 
   setGeopoints: (mapMarkers) => set({ mapMarkers }),
@@ -118,6 +76,7 @@ export const useScheduleState = create((set) => ({
   locationNotes: {},
   gearChecklist: [],
   otherItemChecklist: [],
+  // arrivingTime
   setScheduleState: (key, value) => set({ [key]: value }),
   addLocationNote: (id, value) =>
     set((state) => ({

@@ -46,22 +46,19 @@ const useSchedulesDB = () => {
     }
   };
 
-  //以下可能可以不用!
-  // const useTemporaryLocations = async () => {
-  //   try {
-  //     const querySnapshot = await getDocs(q_temporarySchedule);
-  //     if (querySnapshot.empty) return;
-  //     const doc = querySnapshot.docs[0];
-  //     const itinerariesRef = collection(doc.ref, 'itineraries');
-  //     const itinerariesSnapshot = await getDocs(itinerariesRef);
-  //     const locations = itinerariesSnapshot.docs.map((itineraryDoc) =>
-  //       itineraryDoc.data()
-  //     );
-  //     return locations;
-  //   } catch (error) {
-  //     console.log('Failed to get schedules data: ' + error);
-  //   }
-  // };
+  const addArrivalTime = async (scheduleId, itineraryId, time) => {
+    try {
+      const docRef = doc(schedulesRef, scheduleId, 'itineraries', itineraryId);
+      await updateDoc(docRef, {
+        arrivalTime: time,
+        isArrived: true,
+      });
+    } catch (error) {
+      console.log(`Failed to write arrival time to ${itineraryId} itinerary.`);
+      console.log(error);
+    }
+  };
+
   const deleteItinerary = async (id, itineraryId) => {
     const deletionDoc = doc(schedulesRef, id, 'itineraries', itineraryId);
     await deleteDoc(deletionDoc);
@@ -227,7 +224,6 @@ const useSchedulesDB = () => {
       const itinerariesRef = collection(schedulesRef, id, 'itineraries');
       const itinerariesSnapshot = await getDocs(itinerariesRef);
       if (itinerariesSnapshot.empty) {
-        console.log('no temporary schedule');
         return null;
       } else {
         const locations = [];
@@ -313,6 +309,7 @@ const useSchedulesDB = () => {
     getTemporaryScheduleId,
     createNewSchedule,
     addLocationToDB,
+    addArrivalTime,
     addGPXtoDB,
     deleteItinerary,
     useNewItineraryListener,
