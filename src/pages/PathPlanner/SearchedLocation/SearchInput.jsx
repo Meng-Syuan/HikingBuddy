@@ -4,7 +4,10 @@ import hoverMixin from '@utils/hoverMixin';
 import searchIcon from '../../../assets/img/search.png';
 import searchIcon_hover from '../../../assets/img/search-hover.png';
 import { useEffect, useState } from 'react';
-import { useSearchLocation, useSearchLocations } from '@utils/zustand.js';
+import {
+  useSearchSingleLocationState,
+  useSearchLocations,
+} from '@utils/zustand.js';
 import getGeoJSON from '@utils/osmApi';
 import color from '@utils/theme';
 
@@ -71,11 +74,11 @@ const SearchResultItem = styled.button`
 
 const SearchResultsList = () => {
   const searchLocations = useSearchLocations((state) => state.searchLocations);
-  const { setGeopoint } = useSearchLocation();
+  const { setLocationState } = useSearchSingleLocationState();
   const { resetSearchLocations, checkLocation } = useSearchLocations();
 
   const handleLocationSelected = (geopoint) => {
-    setGeopoint(geopoint);
+    setLocationState('geopoint', geopoint);
     resetSearchLocations();
     checkLocation();
   };

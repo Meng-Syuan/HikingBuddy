@@ -1,19 +1,15 @@
 import { create } from 'zustand';
 
 //planning
-export const useSearchLocation = create((set) => ({
+export const useSearchSingleLocationState = create((set) => ({
   geoJSON: null,
   location: null,
   geopoint: null,
   isSearchValid: false,
   searchResults: null,
-  //一堆 set 的地方可以改掉!!
-  setGeoJSON: (data) => set({ geoJSON: data }),
-  setLocation: (location) => set({ location }),
-  setGeopoint: (latlng) => set({ geopoint: latlng }),
+  setLocationState: (key, value) => set({ [key]: value }),
   setSearchInvalid: () => set({ isSearchValid: false }),
   setSearchValid: () => set({ isSearchValid: true }),
-  setSearchResults: (searchResults) => set({ searchResults }),
 }));
 
 export const useSearchLocations = create((set) => ({
@@ -35,21 +31,12 @@ export const useScheduleArrangement = create((set) => ({
   newItinerary: null,
   mapMarkers: [],
   setScheduleArrangement: (key, value) => set({ [key]: value }),
-
-  setTripName: (tripName) => set({ tripName }),
-
-  setItineraries: (itineraries) => set({ itineraries }),
-
-  setNewItinerary: (newItinerary) => set({ newItinerary }),
-
-  setGeopoints: (mapMarkers) => set({ mapMarkers }),
   addGeopoint: (lat, lng, id, name) =>
     set((state) => ({
       mapMarkers: [...state.mapMarkers, { lat, lng, id, name }],
     })),
 }));
 
-//profile
 export const useUserState = create((set) => ({
   userData: null,
   userPhoto: '',

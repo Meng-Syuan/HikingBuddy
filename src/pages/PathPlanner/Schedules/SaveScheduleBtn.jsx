@@ -1,12 +1,21 @@
-import { useAuth } from '@clerk/clerk-react';
 import styled from 'styled-components';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import useUsersDB from '@utils/hooks/useUsersDB';
 import { useScheduleArrangement, useUserState } from '@utils/zustand';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
+import { Tooltip } from 'react-tippy';
+import { Toast } from '@utils/sweetAlert';
 
-const StyledBtn = styled.button``;
-
+const StyledBtn = styled(FontAwesomeIcon)`
+  font-size: 2rem;
+  color: #6e6e6e;
+  &:hover {
+    color: #0161bb;
+    cursor: pointer;
+  }
+`;
 const SaveScheduleBtn = () => {
   const { futureSchedules, setUserState } = useUserState();
   const {
@@ -24,10 +33,15 @@ const SaveScheduleBtn = () => {
   const handleSaveClick = async () => {
     const result = checkReqirement();
     if (!result) {
-      console.log('填寫未完成');
-      alert('請完成路線命名及日期、時間填寫');
+      Toast.fire({
+        position: 'bottom-end',
+        title: '填寫未完成',
+        text: '請檢查路線名稱、日期與時間是否填寫完畢。',
+        icon: 'error',
+        width: '420px',
+        padding: '1rem 2rem',
+      });
     } else {
-      alert('填寫完成');
       await saveScheduleDetails(
         temporaryScheduleId,
         itineraries_dates,
@@ -38,12 +52,8 @@ const SaveScheduleBtn = () => {
       await useSaveScheduleToUsersDB(temporaryScheduleId);
 
       const newSchedule = getNewScheduleInfo();
-      console.log('futureSchedules');
-      console.log(futureSchedules);
       const newFutureSchedules = [...futureSchedules, newSchedule];
       newFutureSchedules.sort((a, b) => a.lastDay - b.lastDay);
-      console.log(newFutureSchedules);
-      console.log('newFutureSchedules');
       setUserState('futureSchedules', newFutureSchedules);
 
       setScheduleArrangement('tripName', '');
@@ -53,9 +63,13 @@ const SaveScheduleBtn = () => {
       setScheduleArrangement('gpxPoints', null);
       setScheduleArrangement('gpxFileName', '');
       setScheduleArrangement('mapMarkers', []);
-      alert('儲存成功，到個人頁面查看');
+      Toast.fire({
+        position: 'center',
+        title: '儲存成功',
+        text: '導向個人頁面查看行程😎',
+        icon: 'success',
+      });
       navigate('/profile');
-      //把schedule 清空
     }
   };
 
@@ -85,7 +99,17 @@ const SaveScheduleBtn = () => {
     }
   };
 
-  return <StyledBtn onClick={handleSaveClick}>儲存行程表</StyledBtn>;
+  return (
+    <Tooltip
+      title="儲存行程"
+      arrow={true}
+      position="right"
+      size="small"
+      theme="light"
+    >
+      <StyledBtn icon={faFloppyDisk} onClick={handleSaveClick} />
+    </Tooltip>
+  );
 };
 
 export default SaveScheduleBtn;

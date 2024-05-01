@@ -20,7 +20,7 @@ import { isFuture } from 'date-fns';
 const useSchedulesDB = () => {
   const { userId } = useAuth();
   const { setScheduleState } = useScheduleState();
-  const { setNewItinerary } = useScheduleArrangement();
+  const { setScheduleArrangement } = useScheduleArrangement();
   const schedulesRef = collection(db, 'schedules');
   const q_temporarySchedule = query(
     schedulesRef,
@@ -38,9 +38,7 @@ const useSchedulesDB = () => {
       const itinerariesDocRef = await addDoc(itinerariesRef, newItinerary);
       const itineraryId = itinerariesDocRef.id;
       await updateDoc(itinerariesDocRef, { itineraryId });
-      console.log(
-        'Created a new document in itineraries collection successfully.'
-      );
+      return itineraryId;
     } catch (error) {
       console.log('Error: ' + error);
     }
@@ -72,8 +70,7 @@ const useSchedulesDB = () => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'modified') {
             const data = change.doc.data();
-            setNewItinerary(data);
-            console.log(data);
+            setScheduleArrangement('newItinerary', data);
           }
         });
       });
@@ -102,7 +99,7 @@ const useSchedulesDB = () => {
       lastDay,
       gearChecklist: [
         { id: '登山包', isChecked: false },
-        { id: '登頂包', isChecked: false },
+        { id: '攻頂包', isChecked: false },
         { id: '風雨衣、雨褲、鞋套', isChecked: false },
         { id: '中層外套', isChecked: false },
         { id: '保暖手套', isChecked: false },

@@ -9,6 +9,8 @@ import { useEffect } from 'react';
 
 const PlannerContainer = styled.main`
   display: flex;
+  width: 1100px;
+  justify-content: center;
 `;
 const MapWrapper = styled.section`
   position: relative;
@@ -17,8 +19,9 @@ const MapWrapper = styled.section`
 
 const ScheduleWrapper = styled.section`
   background-color: ${color.lightBackgroundColor};
-  flex: 0 1 350px;
+  flex: 0 1 340px;
   padding: 20px;
+  position: relative;
 `;
 
 const PathPlanner = () => {
@@ -34,7 +37,11 @@ const PathPlanner = () => {
   return (
     <>
       <PlannerContainer>
-        <MapWrapper>{isSignedIn && <Map />}</MapWrapper>
+        {isSignedIn && (
+          <MapWrapper>
+            <Map />
+          </MapWrapper>
+        )}
         {isSignedIn && (
           <ScheduleWrapper>
             <Schedule />

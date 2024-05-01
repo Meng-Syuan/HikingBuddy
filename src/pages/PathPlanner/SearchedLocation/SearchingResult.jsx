@@ -1,4 +1,7 @@
-import { useSearchLocation, useScheduleArrangement } from '@utils/zustand';
+import {
+  useSearchSingleLocationState,
+  useScheduleArrangement,
+} from '@utils/zustand';
 import styled from 'styled-components';
 import color from '@utils/theme';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
@@ -56,20 +59,19 @@ const AddToSchedule_btn = styled.button`
 `;
 
 const LocationDetails = () => {
-  const { userId } = useAuth();
-  const { location, geopoint, isSearchValid } = useSearchLocation();
-  const { temporaryScheduleId, mapMarkers, addGeopoint } =
-    useScheduleArrangement();
+  const { location, geopoint, isSearchValid, setLocationState } =
+    useSearchSingleLocationState();
+  const { temporaryScheduleId, addGeopoint } = useScheduleArrangement();
   const { addLocationToDB } = useSchedulesDB();
 
   const handleAddLocation = async () => {
-    await addLocationToDB(temporaryScheduleId, geopoint, location);
-    addGeopoint(
-      geopoint.lat,
-      geopoint.lng,
-      geopoint.lat + geopoint.lng,
+    const itineraryId = await addLocationToDB(
+      temporaryScheduleId,
+      geopoint,
       location
     );
+    addGeopoint(geopoint.lat, geopoint.lng, itineraryId, location);
+    setLocationState('location', null);
   };
 
   return (

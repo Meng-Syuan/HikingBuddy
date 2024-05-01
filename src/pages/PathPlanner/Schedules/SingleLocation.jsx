@@ -4,15 +4,18 @@ import Flatpickr from 'react-flatpickr';
 import { useState, useEffect } from 'react';
 import { useScheduleArrangement } from '@utils/zustand';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { IconButton } from '@mui/material';
 
 const ContentWrapper = styled.div`
-  min-height: 30px;
+  min-height: 25px;
   border: 1px solid ${color.borderColor};
-  border-radius: 5px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 6px;
+  padding: 0 6px;
   .flatpickr-input {
     font-size: 0.75rem;
     text-align: center;
@@ -27,12 +30,8 @@ const ContentWrapper = styled.div`
 `;
 const Location_Name = styled.h5`
   width: 200px;
-  line-height: 1.2rem;
+  line-height: 1rem;
   font-size: 0.875rem;
-`;
-
-const DeleteButton = styled.button`
-  border: none;
 `;
 
 const SingleLocation = ({ name, id, deletionId, setDeletion }) => {
@@ -41,10 +40,10 @@ const SingleLocation = ({ name, id, deletionId, setDeletion }) => {
     setScheduleArrangement,
     itineraries_dates,
     itineraries_datetime,
+    mapMarkers,
   } = useScheduleArrangement();
   const { deleteItinerary } = useSchedulesDB();
   const [timeDiff, setTimeDiff] = useState('');
-  // const [deletionId, setDeletionId] = useState(null);
 
   useEffect(() => {
     //initialization
@@ -58,14 +57,12 @@ const SingleLocation = ({ name, id, deletionId, setDeletion }) => {
     } else {
       //update according to new location or new date / deletion
       if (!deletionId) {
-        console.log('deletionId不存在，我沒有刪除任何東西');
         const newItinerary = itineraries_dates.find((itinerary) => {
           return !itineraries_datetime.some(
             (object) => object.itineraryId === itinerary.itineraryId
           );
         });
         if (newItinerary) {
-          console.log('有新增的地點');
           const newItineraries_datetime = itineraries_datetime.map(
             (itinerary) => ({
               itineraryId: itinerary.itineraryId,
@@ -78,10 +75,7 @@ const SingleLocation = ({ name, id, deletionId, setDeletion }) => {
             'itineraries_datetime',
             newItineraries_datetime
           );
-          console.log('新項目已經寫進 datetime裡面');
         } else {
-          console.log('沒有新項目，但是有更新時間，以下是當前的 deletionId');
-          console.log(deletionId);
           const newItineraries_datetime = itineraries_datetime.map(
             (itinerary) => {
               const matchingItem = itineraries_dates.find(
@@ -101,7 +95,6 @@ const SingleLocation = ({ name, id, deletionId, setDeletion }) => {
           );
         }
       } else {
-        console.log('我有刪掉東西，製作新的 datetime');
         const newItineraries_datetime = itineraries_datetime.filter(
           (itinerary) => itinerary.itineraryId !== deletionId
         );
@@ -136,6 +129,8 @@ const SingleLocation = ({ name, id, deletionId, setDeletion }) => {
   const handleDeleteItinerary = (id) => {
     setDeletion(id);
     deleteItinerary(temporaryScheduleId, id);
+    const remainingMarkers = mapMarkers.filter((marker) => marker.id !== id);
+    setScheduleArrangement('mapMarkers', remainingMarkers);
   };
   const timePickerOptions = {
     enableTime: true,
@@ -152,9 +147,9 @@ const SingleLocation = ({ name, id, deletionId, setDeletion }) => {
         <input type="text" data-input readOnly />
       </Flatpickr>
       <Location_Name>{name}</Location_Name>
-      <DeleteButton onClick={() => handleDeleteItinerary(id)}>
-        刪除
-      </DeleteButton>
+      <IconButton onClick={() => handleDeleteItinerary(id)}>
+        <FontAwesomeIcon icon={faTrash} size="xs" />
+      </IconButton>
     </ContentWrapper>
   );
 };

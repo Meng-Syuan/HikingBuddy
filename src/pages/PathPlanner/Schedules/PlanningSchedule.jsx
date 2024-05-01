@@ -9,6 +9,16 @@ import Location from './SingleLocation';
 import SaveScheduleBtn from './SaveScheduleBtn';
 import { useScheduleArrangement } from '@utils/zustand';
 import gpxParser from 'gpxparser';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { Tooltip } from 'react-tippy';
+
+const PlanningText = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+`;
 
 const TripName = styled.div`
   display: flex;
@@ -23,24 +33,27 @@ const TripNameInput = styled.input`
   border-radius: 5px;
   background-color: ${color.lightBackgroundColor};
 `;
-const Day = styled.span`
+const DaySplit = styled.span`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   text-align: center;
   align-items: center;
-  hr {
-    border: none;
-    background-color: ${color.primary};
-    height: 1px;
-  }
-  h6 {
-    letter-spacing: 2px;
-    font-size: 0.75rem;
-  }
+  margin: 6px 0 4px;
+`;
+
+const SplitLine = styled.hr`
+  border: none;
+  background-color: ${color.primary};
+  height: 1px;
+`;
+
+const Day = styled.h6`
+  letter-spacing: 2px;
+  font-size: 0.75rem;
 `;
 
 const ScheduleBlock = styled.div`
-  min-height: 80px;
+  min-height: 100px;
   .sortable {
     display: flex;
     flex-direction: column;
@@ -48,13 +61,40 @@ const ScheduleBlock = styled.div`
   }
 `;
 
-const UploadGpxButton = styled.button`
-  border: 2px solid #000;
+const ButtonsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 1rem;
+  position: absolute;
+  bottom: 3rem;
+  right: 30px;
 `;
 
-const GPXfileWrapper = styled.div``;
+const UploadGpxButton = styled.div`
+  .gpxUpload {
+    font-size: 2rem;
+    color: #6e6e6e;
+    &:hover {
+      color: #0161bb;
+      cursor: pointer;
+    }
+  }
+`;
 
-const GPXfileName = styled.span``;
+const GPXfileWrapper = styled.div`
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+`;
+
+const GPXfileName = styled.span`
+  font-size: 0.875rem;
+  background-color: #fff0c9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-style: italic;
+`;
 
 const sortableOptions = {
   animation: 100,
@@ -70,12 +110,9 @@ const Schedules = () => {
     setScheduleArrangement,
     temporaryScheduleId,
     newItinerary,
-    setNewItinerary,
     tripName,
-    setTripName,
     gpxFileName,
-    itineraries_dates,
-    itineraries_datetime,
+    mapMarkers,
   } = useScheduleArrangement();
   const {
     getTemporaryScheduleId,
@@ -243,7 +280,7 @@ const Schedules = () => {
           ],
         },
       ]);
-      setNewItinerary(null);
+      setScheduleArrangement('newItinerary', null);
     } else {
       const newItem = {
         id: newItinerary.itineraryId,
@@ -292,19 +329,9 @@ const Schedules = () => {
   }, [deletionId]);
 
   useEffect(() => {
-    console.log('scheduleBlocks.........');
-    console.log(scheduleBlocks);
-  }, [scheduleBlocks]);
-
-  useEffect(() => {
-    console.log('.........itineraries_dates......');
-    console.log(itineraries_dates);
-  }, [itineraries_dates]);
-
-  useEffect(() => {
-    console.log('.itineraries_datetime.');
-    console.log(itineraries_datetime);
-  }, [itineraries_datetime]);
+    if (!deletionId) return;
+    console.log(mapMarkers);
+  }, [deletionId]);
 
   const handleSortEnd = (blockId, items) => {
     setScheduleBlocks((prevBlocks) =>
@@ -329,28 +356,29 @@ const Schedules = () => {
   };
   return (
     <>
-      <TripName>
-        <label htmlFor="tripName">路線名稱</label>
-        <TripNameInput
-          id="tripName"
-          type="text"
-          placeholder="未命名的路線名稱"
-          value={tripName}
-          onChange={(e) => setTripName(e.target.value)}
-        />
-      </TripName>
-      <CalendarDate selectDates={setSelectedDates} />
-
+      <PlanningText>
+        <TripName>
+          <label htmlFor="tripName">路線名稱</label>
+          <TripNameInput
+            id="tripName"
+            type="text"
+            placeholder="未命名的路線名稱"
+            value={tripName}
+            onChange={(e) => setScheduleArrangement('tripName', e.target.value)}
+          />
+        </TripName>
+        <CalendarDate selectDates={setSelectedDates} />
+      </PlanningText>
       {scheduleBlocks.length > 0 &&
         scheduleBlocks.map((block, index) => (
           <ScheduleBlock key={block.id}>
             {index < scheduleBlocks.length - 1 && (
               <>
-                <Day>
-                  <hr />
-                  <h6>{`第${index + 1}天`}</h6>
-                  <hr />
-                </Day>
+                <DaySplit>
+                  <SplitLine />
+                  <Day>{`第${index + 1}天`}</Day>
+                  <SplitLine />
+                </DaySplit>
               </>
             )}
             <ReactSortable
@@ -375,20 +403,30 @@ const Schedules = () => {
             </ReactSortable>
           </ScheduleBlock>
         ))}
-      <SaveScheduleBtn />
-      <input
-        type="file"
-        accept=".gpx"
-        onChange={handleUploadGPX}
-        id="gpxUpload"
-        style={{ display: 'none' }}
-      />
-      <GPXfileWrapper>
-        <GPXfileName>{gpxFileName}</GPXfileName>
-        <UploadGpxButton as="label" htmlFor="gpxUpload">
-          上傳 GPX 檔案
-        </UploadGpxButton>
-      </GPXfileWrapper>
+      <ButtonsContainer>
+        <SaveScheduleBtn />
+        <input
+          type="file"
+          accept=".gpx"
+          onChange={handleUploadGPX}
+          id="gpxUpload"
+          style={{ display: 'none' }}
+        />
+        <GPXfileWrapper>
+          <GPXfileName>{gpxFileName}</GPXfileName>
+          <UploadGpxButton as="label" htmlFor="gpxUpload">
+            <Tooltip
+              title="上傳 GPX"
+              arrow={true}
+              position="right"
+              size="small"
+              theme="light"
+            >
+              <FontAwesomeIcon icon={faFileArrowUp} className="gpxUpload" />
+            </Tooltip>
+          </UploadGpxButton>
+        </GPXfileWrapper>
+      </ButtonsContainer>
     </>
   );
 };
