@@ -2,10 +2,19 @@ import styled from 'styled-components';
 import color from '@theme';
 import { LoginHover_icon, Login_icon } from '/src/assets/img/svgIcons';
 import hoverMixin from '@utils/hoverMixin';
-import { SignedIn, SignedOut, SignInButton } from '@clerk/clerk-react';
-import { useUser, useAuth } from '@clerk/clerk-react';
-import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  useUser,
+  useAuth,
+  useClerk,
+} from '@clerk/clerk-react';
+import { useNavigate, NavLink } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import sweetAlert, { Toast } from '@utils/sweetAlert';
+import { useEffect } from 'react';
 
 import { signInWithCustomToken, updateProfile } from 'firebase/auth';
 import { auth } from '@utils/firebase/firebaseConfig.js';
@@ -40,11 +49,20 @@ const Img = styled.img`
   border: 1px solid ${color.primary};
 `;
 
-const SignIn = () => {
+const SignOutBtn = styled(FontAwesomeIcon)`
+  font-size: 1.8rem;
+  color: #4f4f4f;
+  &:hover {
+    color: ${color.secondary};
+    cursor: pointer;
+  }
+`;
+
+export const SignIn = () => {
   const { user } = useUser();
   const { getToken, isLoaded, isSignedIn, userId } = useAuth();
   const { setUsersDB } = useUsersDB();
-  //之後要打開，用來寫入使用者資料
+  //之後要打開，用來寫入使用者資料，要記得寫 func 來辨別這個使用者是不是新的，如果是新的才需要這個功能
   // useEffect(() => {
   //   if (isLoaded && isSignedIn) {
   //     signInWithClerk();
@@ -52,6 +70,16 @@ const SignIn = () => {
   //     console.log(userId);
   //   }
   // }, [isLoaded, isSignedIn]);
+
+  useEffect(() => {
+    if (!userId) return;
+    Toast.fire({
+      icon: 'success',
+      title: '登入成功🎉',
+      timer: 1500,
+      width: '220px',
+    });
+  }, [userId]);
 
   const signInWithClerk = async () => {
     const token = await getToken({ template: 'integration_firebase' });
@@ -109,4 +137,26 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export const SignOut = () => {
+  const { signOut } = useClerk();
+  const navigate = useNavigate();
+  const { isSignedIn } = useAuth();
+
+  const handleSignOut = () => {
+    alert('預備開始登出');
+    signOut();
+    alert('要回首頁了');
+    navigate('/');
+  };
+  return (
+    <>
+      {isSignedIn && (
+        <SignOutBtn
+          icon={faArrowRightFromBracket}
+          title="登出"
+          onClick={handleSignOut}
+        />
+      )}
+    </>
+  );
+};
