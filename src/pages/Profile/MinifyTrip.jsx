@@ -43,8 +43,13 @@ const Content = styled.div`
 
 const Badge = styled.div`
   position: absolute;
-  left: 60%;
+  right: 2.5rem;
+  height: 1rem;
   font-size: 0.6rem;
+  border-radius: 15px;
+  border: 1px solid #ff8800;
+  background-color: #e78f1b66;
+  padding: 2px;
 `;
 const MinifyTrip = ({ id, firstDay, lastDay, tripName, isChecked, type }) => {
   const { deleteTargetData } = useUsersDB();
@@ -81,7 +86,7 @@ const MinifyTrip = ({ id, firstDay, lastDay, tripName, isChecked, type }) => {
     <TripWrapper onClick={showScheduleDetails}>
       <CheckBox ischecked={isChecked.toString()}></CheckBox>
       <Content>{content}</Content>
-      {id === activeScheduleId && <Badge>radix badge</Badge>}
+      {id === activeScheduleId && <Badge>留守人</Badge>}
       <IconButton onClick={(e) => handleDeleteTrip(e, type, id)}>
         <FontAwesomeIcon icon={faTrash} size="sm" />
       </IconButton>

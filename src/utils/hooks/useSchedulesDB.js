@@ -101,7 +101,8 @@ const useSchedulesDB = () => {
       firstDay,
       lastDay,
       gearChecklist: [
-        { id: '大背包', isChecked: false },
+        { id: '登山包', isChecked: false },
+        { id: '登頂包', isChecked: false },
         { id: '風雨衣、雨褲、鞋套', isChecked: false },
         { id: '中層外套', isChecked: false },
         { id: '保暖手套', isChecked: false },

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import color, { styledListTitle } from '@utils/theme';
+import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
 import { sha256 } from 'js-sha256';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
@@ -7,6 +8,7 @@ import useUsersDB from '@utils/hooks/useUsersDB';
 import useProtectorsDB from '@utils/hooks/useProtectorsDB';
 import { useScheduleState, useUserState } from '@utils/zustand';
 import { useParams } from 'react-router-dom';
+import { Toast } from '@utils/sweetAlert';
 
 import TripInfo from './TripInfo';
 import ProtectorSetting from './ProtectorSetting';
@@ -38,6 +40,7 @@ const StyledSplitLine = styled.hr`
   background-color: ${color.primary};
   height: 2px;
   width: 90%;
+  margin-top: 1.5rem;
 `;
 
 const ButtonWrapper = styled.div`
@@ -45,18 +48,20 @@ const ButtonWrapper = styled.div`
   position: relative;
   height: 30px;
 `;
-const StyledButton = styled.button`
-  position: absolute;
-  right: 20%;
+const StyledButton = styled(Button)`
+  position: relative;
+  right: -80%;
+  transform: translateX(-50%);
+  background-color: #8b572a;
+  color: #fff;
+
+  &:hover {
+    background-color: #b3733b;
+  }
 `;
-const ToggleEditButton = styled(StyledButton)``;
 
-const SaveChecklistEditionBtn = styled(StyledButton)``;
-
-const SetActiveBtn = styled.button`
-  position: absolute;
-  right: 10%;
-  top: -2.5rem;
+const SettingActionBtn = styled(StyledButton)`
+  bottom: 30px;
 `;
 
 const ScheduleDetails = () => {
@@ -116,6 +121,10 @@ const ScheduleDetails = () => {
       gearChecklist,
       otherItemChecklist
     );
+    Toast.fire({
+      text: '完成清單更新',
+      icon: 'success',
+    });
   };
 
   const handleToggleProtectorFunc = async (isActive) => {
@@ -139,13 +148,13 @@ const ScheduleDetails = () => {
         <TripInfo isEditable={tripsEditable} />
         <ButtonWrapper>
           {tripsEditable ? (
-            <ToggleEditButton onClick={handleTripsEdition}>
+            <StyledButton variant="contained" onClick={handleTripsEdition}>
               儲存變更
-            </ToggleEditButton>
+            </StyledButton>
           ) : (
-            <ToggleEditButton onClick={handleTripsEdition}>
+            <StyledButton variant="contained" onClick={handleTripsEdition}>
               開始編輯
-            </ToggleEditButton>
+            </StyledButton>
           )}
         </ButtonWrapper>
       </ArticleWrapper>
@@ -155,9 +164,11 @@ const ScheduleDetails = () => {
       <ArticleWrapper>
         <CheckList />
         <ButtonWrapper>
-          <SaveChecklistEditionBtn onClick={handleSaveCheckList}>
-            儲存清單變更
-          </SaveChecklistEditionBtn>
+          <>
+            <StyledButton variant="contained" onClick={handleSaveCheckList}>
+              儲存變更
+            </StyledButton>
+          </>
         </ButtonWrapper>
       </ArticleWrapper>
 
@@ -166,13 +177,19 @@ const ScheduleDetails = () => {
         <ProtectorSetting salt={scheduleId} />
         <ButtonWrapper>
           {isActive ? (
-            <SetActiveBtn onClick={() => handleToggleProtectorFunc(false)}>
-              暫停
-            </SetActiveBtn>
+            <SettingActionBtn
+              variant="contained"
+              onClick={() => handleToggleProtectorFunc(false)}
+            >
+              暫停功能
+            </SettingActionBtn>
           ) : (
-            <SetActiveBtn onClick={() => handleToggleProtectorFunc(true)}>
-              啟用
-            </SetActiveBtn>
+            <SettingActionBtn
+              variant="contained"
+              onClick={() => handleToggleProtectorFunc(true)}
+            >
+              啟用功能
+            </SettingActionBtn>
           )}
         </ButtonWrapper>
       </ArticleWrapper>

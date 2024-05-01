@@ -3,6 +3,11 @@ import { sha256 } from 'js-sha256';
 import color, { fieldWrapper } from '@utils/theme';
 import { useScheduleState } from '@utils/zustand';
 import { SharedListTitle } from './index';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { IconButton } from '@mui/material';
+import { Toast } from '@utils/sweetAlert';
+import { Tooltip } from 'react-tippy';
 
 const TitleWrapper = styled.div`
   display: flex;
@@ -11,19 +16,18 @@ const TitleWrapper = styled.div`
 `;
 const SettingContainer = styled.div`
   ${fieldWrapper}
-  min-height: 150px;
+  min-height: 180px;
 `;
 const ProtectorWrapper = styled.div`
   width: 70%;
   border: 1px solid ${color.borderColor};
-  padding: 0.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 `;
 
 const UrlWrapper = styled.div`
-  border: 1px solid blue;
   display: flex;
 `;
 
@@ -31,7 +35,11 @@ const ProtectorUrlContent = styled.span`
   font-size: 0.75rem;
 `;
 
-const CopyBtn = styled.button``;
+const StyledIcon = styled(IconButton)`
+  .copy {
+    font-size: 1.5rem;
+  }
+`;
 
 const Note = styled.p`
   font-size: 0.875rem;
@@ -46,7 +54,13 @@ const ProtectorSetting = ({ salt }) => {
   const handleCopyURL = async () => {
     try {
       await navigator.clipboard.writeText(hashedUrl);
-      alert('successfully');
+      Toast.fire({
+        title: '複製成功 🎉🎉🎉',
+        text: '請將網址交給留守人',
+        position: 'center',
+        icon: 'success',
+        timer: 1500,
+      });
     } catch (error) {
       alert('bad bad bad');
     }
@@ -62,7 +76,17 @@ const ProtectorSetting = ({ salt }) => {
         <ProtectorWrapper>
           <UrlWrapper>
             <ProtectorUrlContent>{`https://hikingbuddy-4abda.firebaseapp.com/protector/${encryptedId}`}</ProtectorUrlContent>
-            <CopyBtn onClick={handleCopyURL}>複製</CopyBtn>
+            <Tooltip
+              title="複製左側網址"
+              arrow={true}
+              position="right"
+              size="small"
+              theme="light"
+            >
+              <StyledIcon onClick={handleCopyURL}>
+                <FontAwesomeIcon icon={faCopy} className="copy" />
+              </StyledIcon>
+            </Tooltip>
           </UrlWrapper>
           <Note>
             功能啟動後，僅持有上述網址的人可透過上述網址看到您的行程資訊

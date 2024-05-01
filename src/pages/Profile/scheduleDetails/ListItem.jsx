@@ -1,10 +1,17 @@
 import styled from 'styled-components';
-import color, { textBorder } from '@utils/theme';
+import color from '@utils/theme';
 import { useScheduleState } from '@utils/zustand';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faX,
+  faSquare,
+  faSquareCheck,
+} from '@fortawesome/free-solid-svg-icons';
+import { IconButton } from '@mui/material';
 
-const ItemWrapper = styled.div`
-  padding: 5px;
-  ${textBorder}
+const ItemContainer = styled.div`
+  display: flex;
+  align-items: center;
   justify-content: space-between;
 `;
 
@@ -17,11 +24,27 @@ const CheckBox = styled.div`
     props.ischecked === 'true' ? color.secondary : color.lightBackgroundColor};
 `;
 
-const ItemName = styled.span`
-  width: 200px;
+const ItemWrapper = styled.div`
+  padding: 2px 4px 2px 14px;
+  border: 1px solid ${color.borderColor};
+  border-radius: 20px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  min-height: 35px;
 `;
 
-const DeleteBtn = styled.button``;
+const ItemName = styled.span`
+  width: 200px;
+  line-height: 1.25rem;
+`;
+
+const StyledIcon = styled(IconButton)`
+  &:hover {
+    color: ${color.secondary};
+  }
+`;
+
 const ListItem = ({ isChecked, id, type }) => {
   const { gearChecklist, otherItemChecklist, setScheduleState } =
     useScheduleState();
@@ -60,14 +83,18 @@ const ListItem = ({ isChecked, id, type }) => {
     }
   };
   return (
-    <ItemWrapper>
+    <ItemContainer>
       <CheckBox
         ischecked={isChecked.toString()}
         onClick={() => handleToggleCheckBox(id)}
       ></CheckBox>
-      <ItemName>{id}</ItemName>
-      <DeleteBtn onClick={() => handleDeleteItem(id)}>刪除</DeleteBtn>
-    </ItemWrapper>
+      <ItemWrapper>
+        <ItemName>{id}</ItemName>
+        <StyledIcon onClick={() => handleDeleteItem(id)}>
+          <FontAwesomeIcon icon={faX} size="2xs" />
+        </StyledIcon>
+      </ItemWrapper>
+    </ItemContainer>
   );
 };
 

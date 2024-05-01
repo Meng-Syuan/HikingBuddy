@@ -4,6 +4,9 @@ import { useScheduleState } from '@utils/zustand';
 import { useState } from 'react';
 import { SharedListTitle } from './index';
 import ListItem from './ListItem';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileCirclePlus } from '@fortawesome/free-solid-svg-icons';
+import { IconButton } from '@mui/material';
 
 //#region
 const ChecklistsWrapper = styled.div`
@@ -18,10 +21,10 @@ const ListsContainer = styled.div`
 `;
 
 const ListWrapper = styled.div`
-  width: 300px;
+  width: 280px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 `;
 
 const AddItemField = styled.div`
@@ -38,10 +41,17 @@ const ItemInput = styled.input`
   border: none;
   outline: none;
   text-align: center;
+  &::placeholder {
+    font-size: 0.875rem;
+  }
 `;
-const AddIBtn = styled.button`
-  margin: 0.5rem;
+
+const StyledIcon = styled(IconButton)`
+  &:hover {
+    color: ${color.secondary};
+  }
 `;
+
 //#endregion
 
 const CheckList = () => {
@@ -76,10 +86,11 @@ const CheckList = () => {
             <ItemInput
               value={newGearItemInput}
               onChange={(e) => setNewGearItemInput(e.target.value)}
+              placeholder="點擊新增自訂裝備"
             ></ItemInput>
-            <AddIBtn onClick={() => handleAddNewItem('gearChecklist')}>
-              新增
-            </AddIBtn>
+            <StyledIcon onClick={() => handleAddNewItem('gearChecklist')}>
+              <FontAwesomeIcon icon={faFileCirclePlus} size="sm" />
+            </StyledIcon>
           </AddItemField>
         </ListWrapper>
         <ListWrapper>
@@ -95,10 +106,11 @@ const CheckList = () => {
             <ItemInput
               value={newOtherItemInput}
               onChange={(e) => setNewOtherItemInput(e.target.value)}
+              placeholder="點擊新增自訂用品"
             ></ItemInput>
-            <AddIBtn onClick={() => handleAddNewItem('otherItemChecklist')}>
-              新增
-            </AddIBtn>
+            <StyledIcon onClick={() => handleAddNewItem('otherItemChecklist')}>
+              <FontAwesomeIcon icon={faFileCirclePlus} size="sm" />
+            </StyledIcon>
           </AddItemField>
         </ListWrapper>
       </ListsContainer>
