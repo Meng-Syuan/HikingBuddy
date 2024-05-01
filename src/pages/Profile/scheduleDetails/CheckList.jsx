@@ -1,8 +1,7 @@
 import styled from 'styled-components';
-import { lightFormat, format } from 'date-fns';
 import color, { fieldWrapper } from '@utils/theme';
 import { useScheduleState } from '@utils/zustand';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { SharedListTitle } from './index';
 import ListItem from './ListItem';
 
