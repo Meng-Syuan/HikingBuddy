@@ -33,4 +33,11 @@ export const inputFocusStyle = {
   border: `1px solid ${color.secondary}`,
   boxShadow: `0 0 6px ${color.secondary}`,
 };
+
+export const styledListTitle = {
+  padding: '1.25rem 0.875rem 0.75rem',
+  fontSize: '1.5rem',
+  fontWeight: 'bold',
+  color: color.textColor,
+};
 export default color;

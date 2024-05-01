@@ -36,8 +36,8 @@ export default function ProtectorTabs({ isEditable }) {
           <StyledTab label="規劃清單" />
         </Tabs>
       </TabsWrapper>
-      {value === 0 && <MapInfo isEditable={isEditable}></MapInfo>}
-      {value === 1 && <ScheduleInfo></ScheduleInfo>}
+      {value === 0 && <MapInfo isEditable={isEditable} />}
+      {value === 1 && <ScheduleInfo />}
     </>
   );
 }

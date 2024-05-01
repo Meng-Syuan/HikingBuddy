@@ -78,8 +78,6 @@ const Protector = () => {
           setProtectorPageData('hikerInfo', hikerInfo);
           setProtectorPageData('hikerPhoto', hikerInfo.hiker_photo);
           const scheduleDetails = await getScheduleDetails(id);
-          console.log('scheduleDetails');
-          console.log(scheduleDetails);
           const scheduleInfo = await getScheduleInfo(id);
           setScheduleState('scheduleDetails', scheduleDetails);
           setScheduleState('ScheduleInfo', scheduleInfo);
@@ -97,11 +95,13 @@ const Protector = () => {
   useEffect(() => {
     if (!scheduleInfo) return;
     const gpxPoints = scheduleInfo?.gpxPoints;
-    // const gpxFileName = scheduleInfo?.gpxFileName || '';
-    console.log(gpxPoints);
-    // console.log(gpxFileName);
+    const gearChecklist = scheduleInfo.gearChecklist;
+    const otherItemChecklist = scheduleInfo.otherItemChecklist;
+    const locationNotes = scheduleInfo.locationNotes;
     setScheduleArrangement('gpxPoints', gpxPoints);
-    // setScheduleArrangement('gpxFileName', gpxFileName);
+    setScheduleState('gearChecklist', gearChecklist);
+    setScheduleState('otherItemChecklist', otherItemChecklist);
+    setScheduleState('locationNotes', locationNotes);
   }, [scheduleInfo]);
 
   useEffect(() => {

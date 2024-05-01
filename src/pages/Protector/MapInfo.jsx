@@ -4,7 +4,6 @@ import {
   Marker,
   Polyline,
   Popup,
-  useMap,
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import styled from 'styled-components';
@@ -43,7 +42,7 @@ const arrivedMarker = L.icon({
 });
 
 const StyledMapContainer = styled(MapContainer)`
-  min-height: calc(100% - 3rem); //???????????????
+  min-height: calc(100% - 64px);
 `;
 
 const PopupContent = styled.div`

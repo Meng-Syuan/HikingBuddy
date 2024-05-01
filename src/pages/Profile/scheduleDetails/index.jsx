@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color from '@utils/theme';
+import color, { styledListTitle } from '@utils/theme';
 import { useEffect, useState } from 'react';
 import { sha256 } from 'js-sha256';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
@@ -13,10 +13,7 @@ import ProtectorSetting from './ProtectorSetting';
 import CheckList from './CheckList';
 
 export const SharedListTitle = styled.h3`
-  padding: 1.25rem 0.875rem 0.75rem;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: ${color.textColor};
+  ${styledListTitle}
 `;
 
 const ArticlesContainer = styled.section`

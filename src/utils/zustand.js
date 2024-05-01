@@ -76,7 +76,6 @@ export const useScheduleState = create((set) => ({
   locationNotes: {},
   gearChecklist: [],
   otherItemChecklist: [],
-  // arrivingTime
   setScheduleState: (key, value) => set({ [key]: value }),
   addLocationNote: (id, value) =>
     set((state) => ({
