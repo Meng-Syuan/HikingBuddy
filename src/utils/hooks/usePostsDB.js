@@ -7,7 +7,6 @@ import {
   getDocs,
   updateDoc,
   deleteDoc,
-  serverTimestamp,
 } from 'firebase/firestore';
 
 const usePostsDB = () => {
@@ -41,12 +40,14 @@ const usePostsDB = () => {
         const mainPhoto = data.mainPhoto;
         const content = data.parsedContent;
         const id = data.postId;
+        const markers = data.markers;
         postsContent.push({
           id,
           title,
           createTime,
           mainPhoto,
           content,
+          markers,
         });
       });
       await Promise.all(postPromises);
@@ -57,7 +58,13 @@ const usePostsDB = () => {
     }
   };
 
-  const publishPost = async (postId, title, parsedContent, mainPhoto) => {
+  const publishPost = async (
+    postId,
+    title,
+    parsedContent,
+    mainPhoto,
+    markers
+  ) => {
     const docRef = doc(postsRef, postId);
     try {
       await setDoc(docRef, {
@@ -65,6 +72,7 @@ const usePostsDB = () => {
         title,
         parsedContent,
         mainPhoto,
+        markers: { ...markers },
         isTemporary: false,
         createAt: new Date().getTime(),
       });

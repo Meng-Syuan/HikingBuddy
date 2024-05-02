@@ -123,16 +123,6 @@ const useUsersDB = () => {
     }
   };
 
-  const setMarkersDoc = async (postId, content) => {
-    const markersDoc = doc(userDocRef, 'markers', postId);
-    try {
-      await setDoc(markersDoc, content);
-    } catch (error) {
-      console.log('Failed to renew markers for this post.');
-      console.log(error);
-    }
-  };
-
   const getActiveScheduleIdByPassword = async (password) => {
     try {
       const usersRef = collection(db, 'users');
@@ -180,7 +170,6 @@ const useUsersDB = () => {
     updateHashedPassword,
     updateUserDoc,
     addUserInfo,
-    setMarkersDoc,
     getActiveScheduleIdByPassword,
     deleteTargetData,
   };

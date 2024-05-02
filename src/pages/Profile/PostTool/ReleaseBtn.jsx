@@ -29,20 +29,17 @@ const ReleaseBtn = () => {
   } = usePostState();
   const { deleteTrip } = useUserState();
   const { publishPost } = usePostsDB();
-  const { addUserInfo, setMarkersDoc, deleteTargetData } = useUsersDB();
+  const { addUserInfo, deleteTargetData } = useUsersDB();
 
   const handlePublication = async () => {
     const result = checkReqirement();
     if (!result) return;
     const reorderedPhotos = reorderPhotos();
     const parsedContent = structureContent(reorderedPhotos);
-    await publishPost(postId, title, parsedContent, mainPhoto);
+    await publishPost(postId, title, parsedContent, mainPhoto, markers);
     await addUserInfo('posts', postId);
     await deleteTargetData('schedulesIDs', postId);
     deleteTrip('pastSchedules', postId);
-    if (markers.length > 0) {
-      await setMarkersDoc(postId, { ...markers });
-    }
     setPostState('postId', '');
     setPostState('tripName', '');
     setPostState('title', '');
