@@ -15,13 +15,11 @@ import { sha256 } from 'js-sha256';
 import useProtectorsDB from '@utils/hooks/useProtectorsDB';
 import useUsersDB from '@utils/hooks/useUsersDB';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
+import { Toast } from '@utils/sweetAlert';
 //#region
 const ProtectorContainer = styled.main`
-  width: 80vw;
+  width: 1100px;
   display: flex;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
 `;
 
 const TabsContainer = styled.section`
@@ -51,8 +49,11 @@ const Protector = () => {
     const checkStatus = async () => {
       const hashedPassword = sha256.hmac(scheduleId, hashKey);
       if (!isSignedIn && scheduleId.length <= firestoreDocIdLength) {
-        alert('請先登入😊');
-        navigate('/');
+        Toast.fire({
+          title: '未登入',
+          text: '請在右上角進行登入操作',
+          icon: 'info',
+        });
       } else if (isSignedIn && scheduleId.length <= firestoreDocIdLength) {
         const encryptedId = sha256(scheduleId);
         const hashedPassword = sha256.hmac(encryptedId, hashKey);
@@ -68,7 +69,13 @@ const Protector = () => {
           setIsEditable(true);
           setIsUrlValid(true);
         } else {
-          alert('請先到行程表下方啟用留守人功能 😊');
+          await Toast.fire({
+            icon: 'info',
+            title: '導向使用者頁面',
+            text: '請先到行程表下方啟用留守人功能 😊',
+            timer: 3000,
+            position: 'center',
+          });
           navigate('/profile');
         }
       } else if (scheduleId.length > firestoreDocIdLength) {
@@ -84,7 +91,11 @@ const Protector = () => {
           setIsEditable(false);
           setIsUrlValid(true);
         } else {
-          alert('此網址功能未生效');
+          await Toast.fire({
+            icon: 'info',
+            title: '此網址未生效',
+            position: 'center',
+          });
           navigate('/');
         }
       }
@@ -106,7 +117,6 @@ const Protector = () => {
 
   useEffect(() => {
     if (!scheduleDetails) return;
-    console.log(scheduleDetails);
     const mapMarkers = scheduleDetails.map((location) => {
       return {
         lat: location.geopoint._lat,

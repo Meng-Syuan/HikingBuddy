@@ -8,24 +8,21 @@ import { usePostReadingState } from '@utils/zustand';
 import lightFormat from 'date-fns/lightFormat';
 
 const MainBackground = styled.div`
-  width: 1050px;
+  width: 1100px;
   background-color: #d9d9d9;
-  position: relative;
-  left: 50%;
-  transform: translate(-50%);
 `;
 
 const PostContainer = styled.main`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 900px;
-  min-height: calc(100vh - 100px);
+  width: 950px;
+  min-height: calc(100vh - 80px);
   background-color: #fafafa;
   position: relative;
   left: 50%;
   transform: translateX(-50%);
-  padding: 20px 115px;
+  padding: 20px 80px 50px;
 `;
 
 const H1 = styled.h1`
@@ -43,7 +40,8 @@ const CreateTime = styled.span`
 `;
 
 const ContentWrapper = styled.div`
-  padding: 0.5rem 0;
+  width: 90%;
+  padding-top: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;

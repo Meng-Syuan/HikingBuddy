@@ -8,21 +8,19 @@ import { useEffect } from 'react';
 import mountain from '../../assets/img/mountain.jpg';
 import usePostsDB from '@utils/hooks/usePostsDB';
 import lightFormat from 'date-fns/lightFormat';
+import wireframe from '../../assets/img/wireframe.png';
 
-const MainBackground = styled.div`
-  width: 1050px;
+const MiddleBackground = styled.div`
+  width: 1100px;
   background-color: #d9d9d9;
-  position: relative;
-  left: 50%;
-  transform: translate(-50%);
 `;
 
 const NoPostContainer = styled.main`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 1050px;
-  min-height: calc(100vh - 100px);
+  width: 1100px;
+  min-height: calc(100vh - 80px);
   background-color: #fafafa;
   position: relative;
   left: 50%;
@@ -31,19 +29,22 @@ const NoPostContainer = styled.main`
 `;
 
 const PostsContainer = styled(NoPostContainer)`
-  width: 900px;
+  width: 980px;
 `;
 
-const PostsList = styled.section``;
+const PostsList = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
 
 const PostWrapper = styled.article`
-  width: 600px;
+  width: 620px;
   height: 168px;
   border: ${color.borderColor} 1px solid;
   border-radius: 10px;
   background-color: #fff;
   display: flex;
-  margin-bottom: 1rem;
   &:hover {
     cursor: pointer;
     transition: all 0.15s;
@@ -57,12 +58,13 @@ const PhotoWrapper = styled.figure`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0;
   border-radius: 10px 0 0 10px;
   background-color: ${color.borderColor};
+  background-image: wireframe; ///??????
 `;
 
 const Photo = styled.img`
+  border-radius: 10px 0 0 10px;
   min-width: 150px;
   height: 100%;
   object-fit: cover;
@@ -81,6 +83,7 @@ const Title = styled.h2`
   color: #000;
   font-size: 1.25rem;
   font-weight: 700;
+  letter-spacing: 0.15rem;
 `;
 
 const Excerpt = styled.p`
@@ -122,7 +125,7 @@ const Img = styled.img`
 
 const Posts = () => {
   const { isSignedIn } = useAuth();
-  const { userData, userPostsIds, postsData, setUserState } = useUserState();
+  const { userPostsIds, postsData, setUserState } = useUserState();
   const navigate = useNavigate();
   const { getPostsList } = usePostsDB();
 
@@ -141,7 +144,6 @@ const Posts = () => {
     const fetchAllPosts = async () => {
       const postsData = await getPostsList(userPostsIds);
       setUserState('postsData', postsData.reverse());
-      console.log(postsData);
     };
     fetchAllPosts();
   }, [userPostsIds]);
@@ -161,7 +163,7 @@ const Posts = () => {
       )}
 
       {userPostsIds.length > 0 && (
-        <MainBackground>
+        <MiddleBackground>
           <PostsContainer>
             <Story>走進山裡，帶著故事與回憶回來</Story>
             <PostsList>
@@ -189,7 +191,7 @@ const Posts = () => {
               })}
             </PostsList>
           </PostsContainer>
-        </MainBackground>
+        </MiddleBackground>
       )}
     </>
   );

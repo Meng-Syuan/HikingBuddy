@@ -119,28 +119,31 @@ const SearchedPositionMarker = () => {
 
 const PathPlannerMap = () => {
   const { geopoint } = useSearchSingleLocationState();
-  const [zoom, setZoom] = useState(null);
   const mapRef = useRef(null);
   const { gpxPoints } = useScheduleArrangement();
 
   useEffect(() => {
     if (geopoint && mapRef.current) {
-      setZoom(15);
-      console.log(geopoint);
-      mapRef.current.setView(geopoint);
+      gpxPoints
+        ? mapRef.current.setView(geopoint, 18)
+        : mapRef.current.setView(geopoint, 13);
     }
   }, [geopoint]);
 
   useEffect(() => {
-    console.log(zoom);
-  }, [zoom]);
+    if (!gpxPoints) return;
+    const starting = gpxPoints[0];
+    console.log('starting');
+    console.log(starting);
+    mapRef.current.setView(starting, 18);
+  }, [gpxPoints]);
 
   return (
     <>
       <SearchInputField />
       <StyledMapContainer
         center={geopoint || [23.5, 121]}
-        zoom={zoom || 8}
+        zoom={8}
         ref={mapRef}
       >
         <TileLayer
@@ -148,7 +151,10 @@ const PathPlannerMap = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {gpxPoints && (
-          <Polyline pathOptions={{ color: '#8b572a' }} positions={gpxPoints} />
+          <Polyline
+            pathOptions={{ color: 'red', weight: 5 }}
+            positions={gpxPoints}
+          />
         )}
 
         <TemporaryScheduleMarkers />
