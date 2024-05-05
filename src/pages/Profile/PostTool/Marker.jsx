@@ -15,21 +15,18 @@ const Marker = () => {
   const [selections, setSelections] = useState([]);
   useEffect(() => {
     if (!postId) return;
+    setSelections([]);
     const fetchScheduleData = async () => {
       const result = await getScheduleDetails(postId);
-      const locations = result.map((location) => ({
-        id: location.itineraryId,
-        geopoint: [location.geopoint._long, location.geopoint._lat],
-        name: location.location,
+      const locations = result.map(({ itineraryId, geopoint, location }) => ({
+        id: itineraryId,
+        geopoint: [geopoint._long, geopoint._lat],
+        name: location,
       }));
       setlocations(locations);
     };
     fetchScheduleData();
   }, [postId]);
-
-  useEffect(() => {
-    console.log(markers);
-  }, [markers]);
 
   useEffect(() => {
     const markers = selections.map((selection) => selection.geopoint);
@@ -45,15 +42,10 @@ const Marker = () => {
     <>
       {postId && (
         <FormControl sx={{ m: 1, minWidth: 150, maxWidth: 250 }} size="small">
-          <InputLabel
-            id="demo-multiple-chip-label"
-            style={{ fontSize: '0.875rem' }}
-          >
+          <InputLabel style={{ fontSize: '0.875rem' }}>
             選擇首頁座標點
           </InputLabel>
           <Select
-            labelId="demo-multiple-chip-label"
-            id="demo-multiple-chip"
             multiple
             value={selections}
             onChange={handleChange}

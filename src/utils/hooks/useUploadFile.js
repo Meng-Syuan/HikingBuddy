@@ -23,15 +23,13 @@ const useUploadFile = () => {
     console.log('Original file size:', file.size / 1024 / 1024, 'MB');
     const getMaxSizeMB = (originalSize) => {
       // return unit:KB
-      if (originalSize <= 400) return 0.35;
-      if (originalSize <= 800) return 0.5;
-      if (originalSize <= 1200) return 0.7;
-      if (originalSize <= 2000) return 1.2;
-      return 1.8;
+      if (originalSize <= 1200) return 0.9;
+      if (originalSize <= 2000) return 1.5;
+      return 2;
     };
 
     const options = {
-      maxWidthOrHeight: 650, //might be change
+      maxWidthOrHeight: 670, //might be change
       maxSizeMB: getMaxSizeMB(file.size),
       useWebWorker: true,
     };

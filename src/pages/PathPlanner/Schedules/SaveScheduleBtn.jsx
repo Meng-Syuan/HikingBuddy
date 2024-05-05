@@ -16,7 +16,7 @@ const StyledBtn = styled(FontAwesomeIcon)`
     cursor: pointer;
   }
 `;
-const SaveScheduleBtn = () => {
+const SaveScheduleBtn = ({ isSaved, setSave }) => {
   const { futureSchedules, setUserState } = useUserState();
   const {
     temporaryScheduleId,
@@ -42,6 +42,7 @@ const SaveScheduleBtn = () => {
         padding: '1rem 2rem',
       });
     } else {
+      setSave(true); //stop listener for modification
       await saveScheduleDetails(
         temporaryScheduleId,
         itineraries_dates,
@@ -63,7 +64,8 @@ const SaveScheduleBtn = () => {
       setScheduleArrangement('gpxPoints', null);
       setScheduleArrangement('gpxFileName', '');
       setScheduleArrangement('mapMarkers', []);
-      Toast.fire({
+      setSave(false);
+      await Toast.fire({
         position: 'center',
         title: '儲存成功',
         text: '導向個人頁面查看行程😎',
@@ -81,7 +83,7 @@ const SaveScheduleBtn = () => {
       id: temporaryScheduleId,
       firstDay,
       lastDay,
-      isChecklistComfirmed: false,
+      isChecklistConfirmed: false,
     };
   };
 
@@ -92,7 +94,13 @@ const SaveScheduleBtn = () => {
     const isDatetimeNotCompelte = itineraries_datetime.find(
       (itinerary) => isNaN(itinerary.datetime) || !itinerary.datetime
     );
-    if (!isDatesNotCompleted && !isDatetimeNotCompelte && tripName) {
+    if (
+      itineraries_dates.length > 0 &&
+      itineraries_datetime.length > 0 &&
+      !isDatesNotCompleted &&
+      !isDatetimeNotCompelte &&
+      tripName
+    ) {
       return true;
     } else {
       return false;

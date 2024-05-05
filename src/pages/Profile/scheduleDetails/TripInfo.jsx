@@ -62,6 +62,7 @@ const NoteInput = styled.input`
   flex: 1;
   border-radius: 5px;
   outline: ${(props) => (props.readOnly ? 'none' : '')};
+  border: ${(props) => (props.readOnly ? 'none' : '')};
   background-color: ${(props) =>
     props.readOnly ? `${color.lightBackgroundColor}` : ''};
 `;

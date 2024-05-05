@@ -5,8 +5,8 @@ const GlobalStyle = createGlobalStyle`
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
-  font-weight: normal;
+  font-family: "Noto Sans TC", sans-serif;
+  font-weight: 300;
   font-size: 1rem;
   text-decoration: none;
   list-style: none;

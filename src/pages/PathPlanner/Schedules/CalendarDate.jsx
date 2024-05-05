@@ -35,7 +35,7 @@ const CalendarDate = ({ selectDates }) => {
     setDateValue(dateStr);
   };
   const flatpickrCalendarOptions = {
-    minDate: 'today',
+    // minDate: 'today',
     mode: 'range',
     dateFormat: 'Y-m-d',
     locale: MandarinTraditional,

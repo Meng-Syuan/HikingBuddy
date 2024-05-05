@@ -37,7 +37,7 @@ const AddItemField = styled.div`
   background-color: #fff;
 `;
 const ItemInput = styled.input`
-  flex: 1;
+  width: 240px;
   border: none;
   outline: none;
   text-align: center;
@@ -54,7 +54,7 @@ const StyledIcon = styled(IconButton)`
 
 //#endregion
 
-const CheckList = () => {
+const CheckList = ({ isFuture }) => {
   const { gearChecklist, otherItemChecklist, addNewItemToChecklist } =
     useScheduleState();
   const [newGearItemInput, setNewGearItemInput] = useState('');
@@ -80,18 +80,21 @@ const CheckList = () => {
                 id={item.id}
                 isChecked={item.isChecked}
                 type="gearChecklist"
+                isFuture={isFuture}
               ></ListItem>
             ))}
-          <AddItemField>
-            <ItemInput
-              value={newGearItemInput}
-              onChange={(e) => setNewGearItemInput(e.target.value)}
-              placeholder="點擊新增自訂裝備"
-            ></ItemInput>
-            <StyledIcon onClick={() => handleAddNewItem('gearChecklist')}>
-              <FontAwesomeIcon icon={faFileCirclePlus} size="sm" />
-            </StyledIcon>
-          </AddItemField>
+          {isFuture && (
+            <AddItemField>
+              <ItemInput
+                value={newGearItemInput}
+                onChange={(e) => setNewGearItemInput(e.target.value)}
+                placeholder="點擊新增自訂裝備"
+              ></ItemInput>
+              <StyledIcon onClick={() => handleAddNewItem('gearChecklist')}>
+                <FontAwesomeIcon icon={faFileCirclePlus} size="sm" />
+              </StyledIcon>
+            </AddItemField>
+          )}
         </ListWrapper>
         <ListWrapper>
           {otherItemChecklist.length &&
@@ -100,18 +103,23 @@ const CheckList = () => {
                 id={item.id}
                 isChecked={item.isChecked}
                 type="otherItemChecklist"
+                isFuture={isFuture}
               ></ListItem>
             ))}
-          <AddItemField>
-            <ItemInput
-              value={newOtherItemInput}
-              onChange={(e) => setNewOtherItemInput(e.target.value)}
-              placeholder="點擊新增自訂用品"
-            ></ItemInput>
-            <StyledIcon onClick={() => handleAddNewItem('otherItemChecklist')}>
-              <FontAwesomeIcon icon={faFileCirclePlus} size="sm" />
-            </StyledIcon>
-          </AddItemField>
+          {isFuture && (
+            <AddItemField>
+              <ItemInput
+                value={newOtherItemInput}
+                onChange={(e) => setNewOtherItemInput(e.target.value)}
+                placeholder="點擊新增自訂用品"
+              ></ItemInput>
+              <StyledIcon
+                onClick={() => handleAddNewItem('otherItemChecklist')}
+              >
+                <FontAwesomeIcon icon={faFileCirclePlus} size="sm" />
+              </StyledIcon>
+            </AddItemField>
+          )}
         </ListWrapper>
       </ListsContainer>
     </ChecklistsWrapper>

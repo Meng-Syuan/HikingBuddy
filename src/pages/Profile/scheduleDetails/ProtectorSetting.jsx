@@ -19,7 +19,7 @@ const SettingContainer = styled.div`
   min-height: 180px;
 `;
 const ProtectorWrapper = styled.div`
-  width: 70%;
+  width: 80%;
   border: 1px solid ${color.borderColor};
   padding: 0.5rem 0.5rem 0.5rem 1rem;
   display: flex;

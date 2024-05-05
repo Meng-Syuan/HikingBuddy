@@ -66,7 +66,7 @@ const default_photo = `https://react.semantic-ui.com/images/wireframe/image.png`
 
 //#endregion
 const PersonalInfo = () => {
-  const { userData, userPhoto, futureSchedules, pastSchedules } =
+  const { userData, userPhoto, futureSchedules, pastSchedules, setUserState } =
     useUserState();
 
   const { getUploadFileUrl } = useUploadFile();
@@ -86,6 +86,7 @@ const PersonalInfo = () => {
     const file = e.target.files[0];
     const url = await getUploadFileUrl('user_photo', file, userData.userId);
     setImgUpload(url);
+    setUserState('userPhoto', url);
     await updateUserDoc('userPhoto', url);
   };
   return (
@@ -111,7 +112,6 @@ const PersonalInfo = () => {
                 firstDay={schedule.firstDay}
                 lastDay={schedule.lastDay}
                 tripName={schedule.tripName}
-                isChecked={schedule.isChecklistComfirmed}
                 activeId={activeId}
                 type="futureSchedules"
               />
@@ -127,7 +127,6 @@ const PersonalInfo = () => {
                 firstDay={schedule.firstDay}
                 lastDay={schedule.lastDay}
                 tripName={schedule.tripName}
-                isChecked={schedule.isChecklistComfirmed}
                 activeId={activeId}
                 type="pastSchedules"
               />

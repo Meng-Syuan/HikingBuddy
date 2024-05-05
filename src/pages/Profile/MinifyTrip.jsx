@@ -8,11 +8,13 @@ import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
+import { Tooltip } from 'react-tippy';
 
 import sweetAlert from '@utils/sweetAlert';
+import { useEffect, useState } from 'react';
 
 const TripWrapper = styled.div`
-  width: 90%;
+  width: 100%;
   height: 35px;
   border-radius: 5px;
   display: flex;
@@ -20,7 +22,6 @@ const TripWrapper = styled.div`
   justify-content: space-between;
   padding: 2px 0px 2px 10px;
   border: 1px solid #d9d9d9;
-
   position: relative;
   &:hover {
     cursor: pointer;
@@ -34,8 +35,13 @@ const CheckBox = styled.div`
   height: 15px;
   border-radius: 50%;
   background-color: ${(props) =>
-    props.ischecked === 'true' ? color.secondary : color.borderColor};
+    props['data-is-checked'] ? color.secondary : color.borderColor};
 `;
+
+const PastTripPrefix = styled(CheckBox)`
+  visibility: hidden;
+`;
+
 const Content = styled.div`
   letter-spacing: 1px;
   margin-right: 1rem;
@@ -50,16 +56,27 @@ const Badge = styled.div`
   border: 1px solid #ff8800;
   background-color: #e78f1b66;
   padding: 2px;
+  display: flex;
+  align-items: center;
 `;
-const MinifyTrip = ({ id, firstDay, lastDay, tripName, isChecked, type }) => {
+const MinifyTrip = ({ id, firstDay, lastDay, tripName, type }) => {
   const { deleteTargetData } = useUsersDB();
   const { getScheduleInfo, getScheduleDetails } = useSchedulesDB();
-  const { activeScheduleId, deleteTrip } = useUserState();
+  const { activeScheduleId, deleteTrip, listsConfirmedStatus } = useUserState();
   const { setScheduleState } = useScheduleState();
+  const [isChecked, setIsChecked] = useState();
   const navigate = useNavigate();
   const firstDayContent = lightFormat(firstDay, 'M/d');
   const lastDayContent = lightFormat(lastDay, 'M/d');
   const content = `${firstDayContent} - ${lastDayContent}`;
+
+  useEffect(() => {
+    if (listsConfirmedStatus.length < 1 || type === 'pastSchedules') return;
+    const status = listsConfirmedStatus.find(
+      (trip) => trip.id === id
+    ).isConfirmed;
+    setIsChecked(status);
+  }, [listsConfirmedStatus]);
 
   const handleDeleteTrip = async (e, type, id) => {
     e.stopPropagation(); //prevent navigate
@@ -83,14 +100,27 @@ const MinifyTrip = ({ id, firstDay, lastDay, tripName, isChecked, type }) => {
   };
 
   return (
-    <TripWrapper onClick={showScheduleDetails}>
-      <CheckBox ischecked={isChecked.toString()}></CheckBox>
-      <Content>{content}</Content>
-      {id === activeScheduleId && <Badge>留守人</Badge>}
-      <IconButton onClick={(e) => handleDeleteTrip(e, type, id)}>
-        <FontAwesomeIcon icon={faTrash} size="sm" />
-      </IconButton>
-    </TripWrapper>
+    <Tooltip
+      title={tripName}
+      size="small"
+      position="top-end"
+      arrow
+      theme="transparent"
+      style={{ width: '90%' }}
+    >
+      <TripWrapper onClick={showScheduleDetails}>
+        {type === 'futureSchedules' ? (
+          <CheckBox data-is-checked={isChecked}></CheckBox>
+        ) : (
+          <PastTripPrefix>readOnly</PastTripPrefix>
+        )}
+        <Content>{content}</Content>
+        {id === activeScheduleId && <Badge>Protector</Badge>}
+        <IconButton onClick={(e) => handleDeleteTrip(e, type, id)}>
+          <FontAwesomeIcon icon={faTrash} size="sm" />
+        </IconButton>
+      </TripWrapper>
+    </Tooltip>
   );
 };
 

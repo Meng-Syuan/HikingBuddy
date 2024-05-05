@@ -3,6 +3,7 @@ import color from '@theme';
 import logo from '/src/assets/img/logo.png';
 import { NavLink } from 'react-router-dom';
 import { SignIn, SignOut } from './AuthIcon';
+import { useAuth } from '@clerk/clerk-react';
 import { useUserState } from '@utils/zustand';
 import { useEffect, useState } from 'react';
 import useUsersDB from '@utils/hooks/useUsersDB';
@@ -64,23 +65,24 @@ const AuthIconWrapper = styled.div`
 `;
 
 const Header = () => {
+  const { isSignedIn } = useAuth();
   const { getUserData } = useUsersDB();
   const { sortSchedulesDates } = useSchedulesDB();
-  const { setUserState, activeScheduleId, userData } = useUserState();
+  const { setUserState, activeScheduleId, userData, futureSchedules } =
+    useUserState();
   const [scheduleId, setScheduleId] = useState('no_active_schedule');
 
   useEffect(() => {
+    if (!isSignedIn) return;
     const fetchUserData = async () => {
       const data = await getUserData();
       setUserState('userData', data);
-      setUserState('userPhoto', data?.userPhoto);
+      setUserState('userPhoto', data.userPhoto || '');
       setUserState('activeScheduleId', data.activeSchedule);
-      setUserState('userPostsIds', data?.posts);
-      console.log('allUserData');
-      console.log(data);
+      setUserState('userPostsIds', data.posts || []);
     };
     fetchUserData();
-  }, []);
+  }, [isSignedIn]);
 
   useEffect(() => {
     if (!userData) return;
@@ -92,6 +94,15 @@ const Header = () => {
     };
     sortDates();
   }, [userData]);
+
+  useEffect(() => {
+    if (futureSchedules.length < 1) return;
+    const listsConfirmedStatus = futureSchedules.map((schedule) => ({
+      id: schedule.id,
+      isConfirmed: schedule.isChecklistConfirmed,
+    }));
+    setUserState('listsConfirmedStatus', listsConfirmedStatus);
+  }, [futureSchedules]);
 
   useEffect(() => {
     if (!activeScheduleId) return;
@@ -112,7 +123,7 @@ const Header = () => {
               style={({ isActive }) => {
                 return {
                   color: isActive ? `${color.primary}` : `${color.textColor}`,
-                  fontWeight: isActive ? 'bold' : '',
+                  fontWeight: isActive ? '400' : '',
                 };
               }}
             >
@@ -125,7 +136,7 @@ const Header = () => {
               style={({ isActive }) => {
                 return {
                   color: isActive ? `${color.primary}` : `${color.textColor}`,
-                  fontWeight: isActive ? 'bold' : '',
+                  fontWeight: isActive ? '400' : '',
                 };
               }}
             >
@@ -138,7 +149,7 @@ const Header = () => {
               style={({ isActive }) => {
                 return {
                   color: isActive ? `${color.primary}` : `${color.textColor}`,
-                  fontWeight: isActive ? 'bold' : '',
+                  fontWeight: isActive ? '400' : '',
                 };
               }}
             >

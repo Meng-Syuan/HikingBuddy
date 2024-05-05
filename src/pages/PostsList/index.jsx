@@ -22,9 +22,6 @@ const NoPostContainer = styled.main`
   width: 1100px;
   min-height: calc(100vh - 80px);
   background-color: #fafafa;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
   padding: 3rem;
 `;
 
@@ -64,9 +61,10 @@ const PhotoWrapper = styled.figure`
 `;
 
 const Photo = styled.img`
-  border-radius: 10px 0 0 10px;
-  min-width: 150px;
+  //minWidth?
+  max-width: 92%;
   height: 100%;
+  border: none;
   object-fit: cover;
 `;
 
@@ -82,7 +80,7 @@ const TextArea = styled.div`
 const Title = styled.h2`
   color: #000;
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0.15rem;
 `;
 
@@ -118,7 +116,6 @@ const Figure = styled.figure`
 `;
 
 const Img = styled.img`
-  position: absolute;
   z-index: 1;
   width: 100%;
 `;
@@ -139,11 +136,14 @@ const Posts = () => {
   }, []);
 
   useEffect(() => {
+    console.log('userPostsIds');
+    console.log(userPostsIds);
     if (userPostsIds.length === 0) return;
 
     const fetchAllPosts = async () => {
       const postsData = await getPostsList(userPostsIds);
       setUserState('postsData', postsData.reverse());
+      console.log(postsData);
     };
     fetchAllPosts();
   }, [userPostsIds]);

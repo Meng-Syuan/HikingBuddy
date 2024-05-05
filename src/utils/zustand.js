@@ -28,12 +28,13 @@ export const useScheduleArrangement = create((set) => ({
   tripName: '',
   itineraries_dates: [],
   itineraries_datetime: [],
+  locationNumber: 0,
   newItinerary: null,
   mapMarkers: [],
   setScheduleArrangement: (key, value) => set({ [key]: value }),
-  addGeopoint: (lat, lng, id, name) =>
+  addGeopoint: (lat, lng, id, name, number) =>
     set((state) => ({
-      mapMarkers: [...state.mapMarkers, { lat, lng, id, name }],
+      mapMarkers: [...state.mapMarkers, { lat, lng, id, name, number }],
     })),
 }));
 
@@ -41,6 +42,7 @@ export const useUserState = create((set) => ({
   userData: null,
   userPhoto: '',
   activeScheduleId: null,
+  listsConfirmedStatus: [],
   futureSchedules: [],
   pastSchedules: [],
   userPostsIds: [],
@@ -106,4 +108,9 @@ export const usePostReadingState = create((set) => ({
   mainPhoto: '',
   createTime: null,
   setPostReadingState: (key, value) => set({ [key]: value }),
+}));
+
+export const useHomepageMarkers = create((set) => ({
+  postWithMarkers: [],
+  setPostWithMarkers: (key, value) => set({ [key]: value }),
 }));

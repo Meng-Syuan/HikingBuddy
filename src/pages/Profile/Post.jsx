@@ -30,8 +30,7 @@ const PostContainer = styled.div`
 
 const PostWrapper = styled.article`
   width: 100%;
-  /* border: 2px solid #000; */
-  min-height: 55vh; //?????
+  min-height: 55vh;
 `;
 
 const ToolBar = styled.div`
@@ -40,7 +39,6 @@ const ToolBar = styled.div`
   width: 100%;
   border: 1px solid #bfbfbf;
   border-radius: 4px;
-  /* min-height: 30px; */
 `;
 
 const ToolWrapper = styled.div`
@@ -122,20 +120,10 @@ const Span = styled.span`
 
 const uploadLimit = 6;
 const Post = () => {
-  //先取得 temporaryPost 的資訊
-  const { postId, title, content, allUploadPhotos, mainPhoto, setPostState } =
+  const { title, content, allUploadPhotos, mainPhoto, setPostState } =
     usePostState();
   const { getUploadFileUrl, compressImage } = useUploadFile();
   const [lastUploadedImg, setLastUploadedImg] = useState();
-
-  useEffect(() => {
-    if (!content) return;
-    console.log(mainPhoto);
-  }, [mainPhoto]);
-
-  useEffect(() => {
-    console.log(allUploadPhotos);
-  }, [allUploadPhotos]);
 
   useEffect(() => {
     if (!lastUploadedImg) return;

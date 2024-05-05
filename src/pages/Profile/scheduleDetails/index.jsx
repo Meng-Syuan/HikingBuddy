@@ -9,6 +9,7 @@ import useProtectorsDB from '@utils/hooks/useProtectorsDB';
 import { useScheduleState, useUserState } from '@utils/zustand';
 import { useParams } from 'react-router-dom';
 import { Toast } from '@utils/sweetAlert';
+import { isFuture } from 'date-fns';
 
 import TripInfo from './TripInfo';
 import ProtectorSetting from './ProtectorSetting';
@@ -78,9 +79,11 @@ const ScheduleDetails = () => {
     otherItemChecklist,
     setScheduleState,
   } = useScheduleState();
-  const { setUserState, activeScheduleId } = useUserState();
+  const { setUserState, activeScheduleId, listsConfirmedStatus } =
+    useUserState();
   const { scheduleId } = useParams();
   const [tripsEditable, setTripsEditable] = useState(false);
+  const [isFutureTrip, setIsFutureTrip] = useState(false);
 
   useEffect(() => {
     const fetchScheduleData = async () => {
@@ -102,6 +105,10 @@ const ScheduleDetails = () => {
     const gearChecklist = scheduleInfo.gearChecklist;
     const otherItemChecklist = scheduleInfo.otherItemChecklist;
     const locationNotes = scheduleInfo.locationNotes || {};
+    const lastDay = scheduleInfo.lastDay;
+    if (isFuture(lastDay)) {
+      setIsFutureTrip(true);
+    }
     setScheduleState('locationNotes', locationNotes);
     setScheduleState('gearChecklist', gearChecklist);
     setScheduleState('otherItemChecklist', otherItemChecklist);
@@ -121,6 +128,30 @@ const ScheduleDetails = () => {
       gearChecklist,
       otherItemChecklist
     );
+    const gearItem = gearChecklist.find((item) => !item.isChecked);
+    const otherItem = otherItemChecklist.find((item) => !item.isChecked);
+    const isAllItemsChecked = !gearItem && !otherItem;
+    if (isAllItemsChecked) {
+      const updatedConfirmedStatus = listsConfirmedStatus.map((list) => {
+        if (list.id === scheduleId) {
+          return { ...list, isConfirmed: true };
+        } else {
+          return list;
+        }
+      });
+      await updateScheduleContents(scheduleId, 'isChecklistConfirmed', true);
+      setUserState('listsConfirmedStatus', updatedConfirmedStatus);
+    } else {
+      const updatedConfirmedStatus = listsConfirmedStatus.map((list) => {
+        if (list.id === scheduleId) {
+          return { ...list, isConfirmed: false };
+        } else {
+          return list;
+        }
+      });
+      await updateScheduleContents(scheduleId, 'isChecklistConfirmed', false);
+      setUserState('listsConfirmedStatus', updatedConfirmedStatus);
+    }
     Toast.fire({
       text: '完成清單更新',
       icon: 'success',
@@ -147,28 +178,29 @@ const ScheduleDetails = () => {
       <ArticleWrapper>
         <TripInfo isEditable={tripsEditable} />
         <ButtonWrapper>
-          {tripsEditable ? (
-            <StyledButton variant="contained" onClick={handleTripsEdition}>
-              儲存變更
-            </StyledButton>
-          ) : (
-            <StyledButton variant="contained" onClick={handleTripsEdition}>
-              開始編輯
-            </StyledButton>
-          )}
+          {isFutureTrip &&
+            (tripsEditable ? (
+              <StyledButton variant="contained" onClick={handleTripsEdition}>
+                儲存變更
+              </StyledButton>
+            ) : (
+              <StyledButton variant="contained" onClick={handleTripsEdition}>
+                開始編輯
+              </StyledButton>
+            ))}
         </ButtonWrapper>
       </ArticleWrapper>
 
       <StyledSplitLine></StyledSplitLine>
 
       <ArticleWrapper>
-        <CheckList />
+        <CheckList isFuture={isFutureTrip} />
         <ButtonWrapper>
-          <>
+          {isFutureTrip && (
             <StyledButton variant="contained" onClick={handleSaveCheckList}>
               儲存變更
             </StyledButton>
-          </>
+          )}
         </ButtonWrapper>
       </ArticleWrapper>
 

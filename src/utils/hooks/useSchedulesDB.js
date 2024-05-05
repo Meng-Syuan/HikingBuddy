@@ -14,12 +14,11 @@ import {
 } from 'firebase/firestore';
 import { useAuth } from '@clerk/clerk-react';
 import { useEffect } from 'react';
-import { useScheduleArrangement, useScheduleState } from '../zustand.js';
+import { useScheduleArrangement } from '../zustand.js';
 import { isFuture } from 'date-fns';
 
 const useSchedulesDB = () => {
   const { userId } = useAuth();
-  const { setScheduleState } = useScheduleState();
   const { setScheduleArrangement } = useScheduleArrangement();
   const schedulesRef = collection(db, 'schedules');
   const q_temporarySchedule = query(
@@ -97,6 +96,7 @@ const useSchedulesDB = () => {
       tripName,
       firstDay,
       lastDay,
+      isChecklistConfirmed: false,
       gearChecklist: [
         { id: '登山包', isChecked: false },
         { id: '攻頂包', isChecked: false },
@@ -173,13 +173,14 @@ const useSchedulesDB = () => {
         const tripName = docSnap.data().tripName;
         const lastDay = docSnap.data().lastDay;
         const firstDay = docSnap.data().firstDay;
+        const isChecklistConfirmed = docSnap.data().isChecklistConfirmed;
         if (isFuture(lastDay)) {
           futureSchedules.push({
             id,
             firstDay,
             lastDay,
             tripName,
-            isChecklistComfirmed: false,
+            isChecklistConfirmed,
           });
         } else {
           pastSchedules.push({
@@ -187,7 +188,6 @@ const useSchedulesDB = () => {
             firstDay,
             lastDay,
             tripName,
-            isChecklistComfirmed: false,
           });
         }
       });
@@ -206,7 +206,6 @@ const useSchedulesDB = () => {
       const docSnap = await getDoc(scheduleDocRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setScheduleState('scheduleInfo', data);
         return data;
       } else {
         console.log('No such schedule');

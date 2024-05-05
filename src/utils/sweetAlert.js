@@ -21,7 +21,7 @@ export default {
       showConfirmButton,
       showDenyButton,
       confirmButtonText: showConfirmButton,
-      confirmButtonColor: 'red',
+      confirmButtonColor: '#FB8152',
       denyButtonText: showDenyButton,
       denyButtonColor: '#417000',
     });

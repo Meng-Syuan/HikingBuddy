@@ -33,15 +33,27 @@ L.Icon.Default.mergeOptions({
   iconUrl,
   shadowUrl,
 });
-const scheduledMarker = L.icon({
-  iconUrl: grayMarker,
-  iconSize: [38, 38],
-  iconAnchor: [19, 38],
-  popupAnchor: [1, -34],
-  shadowUrl,
-  shadowSize: [40, 42],
-  shadowAnchor: [14, 42],
-});
+
+const scheduledMarker = (number) => {
+  return L.divIcon({
+    className: 'numbered-marker123',
+    html: `
+      <div class="marker-container" >
+        <img src="${grayMarker}" alt="Marker" class="marker-image" style="width: 38px"/>
+        <div class="marker-number" style="position: absolute; top: 3px; left: 50%; transform: translateX(-50%); background: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center">${number}</div>
+      </div>
+    `,
+    iconSize: [38, 38],
+    iconAnchor: [19, 38],
+    popupAnchor: [1, -34],
+    shadowUrl,
+    shadowSize: [40, 42],
+    shadowAnchor: [14, 42],
+  });
+};
+const StyledMarker = styled(Marker)`
+  position: relative;
+`;
 
 const StyledMapContainer = styled(MapContainer)`
   height: calc(100vh - 80px);
@@ -59,7 +71,7 @@ const TemporaryScheduleMarkers = () => {
       <Marker
         position={{ lat: geopoint.lat, lng: geopoint.lng }}
         key={geopoint.id}
-        icon={scheduledMarker}
+        icon={scheduledMarker(geopoint.number)}
       >
         <Popup>
           <PopupContent>{geopoint.name}</PopupContent>
@@ -124,18 +136,14 @@ const PathPlannerMap = () => {
 
   useEffect(() => {
     if (geopoint && mapRef.current) {
-      gpxPoints
-        ? mapRef.current.setView(geopoint, 18)
-        : mapRef.current.setView(geopoint, 13);
+      mapRef.current.setView(geopoint, 18);
     }
   }, [geopoint]);
 
   useEffect(() => {
-    if (!gpxPoints) return;
+    if (!gpxPoints || !mapRef.current) return;
     const starting = gpxPoints[0];
-    console.log('starting');
-    console.log(starting);
-    mapRef.current.setView(starting, 18);
+    mapRef.current.setView(starting, 17);
   }, [gpxPoints]);
 
   return (

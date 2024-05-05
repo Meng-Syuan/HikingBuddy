@@ -2,11 +2,7 @@ import styled from 'styled-components';
 import color from '@utils/theme';
 import { useScheduleState } from '@utils/zustand';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faX,
-  faSquare,
-  faSquareCheck,
-} from '@fortawesome/free-solid-svg-icons';
+import { faX } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
 
 const ItemContainer = styled.div`
@@ -21,14 +17,15 @@ const CheckBox = styled.div`
   border-radius: 10px;
   border: 1px solid ${color.borderColor};
   background-color: ${(props) =>
-    props.ischecked === 'true' ? color.secondary : color.lightBackgroundColor};
+    props['data-is-checked'] ? color.secondary : color.lightBackgroundColor};
 `;
 
 const ItemWrapper = styled.div`
   padding: 2px 4px 2px 14px;
   border: 1px solid ${color.borderColor};
   border-radius: 20px;
-  background-color: #fff;
+  background-color: ${(props) =>
+    props['data-is-future'] ? '#fff' : color.lightBackgroundColor};
   display: flex;
   align-items: center;
   min-height: 35px;
@@ -37,6 +34,7 @@ const ItemWrapper = styled.div`
 const ItemName = styled.span`
   width: 200px;
   line-height: 1.25rem;
+  text-align: ${(props) => (props['data-is-future'] ? '' : 'center')};
 `;
 
 const StyledIcon = styled(IconButton)`
@@ -45,7 +43,7 @@ const StyledIcon = styled(IconButton)`
   }
 `;
 
-const ListItem = ({ isChecked, id, type }) => {
+const ListItem = ({ isChecked, id, type, isFuture }) => {
   const { gearChecklist, otherItemChecklist, setScheduleState } =
     useScheduleState();
 
@@ -84,15 +82,21 @@ const ListItem = ({ isChecked, id, type }) => {
   };
   return (
     <ItemContainer>
-      <CheckBox
-        ischecked={isChecked.toString()}
-        onClick={() => handleToggleCheckBox(id)}
-      ></CheckBox>
+      {isFuture ? (
+        <CheckBox
+          data-is-checked={isChecked}
+          onClick={() => handleToggleCheckBox(id)}
+        />
+      ) : (
+        <CheckBox data-is-checked={isChecked} />
+      )}
       <ItemWrapper>
-        <ItemName>{id}</ItemName>
-        <StyledIcon onClick={() => handleDeleteItem(id)}>
-          <FontAwesomeIcon icon={faX} size="2xs" />
-        </StyledIcon>
+        <ItemName data-is-future={isFuture}>{id}</ItemName>
+        {isFuture && (
+          <StyledIcon onClick={() => handleDeleteItem(id)}>
+            <FontAwesomeIcon icon={faX} size="2xs" />
+          </StyledIcon>
+        )}
       </ItemWrapper>
     </ItemContainer>
   );

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import usePostsDB from '@utils/hooks/usePostsDB';
-import { useUserState } from '@utils/zustand';
+import { useUserState, useHomepageMarkers } from '@utils/zustand';
 import { lightFormat } from 'date-fns';
 
 mapboxgl.accessToken =
@@ -32,7 +32,8 @@ const Map = () => {
   const [zoom, setZoom] = useState(2);
   const { getPostsList } = usePostsDB();
   const { userData } = useUserState();
-  const [postWithMarkers, setPostWithMarkers] = useState([]);
+  const { postWithMarkers, setPostWithMarkers } = useHomepageMarkers();
+  // const [postWithMarkers, setPostWithMarkers] = useState([]);
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
@@ -66,32 +67,32 @@ const Map = () => {
           };
         });
       });
-      setPostWithMarkers(postWithMarkers.flat());
+      setPostWithMarkers('postWithMarkers', postWithMarkers.flat());
+      console.log('postWithMarkers.flat()');
+      console.log(postWithMarkers.flat());
     };
     fetchPostsAndMarkers();
   }, [userData]);
 
   useEffect(() => {
     if (postWithMarkers.length === 0) return;
-    if (postWithMarkers.length > 0) {
-      postWithMarkers.map((marker) => {
-        const createTime = lightFormat(marker.createTime, 'yyyy-MM-dd');
-        marker.coordinates &&
-          new mapboxgl.Marker({ color: 'red' })
-            .setLngLat(marker.coordinates)
-            .setPopup(
-              new mapboxgl.Popup().setHTML(
-                `
-                <div>
-                <a href="/post/${marker.id}" style="color: #000; display: block; margin-bottom: 1rem">${marker.title}</a>
-                <span style="font-size: 12px;display: block">${createTime}</span>
-                </div>
-                `
-              )
+    postWithMarkers.map((marker) => {
+      const createTime = lightFormat(marker.createTime, 'yyyy-MM-dd');
+      marker.coordinates &&
+        new mapboxgl.Marker({ color: 'red' })
+          .setLngLat(marker.coordinates)
+          .setPopup(
+            new mapboxgl.Popup().setHTML(
+              `
+                 <div style="padding:0 0.5rem">
+                 <a class="popup-title" href="/post/${marker.id}" style="color: #000; display: block; margin-bottom: 1rem">${marker.title}</a>
+                 <span style="font-size: 12px;display: block">${createTime}</span>
+                 </div>
+                  `
             )
-            .addTo(map.current);
-      });
-    }
+          )
+          .addTo(map.current);
+    });
   }, [postWithMarkers]);
 
   return (

@@ -15,7 +15,7 @@ const useUsersDB = () => {
   const { userId } = useAuth();
   const userDocRef = userId ? doc(db, 'users', userId) : null;
 
-  const setUsersDB = async (userId, display_name) => {
+  const setUsersDB = async (userId, display_name, userPhtoUrl) => {
     try {
       if (userDocRef) {
         await setDoc(
@@ -23,6 +23,7 @@ const useUsersDB = () => {
           {
             userId,
             username: display_name,
+            userPhoto: userPhtoUrl,
           },
           { merge: true }
         );
@@ -65,6 +66,7 @@ const useUsersDB = () => {
         return data;
       } else {
         console.log('No this user info.');
+        return null;
       }
     } catch (error) {
       console.log('Error: ' + error);

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import color from '@theme';
-import { LoginHover_icon, Login_icon } from '/src/assets/img/svgIcons';
+import { LoginHover_icon, Login_icon } from '/src/assets/svg/svgIcons';
 import hoverMixin from '@utils/hoverMixin';
 import {
   SignedIn,
@@ -19,6 +19,7 @@ import { useEffect } from 'react';
 import { signInWithCustomToken, updateProfile } from 'firebase/auth';
 import { auth } from '@utils/firebase/firebaseConfig.js';
 import useUsersDB from '@utils/hooks/useUsersDB';
+import { useUserState } from '@utils/zustand';
 
 //components
 import ButtonWrapper from '../Button/ButtonWrapper';
@@ -27,8 +28,8 @@ const LoginBtn = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 48px;
-  height: 45px;
+  width: 45px;
+  height: 40px;
   &:hover {
     cursor: pointer;
     color: ${color.secondary};
@@ -37,7 +38,7 @@ const LoginBtn = styled.div`
 `;
 const Span_login = styled.span`
   line-height: 16px;
-  font-size: 0.625rem;
+  font-size: 0.6rem;
 `;
 
 const ProfileBtn = styled(ButtonWrapper)`
@@ -47,6 +48,7 @@ const ProfileBtn = styled(ButtonWrapper)`
 const Img = styled.img`
   border-radius: 50%;
   border: 1px solid ${color.primary};
+  object-fit: cover;
 `;
 
 const SignOutBtn = styled(FontAwesomeIcon)`
@@ -61,15 +63,24 @@ const SignOutBtn = styled(FontAwesomeIcon)`
 export const SignIn = () => {
   const { user } = useUser();
   const { getToken, isLoaded, isSignedIn, userId } = useAuth();
-  const { setUsersDB } = useUsersDB();
-  //之後要打開，用來寫入使用者資料，要記得寫 func 來辨別這個使用者是不是新的，如果是新的才需要這個功能
-  // useEffect(() => {
-  //   if (isLoaded && isSignedIn) {
-  //     signInWithClerk();
-  //     console.log('signInWithClerk');
-  //     console.log(userId);
-  //   }
-  // }, [isLoaded, isSignedIn]);
+  const { getUserData, setUsersDB } = useUsersDB();
+  const { setUserState, userPhoto } = useUserState();
+
+  useEffect(() => {
+    if (!isSignedIn) return;
+    const fetchUserData = async () => {
+      const data = await getUserData();
+      if (!data) {
+        signInWithClerk();
+      } else {
+        setUserState('userData', data);
+        setUserState('userPhoto', data.userPhoto || '');
+        setUserState('activeScheduleId', data.activeSchedule);
+        setUserState('userPostsIds', data.posts || []);
+      }
+    };
+    fetchUserData();
+  }, [isSignedIn]);
 
   useEffect(() => {
     if (!userId) return;
@@ -89,7 +100,7 @@ export const SignIn = () => {
       displayName: user.username,
     });
     //sync users data with firestore
-    await setUsersDB(userId, user.username);
+    await setUsersDB(userId, user.username, user.imageUrl || '');
   };
 
   const userInfo = user
@@ -128,7 +139,7 @@ export const SignIn = () => {
             }}
           >
             <ProfileBtn>
-              <Img src={user.imageUrl} alt="profile page entry" />
+              <Img src={userPhoto} alt="profile page entry" />
             </ProfileBtn>
           </NavLink>
         )}

@@ -15,7 +15,11 @@ const ContentWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 6px;
+  padding: 2px 6px;
+  cursor: grab;
+  &:active {
+    cursor: grabbing;
+  }
   .flatpickr-input {
     font-size: 0.75rem;
     text-align: center;
@@ -28,13 +32,18 @@ const ContentWrapper = styled.div`
     color: #fff;
   }
 `;
+
+const Number = styled.div`
+  font-size: 0.75rem;
+  margin: 0 5px;
+`;
 const Location_Name = styled.h5`
-  width: 200px;
+  width: 180px;
   line-height: 1rem;
   font-size: 0.875rem;
 `;
 
-const SingleLocation = ({ name, id, deletionId, setDeletion }) => {
+const SingleLocation = ({ name, id, number, deletionId, setDeletion }) => {
   const {
     temporaryScheduleId,
     setScheduleArrangement,
@@ -146,6 +155,7 @@ const SingleLocation = ({ name, id, deletionId, setDeletion }) => {
       <Flatpickr options={timePickerOptions}>
         <input type="text" data-input readOnly />
       </Flatpickr>
+      <Number>{number}</Number>
       <Location_Name>{name}</Location_Name>
       <IconButton onClick={() => handleDeleteItinerary(id)}>
         <FontAwesomeIcon icon={faTrash} size="xs" />

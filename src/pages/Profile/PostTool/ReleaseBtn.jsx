@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { usePostState, useUserState } from '@utils/zustand';
+import { usePostState, useUserState, useHomepageMarkers } from '@utils/zustand';
 import usePostsDB from '@utils/hooks/usePostsDB';
 import useUsersDB from '@utils/hooks/useUsersDB';
 
@@ -7,7 +7,7 @@ import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconButton } from '@mui/material';
 import { Tooltip } from 'react-tippy';
-import 'react-tippy/dist/tippy.css';
+import { Toast } from '@utils/sweetAlert';
 
 const IconWrapper = styled(IconButton)`
   &:hover {
@@ -27,7 +27,8 @@ const ReleaseBtn = () => {
     content,
     setPostState,
   } = usePostState();
-  const { deleteTrip } = useUserState();
+  const { deleteTrip, userPostsIds, postsData, setUserState } = useUserState();
+  const { postWithMarkers, setPostWithMarkers } = useHomepageMarkers();
   const { publishPost } = usePostsDB();
   const { addUserInfo, deleteTargetData } = useUsersDB();
 
@@ -36,7 +37,21 @@ const ReleaseBtn = () => {
     if (!result) return;
     const reorderedPhotos = reorderPhotos();
     const parsedContent = structureContent(reorderedPhotos);
+    const createTime = new Date().getTime();
     await publishPost(postId, title, parsedContent, mainPhoto, markers);
+    const newPost = {
+      id: postId,
+      title,
+      content: parsedContent,
+      mainPhoto,
+      createTime,
+    };
+    const newPostsData = [newPost, ...postsData];
+    setUserState('postsData', newPostsData);
+    const newPostsIds = [...userPostsIds, postId];
+    setUserState('userPostsIds', newPostsIds);
+    const newMarkers = updateHomepageMarkers(createTime);
+    setPostWithMarkers('postWithMarkers', [...postWithMarkers, ...newMarkers]);
     await addUserInfo('posts', postId);
     await deleteTargetData('schedulesIDs', postId);
     deleteTrip('pastSchedules', postId);
@@ -47,19 +62,24 @@ const ReleaseBtn = () => {
     setPostState('mainPhoto', '');
     setPostState('markers', '');
     setPostState('allUploadPhotos', '');
-    alert('發送完成');
+    await Toast.fire({
+      icon: 'success',
+      title: '發送成功',
+      text: '可至山閱足跡查看文章',
+    });
   };
 
-  const checkReqirement = () => {
+  const checkReqirement = async () => {
     if (postId && tripName && title && content) {
-      alert('完成填寫');
       return true;
     } else {
-      alert(
-        `請完成${postId ? '' : ' 路線選擇'}${title ? '' : ' 標題'}${
+      await Toast.fire({
+        icon: 'warning',
+        title: '必要欄位未填寫',
+        text: `請完成${postId ? '' : ' 路線選擇'}${title ? '' : ' 標題'}${
           content ? '' : ' 內文填寫'
-        }`
-      );
+        }`,
+      });
       return false;
     }
   };
@@ -118,6 +138,17 @@ const ReleaseBtn = () => {
       }
       return parsedContent;
     }
+  };
+  const updateHomepageMarkers = (createTime) => {
+    const result = markers.map((marker) => {
+      return {
+        id: postId,
+        title,
+        createTime,
+        coordinates: marker,
+      };
+    });
+    return result;
   };
 
   return (

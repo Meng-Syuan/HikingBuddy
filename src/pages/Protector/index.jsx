@@ -73,7 +73,6 @@ const Protector = () => {
             icon: 'info',
             title: '導向使用者頁面',
             text: '請先到行程表下方啟用留守人功能 😊',
-            timer: 3000,
             position: 'center',
           });
           navigate('/profile');

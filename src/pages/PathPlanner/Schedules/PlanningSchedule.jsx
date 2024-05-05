@@ -112,6 +112,7 @@ const Schedules = () => {
     newItinerary,
     tripName,
     gpxFileName,
+    locationNumber,
     mapMarkers,
   } = useScheduleArrangement();
   const {
@@ -131,6 +132,7 @@ const Schedules = () => {
 
   const [isSortEnd, setIsSortEnd] = useState(false);
   const [deletionId, setDeletionId] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   const getTemporaryLocations = useCallback(async () => {
     const locations = await getScheduleDetails(temporaryScheduleId);
@@ -145,9 +147,10 @@ const Schedules = () => {
     }
 
     //for UI render
-    const items = locations.map((location) => ({
+    const items = locations.map((location, index) => ({
       id: location.itineraryId,
       name: location.location,
+      number: index + 1,
     }));
     setBaseBlock([
       {
@@ -156,15 +159,17 @@ const Schedules = () => {
       },
     ]);
 
-    const mapMarkers = locations.map((location) => {
+    const mapMarkers = locations.map((location, index) => {
       return {
         lat: location.geopoint._lat,
         lng: location.geopoint._long,
         id: location.itineraryId,
         name: location.location,
+        number: index + 1,
       };
     });
     setScheduleArrangement('mapMarkers', mapMarkers);
+    setScheduleArrangement('locationNumber', locations.length);
   }, [temporaryScheduleId]);
 
   useNewItineraryListener(temporaryScheduleId);
@@ -268,31 +273,31 @@ const Schedules = () => {
   useEffect(() => {
     if (!newItinerary) return;
 
-    if (scheduleBlocks.length === 0) {
-      setBaseBlock([
-        {
-          id: 'base_block',
-          items: [
-            {
-              id: newItinerary.itineraryId,
-              name: newItinerary.location,
-            },
-          ],
-        },
-      ]);
-      setScheduleArrangement('newItinerary', null);
-    } else {
-      const newItem = {
-        id: newItinerary.itineraryId,
-        name: newItinerary.location,
-      };
-      const originalBaseBlocks = scheduleBlocks.filter(
-        (block) => block.id === 'base_block'
-      );
-      const updateNewBaseBlock = [
-        ...originalBaseBlocks[0].items,
-        { ...newItem },
-      ];
+    // if (scheduleBlocks.length === 1) {
+    //   setBaseBlock([
+    //     {
+    //       id: 'base_block',
+    //       items: [
+    //         {
+    //           id: newItinerary.itineraryId,
+    //           name: newItinerary.location,
+    //           number: mapMarkers.length + 1,
+    //         },
+    //       ],
+    //     },
+    //   ]);
+    //   setScheduleArrangement('newItinerary', null);
+    // } else {
+    const newItem = {
+      id: newItinerary.itineraryId,
+      name: newItinerary.location,
+      number: locationNumber + 1,
+    };
+    const originalBaseBlocks = scheduleBlocks.filter(
+      (block) => block.id === 'base_block'
+    );
+    const updateNewBaseBlock = [...originalBaseBlocks[0].items, { ...newItem }];
+    if (!isSaved) {
       setBaseBlock([
         {
           id: 'base_block',
@@ -300,6 +305,7 @@ const Schedules = () => {
         },
       ]);
     }
+    // }
   }, [newItinerary]);
 
   useEffect(() => {
@@ -394,6 +400,7 @@ const Schedules = () => {
                   key={item.id}
                   name={item.name}
                   id={item.id}
+                  number={item.number}
                   deletionId={deletionId}
                   setDeletion={setDeletionId}
                   scheduleBlocks={scheduleBlocks}
@@ -404,7 +411,7 @@ const Schedules = () => {
           </ScheduleBlock>
         ))}
       <ButtonsContainer>
-        <SaveScheduleBtn />
+        <SaveScheduleBtn isSaved={isSaved} setSave={setIsSaved} />
         <input
           type="file"
           accept=".gpx"

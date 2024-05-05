@@ -8,9 +8,9 @@ import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import { useAuth } from '@clerk/clerk-react';
 
 const SearchLocationContainer = styled.div`
-  position: absolute;
+  position: fixed;
   z-index: 1001;
-  right: 15px;
+  right: 450px;
   bottom: 35px;
   width: 300px;
   min-height: 60px;
@@ -20,7 +20,6 @@ const SearchLocationContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition-duration: 1s;
 `;
 const ContentWrapper = styled.div`
   display: flex;
@@ -61,7 +60,12 @@ const AddToSchedule_btn = styled.button`
 const LocationDetails = () => {
   const { location, geopoint, isSearchValid, setLocationState } =
     useSearchSingleLocationState();
-  const { temporaryScheduleId, addGeopoint } = useScheduleArrangement();
+  const {
+    temporaryScheduleId,
+    locationNumber,
+    setScheduleArrangement,
+    addGeopoint,
+  } = useScheduleArrangement();
   const { addLocationToDB } = useSchedulesDB();
 
   const handleAddLocation = async () => {
@@ -70,8 +74,15 @@ const LocationDetails = () => {
       geopoint,
       location
     );
-    addGeopoint(geopoint.lat, geopoint.lng, itineraryId, location);
+    addGeopoint(
+      geopoint.lat,
+      geopoint.lng,
+      itineraryId,
+      location,
+      locationNumber + 1
+    );
     setLocationState('location', null);
+    setScheduleArrangement('locationNumber', locationNumber + 1);
   };
 
   return (
