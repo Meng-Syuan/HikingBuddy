@@ -1,6 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import video from '../../assets/home_video.mp4';
-import scrollDownIcon from '../../assets/svg/nextPage.svg';
+import scrollDownIcon from '../../assets/svg/whiteArrow.svg';
 
 const VideoWrapper = styled.div`
   position: relative;
@@ -30,7 +30,7 @@ const fadeIn = keyframes`
 const OverlayText = styled.div`
   position: absolute;
   top: 35%;
-  left: 15%;
+  left: 20%;
   z-index: 1;
 `;
 
@@ -60,7 +60,7 @@ const bounce = keyframes`
   }
 `;
 
-const ScrollDownWrapper = styled.div`
+const IconWrapper = styled.div`
   position: absolute;
   z-index: 5;
   bottom: 10px;
@@ -71,7 +71,7 @@ const ScrollDownWrapper = styled.div`
   animation: ${bounce} 1.8s infinite;
 `;
 
-const Img = styled.img`
+const Icon = styled.img`
   width: 100%;
 `;
 
@@ -83,9 +83,9 @@ const BackgroundVideo = () => {
         <Title>Hiking Buddy</Title>
         <Slogan>Embarking on a Journey to the Peak.</Slogan>
       </OverlayText>
-      <ScrollDownWrapper>
-        <Img src={scrollDownIcon} alt="scroll down icon" />
-      </ScrollDownWrapper>
+      <IconWrapper>
+        <Icon src={scrollDownIcon} alt="scroll down icon" />
+      </IconWrapper>
     </VideoWrapper>
   );
 };

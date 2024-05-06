@@ -27,7 +27,7 @@ const Home = () => {
       {/* )} */}
 
       {/* <MapWrapper> */}
-      {/* <Map /> */}
+      <Map />
       {/* <Poc></Poc> */}
       {/* </MapWrapper> */}
     </HomeContainer>
