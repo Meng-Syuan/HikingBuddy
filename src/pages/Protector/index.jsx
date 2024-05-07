@@ -7,6 +7,7 @@ import {
   useScheduleArrangement,
 } from '@utils/zustand';
 import { useAuth } from '@clerk/clerk-react';
+import gpxParser from 'gpxparser';
 
 import HikerInfo from './HikerInfo';
 import Tabs from './Tabs';
@@ -38,7 +39,7 @@ const Protector = () => {
   const { userData } = useUserState();
   const { setScheduleState, scheduleInfo, scheduleDetails } =
     useScheduleState();
-  const { setScheduleArrangement } = useScheduleArrangement();
+  const { setScheduleArrangement, gpxUrl } = useScheduleArrangement();
   const { setProtectorPageData } = useProtectorPageData();
   const { hashKey, getProtectorDoc } = useProtectorsDB();
   const { getActiveScheduleIdByPassword } = useUsersDB();
@@ -63,9 +64,9 @@ const Protector = () => {
           setProtectorPageData('hikerInfo', hikerInfo);
           setProtectorPageData('hikerPhoto', hikerInfo.hiker_photo);
           const scheduleDetails = await getScheduleDetails(id);
-          const ScheduleInfo = await getScheduleInfo(id);
+          const scheduleInfo = await getScheduleInfo(id);
           setScheduleState('scheduleDetails', scheduleDetails);
-          setScheduleState('ScheduleInfo', ScheduleInfo);
+          setScheduleState('scheduleInfo', scheduleInfo);
           setIsEditable(true);
           setIsUrlValid(true);
         } else {
@@ -104,11 +105,11 @@ const Protector = () => {
 
   useEffect(() => {
     if (!scheduleInfo) return;
-    const gpxPoints = scheduleInfo?.gpxPoints;
+    const gpxUrl = scheduleInfo?.gpxUrl;
     const gearChecklist = scheduleInfo.gearChecklist;
     const otherItemChecklist = scheduleInfo.otherItemChecklist;
     const locationNotes = scheduleInfo.locationNotes;
-    setScheduleArrangement('gpxPoints', gpxPoints);
+    setScheduleArrangement('gpxUrl', gpxUrl);
     setScheduleState('gearChecklist', gearChecklist);
     setScheduleState('otherItemChecklist', otherItemChecklist);
     setScheduleState('locationNotes', locationNotes);
@@ -129,6 +130,22 @@ const Protector = () => {
     });
     setScheduleArrangement('mapMarkers', mapMarkers);
   }, [scheduleDetails]);
+
+  useEffect(() => {
+    if (!gpxUrl) return;
+    const parseGPX = async (url) => {
+      const response = await fetch(url);
+      const data = await response.text();
+      const gpx = new gpxParser();
+      gpx.parse(data);
+      const gpxPoints = gpx.tracks[0].points.map((point) => [
+        point.lat,
+        point.lon,
+      ]);
+      setScheduleArrangement('gpxPoints', gpxPoints);
+    };
+    parseGPX(gpxUrl);
+  }, [gpxUrl]);
 
   return (
     <ProtectorContainer>

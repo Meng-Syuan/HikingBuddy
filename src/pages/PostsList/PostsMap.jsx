@@ -10,17 +10,17 @@ mapboxgl.accessToken =
 
 const MapContainer = styled.div`
   width: 100%;
-  height: calc(100vh - 80px);
+  height: 70vh;
 `;
 const Sidebar = styled.div`
   background-color: rgb(35 55 75 / 90%);
   color: #fff;
   padding: 6px 12px;
   font-family: monospace;
+  font-size: 0.75rem;
+  width: 25vw;
   z-index: 1;
   position: absolute;
-  top: 80px;
-  left: 10px;
   border-radius: 4px;
 `;
 
@@ -33,7 +33,6 @@ const Map = () => {
   const { getPostsList } = usePostsDB();
   const { userData } = useUserState();
   const { postWithMarkers, setPostWithMarkers } = useHomepageMarkers();
-  // const [postWithMarkers, setPostWithMarkers] = useState([]);
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
@@ -68,8 +67,6 @@ const Map = () => {
         });
       });
       setPostWithMarkers('postWithMarkers', postWithMarkers.flat());
-      console.log('postWithMarkers.flat()');
-      console.log(postWithMarkers.flat());
     };
     fetchPostsAndMarkers();
   }, [userData]);

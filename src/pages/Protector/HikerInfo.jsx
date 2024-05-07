@@ -97,12 +97,6 @@ const HikerInfo = ({ isEditable, id, valid }) => {
   const { hikerInfo, hikerPhoto, updateHikerInfo, setProtectorPageData } =
     useProtectorPageData();
 
-  useEffect(() => {
-    if (!hikerInfo) return;
-    console.log(hikerInfo);
-    console.log(hikerPhoto);
-  }, [hikerInfo, hikerPhoto]);
-
   const previewURL = hikerPhoto || default_photo;
 
   const handleImageUpload = async (e) => {

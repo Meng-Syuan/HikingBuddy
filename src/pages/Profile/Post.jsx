@@ -4,7 +4,6 @@ import { TextField } from '@mui/material';
 import { usePostState } from '@utils/zustand';
 import { useState, useEffect } from 'react';
 import { Tooltip } from 'react-tippy';
-import 'react-tippy/dist/tippy.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faXmark, faStar } from '@fortawesome/free-solid-svg-icons';
 import useUploadFile from '@utils/hooks/useUploadFile';
@@ -98,7 +97,7 @@ const FavoriteWrapper = styled.div`
 
 const DeletionWrapper = styled.div`
   position: absolute;
-  right: 10px;
+  right: 1.25rem;
   top: 5px;
   .deletion {
     color: #bfbfbf;

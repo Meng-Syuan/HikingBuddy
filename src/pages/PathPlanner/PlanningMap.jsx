@@ -51,9 +51,6 @@ const scheduledMarker = (number) => {
     shadowAnchor: [14, 42],
   });
 };
-const StyledMarker = styled(Marker)`
-  position: relative;
-`;
 
 const StyledMapContainer = styled(MapContainer)`
   height: calc(100vh - 80px);

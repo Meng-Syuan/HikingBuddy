@@ -114,8 +114,8 @@ const Schedules = () => {
     tripName,
     gpxFileName,
     locationNumber,
-    itineraries_dates,
     itineraries_datetime,
+    gpxUrl,
   } = useScheduleArrangement();
   const {
     getTemporaryScheduleId,
@@ -123,14 +123,12 @@ const Schedules = () => {
     updateScheduleContents,
     getScheduleInfo,
     getScheduleDetails,
-    addGPXtoDB,
     useNewItineraryListener,
   } = useSchedulesDB();
   const { getUploadFileUrl } = useUploadFile();
   const [selectedDates, setSelectedDates] = useState([]);
   const [baseBlock, setBaseBlock] = useState(null);
   const [scheduleBlocks, setScheduleBlocks] = useState([]);
-  const [gpxContent, setGPXContent] = useState('');
 
   const [isSortEnd, setIsSortEnd] = useState(false);
   const [deletionId, setDeletionId] = useState(null);
@@ -145,6 +143,8 @@ const Schedules = () => {
           items: [],
         },
       ]);
+
+      setScheduleArrangement('mapMarkers', []);
       return;
     }
 
@@ -197,10 +197,8 @@ const Schedules = () => {
     const fetchScheduleData = async () => {
       await getTemporaryLocations();
       const data = await getScheduleInfo(temporaryScheduleId);
-      if (data.gpxFileName) {
-        setScheduleArrangement('gpxFileName', data.gpxFileName);
-        setScheduleArrangement('gpxPoints', Object.values(data.gpxPoints));
-      }
+      setScheduleArrangement('gpxFileName', data?.gpxFileName);
+      setScheduleArrangement('gpxUrl', data?.gpxUrl);
     };
     fetchScheduleData();
   }, [temporaryScheduleId]);
@@ -299,22 +297,23 @@ const Schedules = () => {
   }, [newItinerary]);
 
   useEffect(() => {
-    if (!gpxContent) return;
-    const gpx = new gpxParser();
-    gpx.parse(gpxContent);
-    const gpxPoints = gpx.tracks[0].points.map((point) => [
-      point.lat,
-      point.lon,
-    ]);
-
-    setScheduleArrangement('gpxPoints', gpxPoints);
-    addGPXtoDB(temporaryScheduleId, gpxPoints);
-  }, [gpxContent]);
+    if (!gpxUrl) return;
+    const parseGPX = async (url) => {
+      const response = await fetch(url);
+      const data = await response.text();
+      const gpx = new gpxParser();
+      gpx.parse(data);
+      const gpxPoints = gpx.tracks[0].points.map((point) => [
+        point.lat,
+        point.lon,
+      ]);
+      setScheduleArrangement('gpxPoints', gpxPoints);
+    };
+    parseGPX(gpxUrl);
+  }, [gpxUrl]);
 
   useEffect(() => {
     if (!deletionId) return;
-    console.log('deletionId');
-    console.log(deletionId);
     const updatedBlocks = scheduleBlocks.map((block) => {
       const remainingItems = block.items.filter(
         (item) => item.id !== deletionId
@@ -340,10 +339,9 @@ const Schedules = () => {
     const file = e.target.files[0];
     setScheduleArrangement('gpxFileName', file.name); //global state
     await updateScheduleContents(temporaryScheduleId, 'gpxFileName', file.name); //DB
-    const url = await getUploadFileUrl('gpx_file', file, temporaryScheduleId);
-    const response = await fetch(url);
-    const data = await response.text();
-    setGPXContent(data);
+    const url = await getUploadFileUrl('gpx_file', file, temporaryScheduleId); //storage
+    await updateScheduleContents(temporaryScheduleId, 'gpxUrl', url); //DB
+    setScheduleArrangement('gpxUrl', url);
   };
   return (
     <>

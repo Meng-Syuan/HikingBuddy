@@ -10,9 +10,14 @@ import usePostsDB from '@utils/hooks/usePostsDB';
 import lightFormat from 'date-fns/lightFormat';
 import wireframe from '../../assets/img/wireframe.png';
 
+import Map from './PostsMap';
+
 const MiddleBackground = styled.div`
   width: 1100px;
   background-color: #d9d9d9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const NoPostContainer = styled.main`
@@ -33,6 +38,9 @@ const PostsList = styled.section`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  min-height: 50vh;
+  max-height: 80vh;
+  margin-bottom: 5rem;
 `;
 
 const PostWrapper = styled.article`
@@ -57,11 +65,10 @@ const PhotoWrapper = styled.figure`
   align-items: center;
   border-radius: 10px 0 0 10px;
   background-color: ${color.borderColor};
-  background-image: wireframe; ///??????
+  background-image: ${wireframe};
 `;
 
 const Photo = styled.img`
-  //minWidth?
   max-width: 92%;
   height: 100%;
   border: none;
@@ -120,6 +127,11 @@ const Img = styled.img`
   width: 100%;
 `;
 
+const MapContainer = styled(PostsList)`
+  width: 100%;
+  position: relative;
+`;
+
 const Posts = () => {
   const { isSignedIn } = useAuth();
   const { userPostsIds, postsData, setUserState } = useUserState();
@@ -136,8 +148,6 @@ const Posts = () => {
   }, []);
 
   useEffect(() => {
-    console.log('userPostsIds');
-    console.log(userPostsIds);
     if (userPostsIds.length === 0) return;
 
     const fetchAllPosts = async () => {
@@ -153,7 +163,7 @@ const Posts = () => {
       {userPostsIds.length < 1 && (
         <>
           <NoPostContainer>
-            <Story>走進山裡，帶著故事與回憶回來</Story>
+            <Story>走進山裡，帶著回憶與故事回來</Story>
             <SubStory>期待你記錄下更多美好故事</SubStory>
             <Figure>
               <Img src={mountain} />
@@ -165,7 +175,7 @@ const Posts = () => {
       {userPostsIds.length > 0 && (
         <MiddleBackground>
           <PostsContainer>
-            <Story>走進山裡，帶著故事與回憶回來</Story>
+            <Story>走進山裡，帶著回憶與故事回來</Story>
             <PostsList>
               {postsData.map((post) => {
                 const excerptObj = post.content.find(
@@ -190,6 +200,10 @@ const Posts = () => {
                 );
               })}
             </PostsList>
+            <Story>找尋過往足跡</Story>
+            <MapContainer>
+              <Map />
+            </MapContainer>
           </PostsContainer>
         </MiddleBackground>
       )}

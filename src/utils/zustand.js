@@ -24,6 +24,7 @@ export const useSearchLocations = create((set) => ({
 export const useScheduleArrangement = create((set) => ({
   temporaryScheduleId: null,
   gpxPoints: null,
+  gpxUrl: null,
   gpxFileName: '',
   tripName: '',
   itineraries_dates: [],

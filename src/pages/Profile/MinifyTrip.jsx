@@ -116,7 +116,7 @@ const MinifyTrip = ({ id, firstDay, lastDay, tripName, type }) => {
           <PastTripPrefix>readOnly</PastTripPrefix>
         )}
         <Content>{content}</Content>
-        {id === activeScheduleId && <Badge>Protector</Badge>}
+        {id === activeScheduleId && <Badge>留守</Badge>}
         <IconButton onClick={(e) => handleDeleteTrip(e, type, id)}>
           <FontAwesomeIcon icon={faTrash} size="sm" />
         </IconButton>
