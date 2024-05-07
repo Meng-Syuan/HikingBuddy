@@ -21,7 +21,7 @@ const StyledTab = styled(Tab)`
   font-size: 1rem;
 `;
 
-export default function ProtectorTabs({ isEditable }) {
+export default function ProtectorTabs({ isEditable, gpxPoints }) {
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -36,7 +36,7 @@ export default function ProtectorTabs({ isEditable }) {
           <StyledTab label="規劃清單" />
         </Tabs>
       </TabsWrapper>
-      {value === 0 && <MapInfo isEditable={isEditable} />}
+      {value === 0 && <MapInfo isEditable={isEditable} gpxPoints={gpxPoints} />}
       {value === 1 && <ScheduleInfo />}
     </>
   );

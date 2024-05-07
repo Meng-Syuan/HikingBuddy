@@ -33,13 +33,15 @@ const firestoreDocIdLength = 20;
 const Protector = () => {
   const [isEditable, setIsEditable] = useState(false);
   const [isUrlValid, setIsUrlValid] = useState(false);
+  const [gpxUrl, setGPXurl] = useState(null);
+  const [gpxPoints, setGPXpoints] = useState(null);
   const navigate = useNavigate();
   const scheduleId = useParams().encryptedScheduleId;
   const { isSignedIn } = useAuth();
   const { userData } = useUserState();
   const { setScheduleState, scheduleInfo, scheduleDetails } =
     useScheduleState();
-  const { setScheduleArrangement, gpxUrl } = useScheduleArrangement();
+  const { setScheduleArrangement } = useScheduleArrangement();
   const { setProtectorPageData } = useProtectorPageData();
   const { hashKey, getProtectorDoc } = useProtectorsDB();
   const { getActiveScheduleIdByPassword } = useUsersDB();
@@ -109,7 +111,7 @@ const Protector = () => {
     const gearChecklist = scheduleInfo.gearChecklist;
     const otherItemChecklist = scheduleInfo.otherItemChecklist;
     const locationNotes = scheduleInfo.locationNotes;
-    setScheduleArrangement('gpxUrl', gpxUrl);
+    setGPXurl(gpxUrl);
     setScheduleState('gearChecklist', gearChecklist);
     setScheduleState('otherItemChecklist', otherItemChecklist);
     setScheduleState('locationNotes', locationNotes);
@@ -142,7 +144,7 @@ const Protector = () => {
         point.lat,
         point.lon,
       ]);
-      setScheduleArrangement('gpxPoints', gpxPoints);
+      setGPXpoints(gpxPoints);
     };
     parseGPX(gpxUrl);
   }, [gpxUrl]);
@@ -150,7 +152,7 @@ const Protector = () => {
   return (
     <ProtectorContainer>
       <TabsContainer>
-        <Tabs isEditable={isEditable} />
+        <Tabs isEditable={isEditable} gpxPoints={gpxPoints} />
       </TabsContainer>
       <HikerInfo
         isEditable={isEditable}

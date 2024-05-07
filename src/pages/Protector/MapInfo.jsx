@@ -160,8 +160,8 @@ const Markers = ({ isEditable }) => {
   );
 };
 
-const MapInfo = ({ isEditable }) => {
-  const { gpxPoints, mapMarkers } = useScheduleArrangement();
+const MapInfo = ({ isEditable, gpxPoints }) => {
+  const { mapMarkers } = useScheduleArrangement();
   const [center, setCenter] = useState([23.5, 121]);
   const mapRef = useRef(null);
 

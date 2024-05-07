@@ -81,6 +81,8 @@ export const useScheduleState = create((set) => ({
 export const useProtectorPageData = create((set) => ({
   hikerInfo: '',
   hikerPhoto: '',
+  gpxPoints: null, //different from planPage
+  gpxUrl: null,
   setProtectorPageData: (key, value) => set({ [key]: value }),
   updateHikerInfo: (key, value) =>
     set((state) => ({
