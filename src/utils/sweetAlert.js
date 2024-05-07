@@ -13,9 +13,9 @@ export const Toast = Swal.mixin({
 });
 
 export default {
-  confirmDeletion(text, icon, showConfirmButton, showDenyButton) {
+  confirm(title, text, icon, showConfirmButton, showDenyButton) {
     return Swal.fire({
-      title: '提醒',
+      title,
       text,
       icon,
       showConfirmButton,

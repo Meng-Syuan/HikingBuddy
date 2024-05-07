@@ -12,7 +12,7 @@ import gpxParser from 'gpxparser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tippy';
-
+//#region
 const PlanningText = styled.div`
   display: flex;
   flex-direction: column;
@@ -105,6 +105,7 @@ const sortableOptions = {
   forceFallback: true,
 };
 
+//#endregion
 const Schedules = () => {
   const {
     setScheduleArrangement,
@@ -113,7 +114,8 @@ const Schedules = () => {
     tripName,
     gpxFileName,
     locationNumber,
-    mapMarkers,
+    itineraries_dates,
+    itineraries_datetime,
   } = useScheduleArrangement();
   const {
     getTemporaryScheduleId,
@@ -221,7 +223,7 @@ const Schedules = () => {
     }
   }, [baseBlock]);
 
-  //generate blocks according to the dates selection
+  //generate blocks according to the dates selection, reset the itineraries_datetime
   useEffect(() => {
     const generateDateBlocks = async () => {
       if (selectedDates.length === 0) return;
@@ -235,6 +237,12 @@ const Schedules = () => {
       setScheduleBlocks([...generatedBlock, ...baseBlock]);
     };
     generateDateBlocks();
+
+    const resetedDatetimes = itineraries_datetime.map((itinerary) => ({
+      ...itinerary,
+      datetime: undefined,
+    }));
+    setScheduleArrangement('itineraries_datetime', resetedDatetimes);
   }, [selectedDates]);
 
   //update scheduleBlocks after dragging
@@ -255,39 +263,22 @@ const Schedules = () => {
 
   //update date properties to itineraries_dates
   useEffect(() => {
-    if (scheduleBlocks.length > 1) {
-      const itineraries_dates = scheduleBlocks.reduce((acc, curr) => {
-        curr.items.forEach((item) => {
-          acc.push({
-            itineraryId: item.id,
-            date: item.date,
-          });
+    const itineraries_dates = scheduleBlocks.reduce((acc, curr) => {
+      curr.items.forEach((item) => {
+        acc.push({
+          itineraryId: item.id,
+          date: item.date,
         });
-        return acc;
-      }, []);
-      setScheduleArrangement('itineraries_dates', itineraries_dates);
-    }
+      });
+      return acc;
+    }, []);
+    setScheduleArrangement('itineraries_dates', itineraries_dates);
   }, [scheduleBlocks]);
 
   //set the new location on time
   useEffect(() => {
     if (!newItinerary) return;
 
-    // if (scheduleBlocks.length === 1) {
-    //   setBaseBlock([
-    //     {
-    //       id: 'base_block',
-    //       items: [
-    //         {
-    //           id: newItinerary.itineraryId,
-    //           name: newItinerary.location,
-    //           number: mapMarkers.length + 1,
-    //         },
-    //       ],
-    //     },
-    //   ]);
-    //   setScheduleArrangement('newItinerary', null);
-    // } else {
     const newItem = {
       id: newItinerary.itineraryId,
       name: newItinerary.location,
@@ -305,7 +296,6 @@ const Schedules = () => {
         },
       ]);
     }
-    // }
   }, [newItinerary]);
 
   useEffect(() => {
@@ -332,11 +322,6 @@ const Schedules = () => {
       return { ...block, items: remainingItems };
     });
     setScheduleBlocks(updatedBlocks);
-  }, [deletionId]);
-
-  useEffect(() => {
-    if (!deletionId) return;
-    console.log(mapMarkers);
   }, [deletionId]);
 
   const handleSortEnd = (blockId, items) => {

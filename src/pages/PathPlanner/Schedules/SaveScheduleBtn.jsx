@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tippy';
-import { Toast } from '@utils/sweetAlert';
+import sweetAlert, { Toast } from '@utils/sweetAlert';
 
 const StyledBtn = styled(FontAwesomeIcon)`
   font-size: 2rem;
@@ -42,6 +42,14 @@ const SaveScheduleBtn = ({ isSaved, setSave }) => {
         padding: '1rem 2rem',
       });
     } else {
+      const { value: confirm } = await sweetAlert.confirm(
+        '確認',
+        `儲存行程表 ${tripName} ？`,
+        'question',
+        '確認',
+        '取消'
+      );
+      if (!confirm) return;
       setSave(true); //stop listener for modification
       await saveScheduleDetails(
         temporaryScheduleId,

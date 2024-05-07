@@ -80,7 +80,8 @@ const MinifyTrip = ({ id, firstDay, lastDay, tripName, type }) => {
 
   const handleDeleteTrip = async (e, type, id) => {
     e.stopPropagation(); //prevent navigate
-    const { value: willDelete } = await sweetAlert.confirmDeletion(
+    const { value: willDelete } = await sweetAlert.confirm(
+      '提醒',
       `確認要刪除行程表 ${tripName} 嗎？`,
       'warning',
       '刪除',

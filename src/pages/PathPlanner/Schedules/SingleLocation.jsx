@@ -64,7 +64,6 @@ const SingleLocation = ({ name, id, number, deletionId, setDeletion }) => {
       }));
       setScheduleArrangement('itineraries_datetime', initialDatetimes);
     } else {
-      //update according to new location or new date / deletion
       if (!deletionId) {
         const newItinerary = itineraries_dates.find((itinerary) => {
           return !itineraries_datetime.some(
@@ -72,32 +71,26 @@ const SingleLocation = ({ name, id, number, deletionId, setDeletion }) => {
           );
         });
         if (newItinerary) {
-          const newItineraries_datetime = itineraries_datetime.map(
-            (itinerary) => ({
-              itineraryId: itinerary.itineraryId,
-              date: itinerary.date,
-              datetime: itinerary.datetime,
-            })
-          );
-          newItineraries_datetime.push(newItinerary);
+          const newItineraries_datetime = [
+            ...itineraries_datetime,
+            newItinerary,
+          ];
           setScheduleArrangement(
             'itineraries_datetime',
             newItineraries_datetime
           );
         } else {
-          const newItineraries_datetime = itineraries_datetime.map(
-            (itinerary) => {
-              const matchingItem = itineraries_dates.find(
-                (item) => item.itineraryId === itinerary.itineraryId
-              );
-              return {
-                ...itinerary,
-                date: matchingItem.date,
-                //use new datetime; cause matchingItem is founded by itineraries_datetime, which doesn't have datetime property
-                datetime: itinerary.datetime,
-              };
-            }
-          );
+          const newItineraries_datetime = itineraries_dates.map((itinerary) => {
+            const matchingItem = itineraries_datetime.find(
+              (item) => item.itineraryId === itinerary.itineraryId
+            );
+            return {
+              ...itinerary,
+              date: itinerary.date,
+              //use new datetime; as matchingItem is founded by itineraries_datetime, which doesn't have datetime property
+              datetime: matchingItem?.datetime,
+            };
+          });
           setScheduleArrangement(
             'itineraries_datetime',
             newItineraries_datetime
@@ -111,6 +104,7 @@ const SingleLocation = ({ name, id, number, deletionId, setDeletion }) => {
         setDeletion(null);
       }
     }
+    //update according to new location or new date / deletion
   }, [itineraries_dates]);
 
   useEffect(() => {
@@ -135,9 +129,9 @@ const SingleLocation = ({ name, id, number, deletionId, setDeletion }) => {
     setTimeDiff(diffTimestamp);
   };
 
-  const handleDeleteItinerary = (id) => {
+  const handleDeleteItinerary = async (id) => {
     setDeletion(id);
-    deleteItinerary(temporaryScheduleId, id);
+    await deleteItinerary(temporaryScheduleId, id);
     const remainingMarkers = mapMarkers.filter((marker) => marker.id !== id);
     setScheduleArrangement('mapMarkers', remainingMarkers);
   };
