@@ -6,7 +6,7 @@ import { faBookmark } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
 import { Tooltip } from 'react-tippy';
 import 'react-tippy/dist/tippy.css';
-import sweetAlert, { Toast } from '@utils/sweetAlert';
+import { Toast } from '@utils/sweetAlert';
 
 const IconWrapper = styled(IconButton)`
   &:hover {
@@ -18,17 +18,24 @@ const IconWrapper = styled(IconButton)`
 `;
 
 const TempSave = () => {
-  const { postId, tripName, title, content, allUploadPhotos, mainPhoto } =
-    usePostState();
+  const {
+    postId,
+    tripName,
+    title,
+    content,
+    allUploadPhotos,
+    mainPhoto,
+    setPostState,
+  } = usePostState();
   const { saveTempPost } = usePostsDB();
 
   const handleTempPost = async () => {
     console.log(postId);
     console.log('postId');
-    if (postId.length < 1) {
+    if (!postId) {
       Toast.fire({
         icon: 'error',
-        text: '請選取路線名稱',
+        text: '請選取左下角路線名稱',
         position: 'center',
         timerProgressBar: false,
       });
@@ -41,6 +48,11 @@ const TempSave = () => {
         allUploadPhotos,
         mainPhoto
       );
+      setPostState('postId', '');
+      setPostState('tripName', '');
+      setPostState('title', '');
+      setPostState('content', '');
+      setPostState('allUploadPhotos', '');
       Toast.fire({
         icon: 'success',
         title: '暫存成功 🤗',
