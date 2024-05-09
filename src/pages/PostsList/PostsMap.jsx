@@ -11,8 +11,9 @@ mapboxgl.accessToken =
 
 const MapContainer = styled.div`
   width: 100%;
-  height: 70vh;
+  height: 80vh;
   .mapboxgl-popup-content {
+    min-width: 135px;
     cursor: pointer;
     padding: 0;
     border-radius: 5px;
@@ -30,6 +31,7 @@ const MapContainer = styled.div`
       padding: 5px 12px;
       background-color: #fffacd;
       letter-spacing: 2px;
+      text-align: center;
     }
     .create-time {
       font-size: 0.75rem;
@@ -46,7 +48,7 @@ const Sidebar = styled.div`
   padding: 6px 12px;
   font-family: monospace;
   font-size: 0.75rem;
-  width: 25vw;
+  max-width: 30vw;
   z-index: 1;
   position: absolute;
   border-radius: 4px;
@@ -55,9 +57,9 @@ const Sidebar = styled.div`
 const Map = () => {
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const [lng, setLng] = useState(120.5726);
-  const [lat, setLat] = useState(23.2812);
-  const [zoom, setZoom] = useState(2);
+  const [lng, setLng] = useState(121.1604);
+  const [lat, setLat] = useState(23.7898);
+  const [zoom, setZoom] = useState(7);
   const { getPostsList } = usePostsDB();
   const { userData } = useUserState();
   const { postWithMarkers, setPostWithMarkers } = useHomepageMarkers();

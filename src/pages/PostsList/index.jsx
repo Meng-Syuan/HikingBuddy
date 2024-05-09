@@ -28,6 +28,7 @@ const NoPostContainer = styled.main`
   min-height: calc(100vh - 80px);
   background-color: #fafafa;
   padding: 3rem;
+  padding-bottom: 0;
 `;
 
 const PostsContainer = styled(NoPostContainer)`
@@ -41,7 +42,7 @@ const PostsList = styled.section`
   min-height: 50vh;
   max-height: 80vh;
   overflow-y: auto;
-  margin-bottom: 5rem;
+  margin-bottom: 4rem;
 `;
 
 const PostWrapper = styled.article`
