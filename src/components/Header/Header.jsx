@@ -53,12 +53,6 @@ const Split = styled.hr`
   height: 1rem;
 `;
 
-// const LiNavLink = styled(NavLink)`
-//   &:hover {
-//     color: ${color.primary};
-//   }
-// `;
-
 const AuthIconWrapper = styled.div`
   display: flex;
   align-items: center;

@@ -2,17 +2,17 @@ import styled from 'styled-components';
 import Poc from './Poc';
 import BackgroundVideo from './BackgroundVideo';
 import Intro from './Intro';
-const HomeContainer = styled.div``;
-
-const IntroContainer = styled.main``;
+const HomeContainer = styled.main`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const Home = () => {
   return (
     <HomeContainer>
-      <IntroContainer>
-        <BackgroundVideo />
-        <Intro />
-      </IntroContainer>
+      <BackgroundVideo />
+      <Intro />
     </HomeContainer>
   );
 };

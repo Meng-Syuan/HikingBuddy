@@ -53,11 +53,11 @@ const Day = styled.h6`
 `;
 
 const ScheduleBlock = styled.div`
-  min-height: 100px;
+  min-height: 150px;
   .sortable {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
   }
 `;
 
@@ -197,7 +197,7 @@ const Schedules = () => {
     const fetchScheduleData = async () => {
       await getTemporaryLocations();
       const data = await getScheduleInfo(temporaryScheduleId);
-      setScheduleArrangement('gpxFileName', data?.gpxFileName);
+      setScheduleArrangement('gpxFileName', data?.gpxFileName || '');
       setScheduleArrangement('gpxUrl', data?.gpxUrl);
     };
     fetchScheduleData();

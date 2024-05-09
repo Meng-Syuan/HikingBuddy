@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import color from '@theme';
 import { LoginHover_icon, Login_icon } from '/src/assets/svg/svgIcons';
+import profileDefault from '../../assets/img/profileDefault.png';
 import hoverMixin from '@utils/hoverMixin';
 import {
   SignedIn,
@@ -21,9 +22,6 @@ import { auth } from '@utils/firebase/firebaseConfig.js';
 import useUsersDB from '@utils/hooks/useUsersDB';
 import { useUserState } from '@utils/zustand';
 
-//components
-import ButtonWrapper from '../Button/ButtonWrapper';
-
 const LoginBtn = styled.div`
   display: flex;
   flex-direction: column;
@@ -41,11 +39,17 @@ const Span_login = styled.span`
   font-size: 0.6rem;
 `;
 
-const ProfileBtn = styled(ButtonWrapper)`
+const ProfileBtn = styled.div`
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
   margin: 0 30px;
 `;
 
 const Img = styled.img`
+  width: 100%;
+  height: 100%;
+  font-size: 0.5rem;
   border-radius: 50%;
   border: 1px solid ${color.primary};
   object-fit: cover;
@@ -65,6 +69,8 @@ export const SignIn = () => {
   const { getToken, isLoaded, isSignedIn, userId } = useAuth();
   const { getUserData, setUsersDB } = useUsersDB();
   const { setUserState, userPhoto } = useUserState();
+
+  const profileIcon = userPhoto || profileDefault;
 
   useEffect(() => {
     if (!isSignedIn) return;
@@ -139,7 +145,7 @@ export const SignIn = () => {
             }}
           >
             <ProfileBtn>
-              <Img src={userPhoto} alt="profile page entry" />
+              <Img src={profileIcon} alt="profile page entry" />
             </ProfileBtn>
           </NavLink>
         )}
@@ -153,10 +159,16 @@ export const SignOut = () => {
   const navigate = useNavigate();
   const { isSignedIn } = useAuth();
 
-  const handleSignOut = () => {
-    alert('預備開始登出');
+  const handleSignOut = async () => {
+    const { value: willSignOut } = await sweetAlert.confirm(
+      '注意',
+      '確定要登出嗎😯？',
+      'question',
+      '確認登出',
+      '取消'
+    );
+    if (!willSignOut) return;
     signOut();
-    alert('要回首頁了');
     navigate('/');
   };
   return (

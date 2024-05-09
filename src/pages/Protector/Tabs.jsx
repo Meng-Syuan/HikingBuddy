@@ -16,7 +16,7 @@ const TabsWrapper = styled(Box)`
 
 const StyledTab = styled(Tab)`
   width: 250px;
-  height: 4rem;
+  height: 3.5rem;
   letter-spacing: 0.4rem;
   font-size: 1rem;
 `;

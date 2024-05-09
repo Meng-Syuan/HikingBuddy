@@ -32,7 +32,7 @@ const UrlWrapper = styled.div`
 `;
 
 const ProtectorUrlContent = styled.span`
-  font-size: 0.75rem;
+  font-size: 0.7rem;
 `;
 
 const StyledIcon = styled(IconButton)`

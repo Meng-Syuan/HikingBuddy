@@ -9,13 +9,11 @@ const VideoWrapper = styled.div`
 `;
 
 const Video = styled.video`
-  min-width: 100vw;
-  min-height: 100vh;
+  object-fit: cover;
+  width: 100vw;
+  height: 100%;
   overflow: hidden;
   position: relative;
-  top: -80px;
-  left: 50%;
-  transform: translateX(-50%);
 `;
 
 const fadeIn = keyframes`

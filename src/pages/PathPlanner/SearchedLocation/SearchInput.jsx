@@ -1,8 +1,4 @@
 import styled from 'styled-components';
-import ButtonWrapper from '../../../components/Button/ButtonWrapper';
-import hoverMixin from '@utils/hoverMixin';
-import searchIcon from '../../../assets/img/search.png';
-import searchIcon_hover from '../../../assets/img/search-hover.png';
 import { useEffect, useState } from 'react';
 import {
   useSearchSingleLocationState,
@@ -10,6 +6,8 @@ import {
 } from '@utils/zustand.js';
 import getGeoJSON from '@utils/osmApi';
 import color from '@utils/theme';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
 const StyledSearchField = styled.div`
   position: absolute;
@@ -19,6 +17,8 @@ const StyledSearchField = styled.div`
   border-radius: 5px;
 `;
 const Form = styled.form`
+  width: 200px;
+  padding-right: 5px;
   border-radius: 5px;
   display: flex;
   align-items: center;
@@ -26,17 +26,23 @@ const Form = styled.form`
   background-color: #fff;
 `;
 const SearchInput = styled.input`
-  width: 160px;
-  padding-left: 20px;
+  width: calc(95% - 25px);
+  padding-left: 1rem;
   border-radius: 5px 0 0 5px;
-  height: 40px;
+  min-height: 40px;
   font-size: 1rem;
   border: none;
 `;
-const SearchButton = styled(ButtonWrapper)`
+const SearchButton = styled(FontAwesomeIcon)`
   padding: 3px;
   border-radius: 0 5px 5px 0;
-  ${hoverMixin('searchIcon_hover', 'searchIcon')}
+  width: 25px;
+  height: 25px;
+  color: ${color.textColor};
+  cursor: pointer;
+  &:hover {
+    color: ${color.secondary};
+  }
 `;
 
 const SearchResultsDiv = styled.div`
@@ -164,18 +170,11 @@ const SearchInputField = () => {
             onChange={handleInputChange}
             value={searchInput}
           />
-          <SearchButton type="button" onClick={handleSearchSubmit}>
-            <img
-              className="searchIcon"
-              src={searchIcon}
-              alt="search for the location"
-            />
-            <img
-              className="searchIcon_hover"
-              src={searchIcon_hover}
-              alt="search for the location"
-            />
-          </SearchButton>
+          <SearchButton
+            type="button"
+            onClick={handleSearchSubmit}
+            icon={faMagnifyingGlass}
+          ></SearchButton>
         </Form>
         <SearchResultsList />
       </StyledSearchField>

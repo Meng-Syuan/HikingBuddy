@@ -11,6 +11,8 @@ const StyledBackground = styled.div`
   min-height: calc(100vh - 80px);
   background-color: ${color.mainBackgound};
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
 `;
 
@@ -19,8 +21,7 @@ function App() {
     <>
       <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
         <ClerkLoading>
-          {/* clerk loading 使用 */}
-          <div></div>
+          <div>Loading</div>
         </ClerkLoading>
         <ClerkLoaded>
           <Header />
@@ -28,7 +29,6 @@ function App() {
             <Outlet />
           </StyledBackground>
         </ClerkLoaded>
-        {/* <div>This div is always visible</div> */}
       </ClerkProvider>
     </>
   );

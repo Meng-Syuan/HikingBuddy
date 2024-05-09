@@ -217,7 +217,6 @@ const useSchedulesDB = () => {
 
   const getScheduleDetails = async (id) => {
     try {
-      console.log(id);
       const itinerariesRef = collection(schedulesRef, id, 'itineraries');
       const itinerariesSnapshot = await getDocs(itinerariesRef);
       if (itinerariesSnapshot.empty) {
@@ -319,31 +318,3 @@ const useSchedulesDB = () => {
 };
 
 export default useSchedulesDB;
-//single
-// export const getFirestoreData = async () => {
-//   const docRef = doc(db, 'example', 'example-document');
-//   const docSnap = await getDoc(docRef);
-//   if (docSnap.exists()) {
-//     console.log('Document data:', docSnap.data());
-//   } else {
-//     // docSnap.data() will be undefined in this case
-//     console.log('No such document!');
-//   }
-// };
-
-//batch寫入
-// const updateActiveSchedule = async (id) => {
-//   try {
-//     const batch = writeBatch(db);
-//     const activeDocSnapshot = await getDocs(q_activeSchedule);
-//     activeDocSnapshot.forEach((doc) => {
-//       batch.update(doc.ref, { isActive: false });
-//     });
-
-//     const scheduleDocRef = doc(schedulesRef, id);
-//     await updateDoc(scheduleDocRef, { isActive: true });
-//   } catch (error) {
-//     console.log('Failed to batch update active status: ');
-//     console.log(error);
-//   }
-// };

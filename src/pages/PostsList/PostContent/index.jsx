@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Toast } from '@utils/sweetAlert';
 import { useAuth } from '@clerk/clerk-react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import usePostsDB from '@utils/hooks/usePostsDB';
 import { usePostReadingState } from '@utils/zustand';
 import lightFormat from 'date-fns/lightFormat';
@@ -50,6 +50,8 @@ const ContentWrapper = styled.div`
 const TextContent = styled.p`
   margin: 0.5rem 0;
   width: 100%;
+  text-indent: 2rem;
+  letter-spacing: 2px;
 `;
 
 const PhotoWrapper = styled.figure`

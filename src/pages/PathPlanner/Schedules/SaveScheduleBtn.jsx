@@ -16,7 +16,7 @@ const StyledBtn = styled(FontAwesomeIcon)`
     cursor: pointer;
   }
 `;
-const SaveScheduleBtn = ({ isSaved, setSave }) => {
+const SaveScheduleBtn = ({ setSave }) => {
   const { futureSchedules, setUserState } = useUserState();
   const {
     temporaryScheduleId,
@@ -72,6 +72,7 @@ const SaveScheduleBtn = ({ isSaved, setSave }) => {
       setScheduleArrangement('gpxPoints', null);
       setScheduleArrangement('gpxFileName', '');
       setScheduleArrangement('mapMarkers', []);
+      setScheduleArrangement('newItinerary', null);
       setSave(false);
       await Toast.fire({
         position: 'center',
@@ -89,6 +90,7 @@ const SaveScheduleBtn = ({ isSaved, setSave }) => {
     const lastDay = Math.max(...dates);
     return {
       id: temporaryScheduleId,
+      tripName,
       firstDay,
       lastDay,
       isChecklistConfirmed: false,

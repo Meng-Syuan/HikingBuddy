@@ -1,13 +1,15 @@
 import styled from 'styled-components';
 import color, { inputFocusStyle } from '@theme';
 import { useProtectorPageData } from '@utils/zustand';
-import { useState, useEffect } from 'react';
 import useUploadFile from '@utils/hooks/useUploadFile';
 import useProtectorsDB from '@utils/hooks/useProtectorsDB';
+import { Toast } from '../../utils/sweetAlert';
+import { Button } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
 
 const HikerInfoContainer = styled.section`
   flex: 0 1 360px;
-  padding-top: 40px;
+  padding: 40px 45px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,11 +17,7 @@ const HikerInfoContainer = styled.section`
   background-color: ${color.lightBackgroundColor};
 `;
 
-const PhotoWrapper = styled.div`
-  width: 240px;
-  height: 230px;
-  position: relative;
-`;
+const PhotoWrapper = styled.div``;
 
 const HikerPhoto = styled.figure`
   position: relative;
@@ -84,9 +82,8 @@ const MessageInput = styled.textarea`
     props.readOnly ? color.lightBackgroundColor : '#fff'};
 `;
 
-const SaveEditionBtn = styled.button`
-  position: relative;
-  left: 30%;
+const SaveEditionBtn = styled(Button)`
+  align-self: flex-end;
 `;
 
 const default_photo = `https://react.semantic-ui.com/images/wireframe/image.png`;
@@ -107,9 +104,13 @@ const HikerInfo = ({ isEditable, id, valid }) => {
   };
   const handleUploadHikerInfo = async () => {
     const newHikerInfo = { ...hikerInfo, hiker_photo: hikerPhoto };
-    console.log(newHikerInfo);
     await updateProtectorDoc(id, '', newHikerInfo);
-    alert('資訊更新完成');
+    Toast.fire({
+      position: 'bottom-end',
+      timer: 1000,
+      title: '資料上傳完成',
+      icon: 'success',
+    });
   };
 
   return (
@@ -176,7 +177,12 @@ const HikerInfo = ({ isEditable, id, valid }) => {
           </InputWrapper>
         </InfoWrapper>
         {isEditable && (
-          <SaveEditionBtn onClick={handleUploadHikerInfo}>
+          <SaveEditionBtn
+            onClick={handleUploadHikerInfo}
+            variant="outlined"
+            size="small"
+            endIcon={<SendIcon />}
+          >
             上傳資訊
           </SaveEditionBtn>
         )}

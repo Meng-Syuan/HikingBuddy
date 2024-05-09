@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { useRef, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import mapboxgl from 'mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import usePostsDB from '@utils/hooks/usePostsDB';
 import { useUserState, useHomepageMarkers } from '@utils/zustand';
@@ -11,6 +12,33 @@ mapboxgl.accessToken =
 const MapContainer = styled.div`
   width: 100%;
   height: 70vh;
+  .mapboxgl-popup-content {
+    cursor: pointer;
+    padding: 0;
+    border-radius: 5px;
+    .mapboxgl-popup-close-button {
+      display: none;
+    }
+    .wrapper {
+      border-radius: 5px 5px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .popup-title {
+      border-radius: 5px 5px 0 0;
+      padding: 5px 12px;
+      background-color: #fffacd;
+      letter-spacing: 2px;
+    }
+    .create-time {
+      font-size: 0.75rem;
+      align-self: end;
+      position: relative;
+      right: 12px;
+      bottom: 5px;
+    }
+  }
 `;
 const Sidebar = styled.div`
   background-color: rgb(35 55 75 / 90%);
@@ -33,6 +61,7 @@ const Map = () => {
   const { getPostsList } = usePostsDB();
   const { userData } = useUserState();
   const { postWithMarkers, setPostWithMarkers } = useHomepageMarkers();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
@@ -73,25 +102,36 @@ const Map = () => {
 
   useEffect(() => {
     if (postWithMarkers.length === 0) return;
+    const popupClickHandler = (marker) => {
+      handleNavigateToPost(marker.id);
+    };
+
     postWithMarkers.map((marker) => {
       const createTime = lightFormat(marker.createTime, 'yyyy-MM-dd');
+      const popup = new mapboxgl.Popup().setHTML(
+        `<div class="wrapper">
+           <h4 class="popup-title">${marker.title}</h4>
+           <span class="create-time">${createTime}</span>
+         </div>`
+      );
+
       marker.coordinates &&
         new mapboxgl.Marker({ color: 'red' })
           .setLngLat(marker.coordinates)
-          .setPopup(
-            new mapboxgl.Popup().setHTML(
-              `
-                 <div style="padding:0 0.5rem">
-                 <a class="popup-title" href="/post/${marker.id}" style="color: #000; display: block; margin-bottom: 1rem">${marker.title}</a>
-                 <span style="font-size: 12px;display: block">${createTime}</span>
-                 </div>
-                  `
-            )
-          )
+          .setPopup(popup)
           .addTo(map.current);
+
+      popup.on('open', () => {
+        popup._content.addEventListener('click', () => {
+          popupClickHandler(marker);
+        });
+      });
     });
   }, [postWithMarkers]);
 
+  const handleNavigateToPost = (postId) => {
+    navigate(`/post/${postId}`);
+  };
   return (
     <>
       <Sidebar>

@@ -70,7 +70,7 @@ const ReleaseBtn = () => {
   };
 
   const checkReqirement = async () => {
-    if (postId && tripName && title && content) {
+    if (postId && title && content) {
       return true;
     } else {
       await Toast.fire({

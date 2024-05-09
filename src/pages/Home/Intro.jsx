@@ -20,6 +20,7 @@ import { oddAnimation, evenAnimation } from '@utils/animation';
 
 //#region
 //reusable
+const IntroContainer = styled.div``;
 const IntroWrapper = styled.section`
   display: flex;
   justify-content: center;
@@ -308,7 +309,7 @@ const Intro = () => {
     });
   };
   return (
-    <>
+    <IntroContainer>
       <IntroWrapper ref={plannerSection}>
         <Planner_draw>
           <ImgWrapper>
@@ -379,7 +380,7 @@ const Intro = () => {
           <FooterImage src={world}></FooterImage>
         </Footer_draw>
       </IntroWrapper>
-    </>
+    </IntroContainer>
   );
 };
 

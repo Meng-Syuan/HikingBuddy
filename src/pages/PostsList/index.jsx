@@ -40,6 +40,7 @@ const PostsList = styled.section`
   gap: 1rem;
   min-height: 50vh;
   max-height: 80vh;
+  overflow-y: auto;
   margin-bottom: 5rem;
 `;
 
