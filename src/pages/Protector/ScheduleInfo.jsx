@@ -123,6 +123,7 @@ const ScheduleInfo = () => {
   useEffect(() => {
     if (!sortedDates || !scheduleDetails) return;
     const groupItineraries = sortedDates.reduce((acc, date) => {
+      scheduleDetails.sort((a, b) => a.datetime - b.datetime);
       const itineraries = scheduleDetails.filter(
         (itinerary) => itinerary.date === date
       );
@@ -170,7 +171,7 @@ const ScheduleInfo = () => {
                           <Time>{itinerary.datetime}</Time>
                           <LocationName>{itinerary.location}</LocationName>
                         </ItemWrapper>
-                        {locationNotes[itinerary.id] && (
+                        {locationNotes && locationNotes[itinerary.id] && (
                           <Note key={`note${itinerary.id}`} id={itinerary.id}>
                             {`備註：${locationNotes[itinerary.id]}`}
                           </Note>

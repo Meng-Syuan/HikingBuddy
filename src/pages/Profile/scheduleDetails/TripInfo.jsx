@@ -84,6 +84,7 @@ const TripInfo = ({ isEditable }) => {
   useEffect(() => {
     if (!sortedDates || !scheduleDetails) return;
     const groupItineraries = sortedDates.reduce((acc, date) => {
+      scheduleDetails.sort((a, b) => a.datetime - b.datetime);
       const itineraries = scheduleDetails.filter(
         (itinerary) => itinerary.date === date
       );
