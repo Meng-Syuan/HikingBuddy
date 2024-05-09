@@ -1,9 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import './index.css';
 import GlobalStyle from './assets/GlobalStyle';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from 'react-router-dom';
 
 import App from './App.jsx';
 import Home from './pages/Home/Home.jsx';
@@ -15,31 +19,30 @@ import Protector from './pages/Protector';
 import PostLists from './pages/PostsList';
 import Post from './pages/PostsList/PostContent';
 
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<App />}>
+      <Route index element={<Home />} />
+      <Route path="/path-planner" element={<PathPlanner />}></Route>
+      <Route path="/profile" element={<Profile />}>
+        <Route index element={<ProfileHome />} />
+        <Route
+          path="/profile/schedule-details/:scheduleId"
+          element={<ScheduleDetails />}
+        />
+      </Route>
+      <Route path="/postslist" element={<PostLists />} />
+      <Route path="/post/:postId" element={<Post />} />
+      <Route path="/protector/:encryptedScheduleId" element={<Protector />} />
+    </Route>
+  )
+);
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   // <React.StrictMode>
   <>
     <GlobalStyle />
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route index element={<Home />} />
-          <Route path="/path-planner" element={<PathPlanner />}></Route>
-          <Route path="/profile" element={<Profile />}>
-            <Route index element={<ProfileHome />} />
-            <Route
-              path="/profile/schedule-details/:scheduleId"
-              element={<ScheduleDetails />}
-            />
-          </Route>
-          <Route path="/postslist" element={<PostLists />} />
-          <Route path="/post/:postId" element={<Post />} />
-          <Route
-            path="/protector/:encryptedScheduleId"
-            element={<Protector />}
-          />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </>
 
   // </React.StrictMode>
