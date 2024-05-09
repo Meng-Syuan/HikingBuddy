@@ -105,7 +105,7 @@ const Header = () => {
   }, [activeScheduleId]);
 
   return (
-    <HeaderContainer>
+    <HeaderContainer id="header">
       <HeaderContent>
         <LogoNavLink to="/">
           <Logo src={logo} alt="logo-homepage" />

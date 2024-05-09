@@ -58,7 +58,7 @@ const bounce = keyframes`
   }
 `;
 
-const IconWrapper = styled.div`
+const IconWrapper = styled.a`
   position: absolute;
   z-index: 5;
   bottom: 10px;
@@ -81,7 +81,7 @@ const BackgroundVideo = () => {
         <Title>Hiking Buddy</Title>
         <Slogan>Embarking on a Journey to the Peak.</Slogan>
       </OverlayText>
-      <IconWrapper>
+      <IconWrapper href="#first-intro">
         <Icon src={scrollDownIcon} alt="scroll down icon" />
       </IconWrapper>
     </VideoWrapper>

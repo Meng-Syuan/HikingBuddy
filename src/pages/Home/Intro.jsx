@@ -10,13 +10,13 @@ import world from '../../assets/svg/homepageWorld.svg';
 import upToTopIcon from '../../assets/svg/arrow.svg';
 import Lottie from 'lottie-react';
 import lottieRipple from '../../assets/ripple_lottie.json';
-import { SignInButton } from '@clerk/clerk-react';
-
+import { SignInButton, useAuth } from '@clerk/clerk-react';
 import { useRef, useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { oddAnimation, evenAnimation } from '@utils/animation';
+import { Link } from 'react-router-dom';
 
 //#region
 //reusable
@@ -176,6 +176,10 @@ const LoddieWrapper = styled.div`
   height: 2rem;
   right: -1rem;
   transform: translateY(-1rem);
+  &:nth-child(2) {
+    right: 2rem;
+    transform: translateY(0.5rem);
+  }
 `;
 
 const StyledLottie = styled(Lottie)`
@@ -190,31 +194,33 @@ const FooterImage = styled.img`
   transform: translate(-50%, -50%);
 `;
 
-const FooterContext = styled.p`
+const LinkText = styled.p`
   font-size: 1.5rem;
   align-self: end;
-  &:nth-child(1) {
-    &:hover {
-      cursor: pointer;
-      font-size: 1.6rem;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-    &:active {
-      color: ${color.secondary};
-    }
+  color: #000;
+  &:hover {
+    cursor: pointer;
+    font-size: 1.6rem;
+    font-weight: 500;
+    transition: all 0.2s;
   }
-  &:nth-child(2) {
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1;
+  &:active {
+    color: ${color.secondary};
   }
 `;
 
-const IconWrapper = styled.div`
+const FooterContext = styled.p`
+  font-size: 1.5rem;
+  align-self: end;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+`;
+
+const IconWrapper = styled.a`
   position: fixed;
-  bottom: 10px;
+  bottom: 20px;
   right: 2rem;
   z-index: 3;
   width: 35px;
@@ -240,6 +246,8 @@ const Icon = styled.img`
 `;
 //#endregion
 const Intro = () => {
+  const { isSignedIn } = useAuth();
+
   const plannerSection = useRef(null);
   const protectorSection = useRef(null);
   const postsSection = useRef(null);
@@ -302,15 +310,9 @@ const Intro = () => {
     };
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
-  };
   return (
     <IntroContainer>
-      <IntroWrapper ref={plannerSection}>
+      <IntroWrapper ref={plannerSection} id="first-intro">
         <Planner_draw>
           <ImgWrapper>
             <PlannerImg src={schedulePlanner} ref={img_planning}></PlannerImg>
@@ -328,7 +330,7 @@ const Intro = () => {
             </PlannerContext>
           </TextWrapper>
         </Planner_text>
-        <IconWrapper data-is-visible={showBtn} onClick={scrollToTop}>
+        <IconWrapper data-is-visible={showBtn} href="#header">
           <Icon src={upToTopIcon}></Icon>
         </IconWrapper>
       </IntroWrapper>
@@ -368,13 +370,27 @@ const Intro = () => {
 
       <IntroWrapper>
         <Footer_text>
-          <SignInButton>
-            <FooterContext>立即註冊 / 登入</FooterContext>
-          </SignInButton>
-          <FooterContext>開啟你的第一段旅程吧。</FooterContext>
-          <LoddieWrapper>
-            <StyledLottie animationData={lottieRipple}></StyledLottie>
-          </LoddieWrapper>
+          {!isSignedIn && (
+            <>
+              <SignInButton>
+                <LinkText>立即註冊 / 登入</LinkText>
+              </SignInButton>
+              <FooterContext>開啟你的第一段旅程吧。</FooterContext>
+              <LoddieWrapper>
+                <StyledLottie animationData={lottieRipple}></StyledLottie>
+              </LoddieWrapper>
+            </>
+          )}
+          {isSignedIn && (
+            <>
+              <LinkText as={Link} to="/path-planner">
+                即刻開啟你的旅程吧。
+              </LinkText>
+              <LoddieWrapper>
+                <StyledLottie animationData={lottieRipple}></StyledLottie>
+              </LoddieWrapper>
+            </>
+          )}
         </Footer_text>
         <Footer_draw>
           <FooterImage src={world}></FooterImage>

@@ -10,6 +10,7 @@ const GlobalStyle = createGlobalStyle`
   font-size: 1rem;
   text-decoration: none;
   list-style: none;
+  scroll-behavior: smooth;
 }
 //Adjust for chrome default scrollbar css
 ::-webkit-scrollbar {
