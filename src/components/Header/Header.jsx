@@ -39,6 +39,7 @@ const Navigation = styled.nav`
 const UnorderedList = styled.ul`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   text-align: center;
   width: 50vw;
 `;
@@ -117,7 +118,7 @@ const Header = () => {
               style={({ isActive }) => {
                 return {
                   color: isActive ? `${color.primary}` : `${color.textColor}`,
-                  fontWeight: isActive ? '400' : '',
+                  fontWeight: isActive ? '450' : '',
                 };
               }}
             >
@@ -130,7 +131,7 @@ const Header = () => {
               style={({ isActive }) => {
                 return {
                   color: isActive ? `${color.primary}` : `${color.textColor}`,
-                  fontWeight: isActive ? '400' : '',
+                  fontWeight: isActive ? '450' : '',
                 };
               }}
             >
@@ -143,7 +144,7 @@ const Header = () => {
               style={({ isActive }) => {
                 return {
                   color: isActive ? `${color.primary}` : `${color.textColor}`,
-                  fontWeight: isActive ? '400' : '',
+                  fontWeight: isActive ? '450' : '',
                 };
               }}
             >
