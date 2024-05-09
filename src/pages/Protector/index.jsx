@@ -89,7 +89,7 @@ const Protector = () => {
           const scheduleDetails = await getScheduleDetails(id);
           const scheduleInfo = await getScheduleInfo(id);
           setScheduleState('scheduleDetails', scheduleDetails);
-          setScheduleState('ScheduleInfo', scheduleInfo);
+          setScheduleState('scheduleInfo', scheduleInfo);
           setIsEditable(false);
           setIsUrlValid(true);
         } else {
@@ -152,7 +152,11 @@ const Protector = () => {
   return (
     <ProtectorContainer>
       <TabsContainer>
-        <Tabs isEditable={isEditable} gpxPoints={gpxPoints} />
+        <Tabs
+          isEditable={isEditable}
+          gpxPoints={gpxPoints}
+          valid={isUrlValid}
+        />
       </TabsContainer>
       <HikerInfo
         isEditable={isEditable}
