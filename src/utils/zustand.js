@@ -14,11 +14,10 @@ export const useSearchSingleLocationState = create((set) => ({
 
 export const useSearchLocations = create((set) => ({
   searchLocations: null,
-  isLocationChecked: false,
+  isLoading: false,
   setSearchLocations: (searchLocations) => set({ searchLocations }),
   resetSearchLocations: () => set({ searchLocations: null }),
-  checkLocation: () => set({ isLocationChecked: true }),
-  choosingLocation: () => set({ isLocationChecked: false }),
+  setIsLoading: (bool) => set({ isLoading: bool }),
 }));
 
 export const useScheduleArrangement = create((set) => ({

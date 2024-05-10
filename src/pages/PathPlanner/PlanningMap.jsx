@@ -99,7 +99,11 @@ const SearchedPositionMarker = () => {
     const lng = geopoint.lng;
     async function getGeoJSONdata(lat, lng) {
       const geoJsonData = await getGeoJSON.geopointSearch(lat, lng);
-      setLocationState('geoJSON', geoJsonData);
+      if (Object.keys(geoJsonData).includes('error')) {
+        setSearchInvalid();
+      } else {
+        setLocationState('geoJSON', geoJsonData);
+      }
     }
     getGeoJSONdata(lat, lng);
   }, [geopoint]);
@@ -107,20 +111,26 @@ const SearchedPositionMarker = () => {
   //set location to state management
   useEffect(() => {
     if (!geoJSON) return;
-    if (!geoJSON.features) {
-      setSearchInvalid();
-      return;
-    }
     const address = geoJSON.features[0].properties.address;
-    const { city, county, suburb, town, road, city_district, leisure } =
-      address;
+    const {
+      city,
+      county,
+      suburb,
+      town,
+      road,
+      city_district,
+      leisure,
+      village,
+    } = address;
     const searchedLocation = `${city || ''}${county || ''}${suburb || ''}${
       town || ''
-    }${city_district || ''}${road || ''}${leisure || ''}`;
-
-    setLocationState('location', searchedLocation || null);
-
-    searchedLocation.length > 0 ? setSearchValid() : setSearchInvalid();
+    }${city_district || ''}${road || ''}${leisure || ''}${village || ''}`;
+    if (!searchedLocation) {
+      setSearchInvalid();
+    } else {
+      setLocationState('location', searchedLocation);
+      setSearchValid();
+    }
   }, [geoJSON]);
 
   return geopoint ? <Marker position={geopoint} /> : null;
@@ -133,7 +143,7 @@ const PathPlannerMap = () => {
 
   useEffect(() => {
     if (geopoint && mapRef.current) {
-      mapRef.current.setView(geopoint, 18);
+      // mapRef.current.setView(geopoint, 18);
     }
   }, [geopoint]);
 

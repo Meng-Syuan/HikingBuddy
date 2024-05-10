@@ -403,7 +403,7 @@ const Schedules = () => {
           style={{ display: 'none' }}
         />
         <GPXfileWrapper>
-          <GPXfileName>{gpxFileName}</GPXfileName>
+          {gpxFileName && <GPXfileName>{gpxFileName}</GPXfileName>}
           <UploadGpxButton as="label" htmlFor="gpxUpload">
             <Tooltip
               title="上傳 GPX"

@@ -36,6 +36,7 @@
     "react-dom": "^18.2.0",
     "react-flatpickr": "^3.10.13",
     "react-leaflet": "^4.2.1",
+    "react-loading": "^2.0.3",
     "react-router-dom": "^6.22.3",
     "react-scripts": "^4.0.3",
     "react-sortablejs": "^6.1.4",

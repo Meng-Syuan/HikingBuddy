@@ -9,8 +9,9 @@ const getGeoJSON = {
   },
 
   async inputSearch(query) {
+    const countryCode = 'tw';
     const response = await fetch(
-      `${this.hostname}search?q=${query}&format=geojson`
+      `${this.hostname}search?q=${query}&format=geojson&countrycodes=${countryCode}&`
     );
     return await response.json();
   },

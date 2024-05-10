@@ -8,6 +8,9 @@ import getGeoJSON from '@utils/osmApi';
 import color from '@utils/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import ReactLoading from 'react-loading';
+import ClearIcon from '@mui/icons-material/Clear';
+import IconButton from '@mui/material/IconButton';
 
 const StyledSearchField = styled.div`
   position: absolute;
@@ -46,121 +49,153 @@ const SearchButton = styled(FontAwesomeIcon)`
 `;
 
 const SearchResultsDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   background-color: #fff;
   margin-top: 2px;
   border-radius: 5px;
   max-height: 235px;
-  overflow-y: scroll;
-  scrollbar-width: thin;
+  overflow-y: auto;
 `;
 
-const SearchResultItem = styled.button`
+const SearchResultItem = styled.div`
   width: 200px;
   min-height: 75px;
   padding: 5px 1.25rem;
-  border: none;
   border-bottom: 1px solid ${color.borderColor};
   background-color: #fff;
-  text-align: left;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  word-break: break-all;
+
   &:hover {
     background-color: #fff0c9;
     cursor: pointer;
   }
-  h5 {
-    line-height: 1.5rem;
-  }
-  span {
-    font-size: 0.75rem;
-    letter-spacing: 1px;
+`;
+const LoadingWrapper = styled(SearchResultItem)`
+  &:hover {
+    background-color: transparent;
+    cursor: default;
   }
 `;
 
+const NotFoundResult = styled(LoadingWrapper)``;
+
+const ResultTitle = styled.h5`
+  align-self: flex-start;
+`;
+
+const ResultAddress = styled.span`
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  align-self: flex-start;
+`;
+
+const CloseResults = styled.div`
+  position: relative;
+  width: 100%;
+`;
+const StyledButton = styled(IconButton)`
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  right: 0;
+  z-index: 450;
+`;
+
 const SearchResultsList = () => {
-  const searchLocations = useSearchLocations((state) => state.searchLocations);
+  const { searchLocations } = useSearchLocations();
   const { setLocationState } = useSearchSingleLocationState();
-  const { resetSearchLocations, checkLocation } = useSearchLocations();
+  const { resetSearchLocations, isLoading } = useSearchLocations();
 
   const handleLocationSelected = (geopoint) => {
     setLocationState('geopoint', geopoint);
     resetSearchLocations();
-    checkLocation();
   };
+
   return (
     <>
-      {searchLocations && (
-        <SearchResultsDiv>
-          {searchLocations.map((location) => (
-            <SearchResultItem
-              onClick={() => handleLocationSelected(location.geopoint)}
-            >
-              <h5>{`${location.name}`}</h5>
-              <span>{`${location.display_name}`}</span>
-            </SearchResultItem>
-          ))}
-        </SearchResultsDiv>
-      )}
+      <SearchResultsDiv>
+        {!isLoading && (
+          <CloseResults>
+            <StyledButton onClick={resetSearchLocations}>
+              <ClearIcon />
+            </StyledButton>
+          </CloseResults>
+        )}
+        {isLoading ? (
+          <LoadingWrapper>
+            <ReactLoading
+              type="spinningBubbles"
+              color={`${color.textColor}`}
+              width="35px"
+              height="35px"
+            ></ReactLoading>
+          </LoadingWrapper>
+        ) : searchLocations === 'notFound' ? (
+          <>
+            <NotFoundResult>
+              <ResultTitle>查無結果</ResultTitle>
+              <ResultTitle>建議提供更多關鍵字</ResultTitle>
+            </NotFoundResult>
+          </>
+        ) : (
+          searchLocations?.map((location) => (
+            <>
+              <SearchResultItem
+                onClick={() => handleLocationSelected(location.geopoint)}
+              >
+                <ResultTitle>{`${location.name}`}</ResultTitle>
+                <ResultAddress>{`${location.display_name}`}</ResultAddress>
+              </SearchResultItem>
+            </>
+          ))
+        )}
+      </SearchResultsDiv>
     </>
   );
 };
 const SearchInputField = () => {
-  const { setSearchLocations, choosingLocation } = useSearchLocations();
-  const isLocationChecked = useSearchLocations(
-    (state) => state.isLocationChecked
-  );
+  const { setSearchLocations, setIsLoading } = useSearchLocations();
 
   const [searchInput, setSearchInput] = useState('');
-  const [isSubmit, setIsSubmit] = useState(false);
   const [searchResults, setSearchResults] = useState(null);
-
-  //searching results
-  useEffect(() => {
-    if (!isSubmit) return;
-
-    async function getGeoJSONdata(query) {
-      const geoJsonData = await getGeoJSON.inputSearch(query);
-      setSearchResults(geoJsonData);
-    }
-    getGeoJSONdata(searchInput);
-    setIsSubmit(false);
-    setSearchInput('');
-  }, [isSubmit]);
 
   //organize search results
   useEffect(() => {
     if (!searchResults) return;
-    if (searchResults.features.length === 0) return;
-    const organizedSearchResults = searchResults.features.map((feature) => {
-      const lat = feature.geometry.coordinates[1];
-      const lng = feature.geometry.coordinates[0];
-      const name = feature.properties.name;
-      const display_name = feature.properties.display_name
-        .split(', ')
-        .reverse()
-        .join('');
-      return { geopoint: { lat, lng }, name, display_name };
-    });
-    setSearchLocations(organizedSearchResults);
+    if (searchResults.features.length === 0) {
+      setSearchLocations('notFound');
+    } else {
+      const organizedSearchResults = searchResults.features.map((feature) => {
+        const lat = feature.geometry.coordinates[1];
+        const lng = feature.geometry.coordinates[0];
+        const name = feature.properties.name;
+        const display_name = feature.properties.display_name
+          .split(', ')
+          .reverse()
+          .join('');
+        return { geopoint: { lat, lng }, name, display_name };
+      });
+      setSearchLocations(organizedSearchResults);
+    }
   }, [searchResults]);
-
-  //reset search results
-  useEffect(() => {
-    if (!isLocationChecked) return;
-    setSearchLocations(null);
-  }, [isLocationChecked]);
 
   const handleInputChange = (e) => {
     setSearchInput(e.target.value);
   };
 
-  const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmit(true);
-    choosingLocation();
+    setSearchInput('');
+    setIsLoading(true);
+    const geoJsonData = await getGeoJSON.inputSearch(searchInput);
+    setSearchResults(geoJsonData);
+    setIsLoading(false);
   };
-
   return (
     <>
       <StyledSearchField>

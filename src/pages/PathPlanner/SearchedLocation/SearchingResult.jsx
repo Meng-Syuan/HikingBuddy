@@ -5,12 +5,11 @@ import {
 import styled from 'styled-components';
 import color from '@utils/theme';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
-import { useAuth } from '@clerk/clerk-react';
 
 const SearchLocationContainer = styled.div`
   position: fixed;
-  z-index: 1001;
-  right: 450px;
+  z-index: 400;
+  transform: translateX(150%);
   bottom: 35px;
   width: 300px;
   min-height: 60px;
@@ -57,7 +56,7 @@ const AddToSchedule_btn = styled.button`
   }
 `;
 
-const LocationDetails = () => {
+const SearchingResult = () => {
   const { location, geopoint, isSearchValid, setLocationState } =
     useSearchSingleLocationState();
   const {
@@ -111,4 +110,4 @@ const LocationDetails = () => {
   );
 };
 
-export default LocationDetails;
+export default SearchingResult;
