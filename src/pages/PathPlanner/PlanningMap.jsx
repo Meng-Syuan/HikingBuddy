@@ -85,10 +85,12 @@ const SearchedPositionMarker = () => {
     geopoint,
     setSearchValid,
     setSearchInvalid,
+    isLoading,
   } = useSearchSingleLocationState();
 
   // useMapEvent should be used in MapContainer, get latlng and the marker
   useMapEvent('click', (e) => {
+    setLocationState('isLoading', true);
     setLocationState('geopoint', e.latlng);
   });
 
@@ -100,8 +102,10 @@ const SearchedPositionMarker = () => {
     async function getGeoJSONdata(lat, lng) {
       const geoJsonData = await getGeoJSON.geopointSearch(lat, lng);
       if (Object.keys(geoJsonData).includes('error')) {
+        setLocationState('isLoading', false);
         setSearchInvalid();
       } else {
+        setLocationState('isLoading', false);
         setLocationState('geoJSON', geoJsonData);
       }
     }
@@ -143,7 +147,7 @@ const PathPlannerMap = () => {
 
   useEffect(() => {
     if (geopoint && mapRef.current) {
-      // mapRef.current.setView(geopoint, 18);
+      mapRef.current.setView(geopoint, 18);
     }
   }, [geopoint]);
 

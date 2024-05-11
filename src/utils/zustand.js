@@ -6,7 +6,7 @@ export const useSearchSingleLocationState = create((set) => ({
   location: null,
   geopoint: null,
   isSearchValid: false,
-  searchResults: null,
+  isLoading: false,
   setLocationState: (key, value) => set({ [key]: value }),
   setSearchInvalid: () => set({ isSearchValid: false }),
   setSearchValid: () => set({ isSearchValid: true }),

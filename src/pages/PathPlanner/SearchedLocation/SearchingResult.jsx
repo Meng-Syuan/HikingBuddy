@@ -5,6 +5,7 @@ import {
 import styled from 'styled-components';
 import color from '@utils/theme';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
+import ReactLoading from 'react-loading';
 
 const SearchLocationContainer = styled.div`
   position: fixed;
@@ -20,6 +21,11 @@ const SearchLocationContainer = styled.div`
   align-items: center;
   justify-content: space-between;
 `;
+
+const LoadingWrapper = styled(SearchLocationContainer)`
+  justify-content: center;
+`;
+
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -57,7 +63,7 @@ const AddToSchedule_btn = styled.button`
 `;
 
 const SearchingResult = () => {
-  const { location, geopoint, isSearchValid, setLocationState } =
+  const { location, geopoint, isSearchValid, setLocationState, isLoading } =
     useSearchSingleLocationState();
   const {
     temporaryScheduleId,
@@ -86,7 +92,16 @@ const SearchingResult = () => {
 
   return (
     <>
-      {location && (
+      {isLoading ? (
+        <LoadingWrapper>
+          <ReactLoading
+            type="spinningBubbles"
+            color={`${color.textColor}`}
+            width="35px"
+            height="35px"
+          />
+        </LoadingWrapper>
+      ) : location ? (
         <SearchLocationContainer>
           <ContentWrapper>
             <LocationName>
@@ -105,6 +120,8 @@ const SearchingResult = () => {
             </AddToSchedule_btn>
           )}
         </SearchLocationContainer>
+      ) : (
+        ''
       )}
     </>
   );
