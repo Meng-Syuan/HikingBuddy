@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import styled from 'styled-components';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useUserState, usePostState } from '@utils/zustand';
 import usePostsDB from '@utils/hooks/usePostsDB';
@@ -29,7 +28,10 @@ const TripSelection = () => {
         setPostState('allUploadPhotos', data.allUploadPhotos);
         setPostState('mainPhoto', data.mainPhoto);
       } else {
-        resetPostState();
+        setPostState('title', '');
+        setPostState('content', '');
+        setPostState('allUploadPhotos', []);
+        setPostState('mainPhoto', '');
       }
     };
 
@@ -41,7 +43,6 @@ const TripSelection = () => {
   }, [postId]);
 
   const handleChange = (e) => {
-    console.log(e.target.value);
     const value = e.target.value;
     setPostState('postId', value);
     setPostState('tripName', value);
