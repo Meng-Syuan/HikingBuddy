@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import color from '@utils/theme.js';
 import Flatpickr from 'react-flatpickr';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { useScheduleArrangement } from '@utils/zustand';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,6 +16,7 @@ const ContentWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 2px 6px;
+  margin-bottom: 2px;
   cursor: grab;
   &:active {
     cursor: grabbing;
@@ -43,119 +44,81 @@ const Location_Name = styled.h5`
   font-size: 0.875rem;
 `;
 
-const SingleLocation = ({ name, id, number, deletionId, setDeletion }) => {
-  const {
-    temporaryScheduleId,
-    setScheduleArrangement,
-    itineraries_dates,
-    itineraries_datetime,
-    mapMarkers,
-  } = useScheduleArrangement();
-  const { deleteItinerary } = useSchedulesDB();
-  const [timeDiff, setTimeDiff] = useState('');
+const SingleLocation = forwardRef(
+  ({ name, id, number, timeStr, ...props }, ref) => {
+    const {
+      scheduleBlocks,
+      temporaryScheduleId,
+      setScheduleArrangement,
+      mapMarkers,
+    } = useScheduleArrangement();
+    const { deleteItinerary } = useSchedulesDB();
+    const [timeDiff, setTimeDiff] = useState('');
 
-  useEffect(() => {
-    //initialization
-    if (itineraries_datetime.length === 0) {
-      const initialDatetimes = itineraries_dates.map((itinerary) => ({
-        itineraryId: itinerary.itineraryId,
-        date: itinerary.date,
-        datetime: itinerary.date,
-      }));
-      setScheduleArrangement('itineraries_datetime', initialDatetimes);
-    } else {
-      if (!deletionId) {
-        const newItinerary = itineraries_dates.find((itinerary) => {
-          return !itineraries_datetime.some(
-            (object) => object.itineraryId === itinerary.itineraryId
-          );
-        });
-        if (newItinerary) {
-          const newItineraries_datetime = [
-            ...itineraries_datetime,
-            newItinerary,
-          ];
-          setScheduleArrangement(
-            'itineraries_datetime',
-            newItineraries_datetime
-          );
-        } else {
-          const newItineraries_datetime = itineraries_dates.map((itinerary) => {
-            const matchingItem = itineraries_datetime.find(
-              (item) => item.itineraryId === itinerary.itineraryId
-            );
-            return {
-              ...itinerary,
-              date: itinerary.date,
-              //use new datetime; as matchingItem is founded by itineraries_datetime, which doesn't have datetime property
-              datetime: matchingItem?.datetime,
-            };
-          });
-          setScheduleArrangement(
-            'itineraries_datetime',
-            newItineraries_datetime
-          );
-        }
-      } else {
-        const newItineraries_datetime = itineraries_datetime.filter(
-          (itinerary) => itinerary.itineraryId !== deletionId
-        );
-        setScheduleArrangement('itineraries_datetime', newItineraries_datetime);
-        setDeletion(null);
-      }
-    }
-    //update according to new location or new date / deletion
-  }, [itineraries_dates]);
+    useEffect(() => {
+      if (!timeDiff) return;
 
-  useEffect(() => {
-    if (!timeDiff) return;
-    const updatedItineraries = itineraries_datetime.map((itinerary) => {
-      if (id === itinerary.itineraryId) {
-        return {
-          ...itinerary,
-          datetime: itinerary.date + timeDiff,
+      const updatedScheduleBlocks = {};
+      for (let key in scheduleBlocks) {
+        updatedScheduleBlocks[key] = {
+          items: scheduleBlocks[key].items.map((item) => {
+            if (timeDiff.id === item.id) {
+              return {
+                ...item,
+                timeDiff: timeDiff.diffTimestamp,
+                timeStr: timeDiff.str,
+              };
+            } else {
+              return item;
+            }
+          }),
         };
-      } else {
-        return itinerary;
       }
-    });
-    setScheduleArrangement('itineraries_datetime', updatedItineraries);
-  }, [timeDiff]);
+      setScheduleArrangement('scheduleBlocks', updatedScheduleBlocks);
+    }, [timeDiff]);
 
-  const handleTimeChange = (selectedDateTime) => {
-    const todayMidnight_timestamp = new Date().setHours(0, 0, 0, 0);
-    const diffTimestamp =
-      selectedDateTime[0].getTime() - todayMidnight_timestamp;
-    setTimeDiff(diffTimestamp);
-  };
+    const handleTimeChange = (datetime, str) => {
+      const todayMidnight_timestamp = new Date().setHours(0, 0, 0, 0);
+      const diffTimestamp = datetime[0].getTime() - todayMidnight_timestamp;
+      setTimeDiff({ id, diffTimestamp, str });
+    };
+    const timePickerOptions = {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: 'H:i',
+      time_24hr: true,
+      wrap: true,
+      onChange: (datetime, str) => handleTimeChange(datetime, str),
+    };
 
-  const handleDeleteItinerary = async (id) => {
-    setDeletion(id);
-    await deleteItinerary(temporaryScheduleId, id);
-    const remainingMarkers = mapMarkers.filter((marker) => marker.id !== id);
-    setScheduleArrangement('mapMarkers', remainingMarkers);
-  };
-  const timePickerOptions = {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: 'H:i',
-    time_24hr: true,
-    wrap: true,
-    onChange: (e) => handleTimeChange(e),
-  };
+    const handleDeleteItinerary = async (id) => {
+      await deleteItinerary(temporaryScheduleId, id);
+      const remainingMarkers = mapMarkers.filter((marker) => marker.id !== id);
+      setScheduleArrangement('mapMarkers', remainingMarkers);
 
-  return (
-    <ContentWrapper>
-      <Flatpickr options={timePickerOptions}>
-        <input type="text" data-input readOnly />
-      </Flatpickr>
-      <Number>{number}</Number>
-      <Location_Name>{name}</Location_Name>
-      <IconButton onClick={() => handleDeleteItinerary(id)}>
-        <FontAwesomeIcon icon={faTrash} size="xs" />
-      </IconButton>
-    </ContentWrapper>
-  );
-};
+      const updatedScheduleBlocks = {};
+      for (let key in scheduleBlocks) {
+        updatedScheduleBlocks[key] = {
+          items: scheduleBlocks[key].items.filter((item) => item.id !== id),
+        };
+      }
+      setScheduleArrangement('scheduleBlocks', updatedScheduleBlocks);
+    };
+
+    return (
+      // make every location can be draggable
+      <ContentWrapper ref={ref} {...props}>
+        <Flatpickr options={timePickerOptions}>
+          <input type="text" data-input readOnly value={timeStr} />
+        </Flatpickr>
+        <Number>{number}</Number>
+        <Location_Name>{name}</Location_Name>
+        <IconButton onClick={() => handleDeleteItinerary(id)}>
+          <FontAwesomeIcon icon={faTrash} size="xs" />
+        </IconButton>
+      </ContentWrapper>
+    );
+  }
+);
 
 export default SingleLocation;

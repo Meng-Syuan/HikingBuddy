@@ -26,8 +26,11 @@ export const useScheduleArrangement = create((set) => ({
   gpxUrl: null,
   gpxFileName: '',
   tripName: '',
-  itineraries_dates: [],
-  itineraries_datetime: [],
+  scheduleBlocks: {
+    notArrangedBlock: {
+      items: [],
+    },
+  },
   locationNumber: 0,
   newItinerary: null,
   mapMarkers: [],
@@ -36,6 +39,22 @@ export const useScheduleArrangement = create((set) => ({
     set((state) => ({
       mapMarkers: [...state.mapMarkers, { lat, lng, id, name, number }],
     })),
+  resetScheduleArrangement: () =>
+    set({
+      temporaryScheduleId: null,
+      gpxPoints: null,
+      gpxUrl: null,
+      gpxFileName: '',
+      tripName: '',
+      scheduleBlocks: {
+        notArrangedBlock: {
+          items: [],
+        },
+      },
+      locationNumber: 0,
+      newItinerary: null,
+      mapMarkers: [],
+    }),
 }));
 
 export const useUserState = create((set) => ({

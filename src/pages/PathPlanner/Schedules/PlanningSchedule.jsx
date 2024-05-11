@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import CalendarDate from './CalendarDate';
 import color from '@theme';
 import { useState, useEffect, useCallback } from 'react';
-import { ReactSortable } from 'react-sortablejs';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import useUploadFile from '@utils/hooks/useUploadFile';
 import Location from './SingleLocation';
@@ -12,6 +11,7 @@ import gpxParser from 'gpxparser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tippy';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 //#region
 const PlanningText = styled.div`
   display: flex;
@@ -41,24 +41,23 @@ const DaySplit = styled.span`
   margin: 6px 0 4px;
 `;
 
+const NoteSplit = styled(DaySplit)`
+  grid-template-columns: 1fr 2fr 1fr;
+`;
+
 const SplitLine = styled.hr`
   border: none;
   background-color: ${color.primary};
   height: 1px;
 `;
 
-const Day = styled.h6`
+const Note = styled.h6`
   letter-spacing: 2px;
   font-size: 0.75rem;
 `;
 
 const ScheduleBlock = styled.div`
-  min-height: 150px;
-  .sortable {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+  min-height: 120px;
 `;
 
 const ButtonsContainer = styled.div`
@@ -66,9 +65,7 @@ const ButtonsContainer = styled.div`
   flex-direction: column;
   align-items: end;
   gap: 1rem;
-  position: absolute;
-  bottom: 3rem;
-  right: 30px;
+  margin-top: 1rem;
 `;
 
 const UploadGpxButton = styled.div`
@@ -96,17 +93,9 @@ const GPXfileName = styled.span`
   font-style: italic;
 `;
 
-const sortableOptions = {
-  animation: 100,
-  fallbackOnBody: true,
-  swapThreshold: 0.1,
-  ghostClass: 'ghost',
-  group: 'shared',
-  forceFallback: true,
-};
-
 //#endregion
-const Schedules = () => {
+
+const PlanningSchedule = () => {
   const {
     setScheduleArrangement,
     temporaryScheduleId,
@@ -114,8 +103,8 @@ const Schedules = () => {
     tripName,
     gpxFileName,
     locationNumber,
-    itineraries_datetime,
     gpxUrl,
+    scheduleBlocks,
   } = useScheduleArrangement();
   const {
     getTemporaryScheduleId,
@@ -127,51 +116,38 @@ const Schedules = () => {
   } = useSchedulesDB();
   const { getUploadFileUrl } = useUploadFile();
   const [selectedDates, setSelectedDates] = useState([]);
-  const [baseBlock, setBaseBlock] = useState(null);
-  const [scheduleBlocks, setScheduleBlocks] = useState([]);
+  //to maintain the datetime when add new location
+  const [baseBlock, setBaseBlock] = useState([]);
 
-  const [isSortEnd, setIsSortEnd] = useState(false);
-  const [deletionId, setDeletionId] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
 
   const getTemporaryLocations = useCallback(async () => {
     const locations = await getScheduleDetails(temporaryScheduleId);
     if (!locations) {
-      setBaseBlock([
-        {
-          id: 'base_block',
-          items: [],
-        },
-      ]);
-
       setScheduleArrangement('mapMarkers', []);
-      return;
-    }
-
-    //for UI render
-    const items = locations.map((location, index) => ({
-      id: location.itineraryId,
-      name: location.location,
-      number: index + 1,
-    }));
-    setBaseBlock([
-      {
-        id: 'base_block',
-        items,
-      },
-    ]);
-
-    const mapMarkers = locations.map((location, index) => {
-      return {
-        lat: location.geopoint._lat,
-        lng: location.geopoint._long,
+    } else {
+      //for right section(schedules) render
+      const items = locations.map((location, index) => ({
         id: location.itineraryId,
         name: location.location,
         number: index + 1,
-      };
-    });
-    setScheduleArrangement('mapMarkers', mapMarkers);
-    setScheduleArrangement('locationNumber', locations.length);
+        timeDiff: 0,
+        timeStr: '00:00',
+      }));
+      setBaseBlock(items);
+      //for left section(OSM) render
+      const mapMarkers = locations.map((location, index) => {
+        return {
+          lat: location.geopoint._lat,
+          lng: location.geopoint._long,
+          id: location.itineraryId,
+          name: location.location,
+          number: index + 1,
+        };
+      });
+      setScheduleArrangement('mapMarkers', mapMarkers);
+      setScheduleArrangement('locationNumber', locations.length);
+    }
   }, [temporaryScheduleId]);
 
   useNewItineraryListener(temporaryScheduleId);
@@ -179,12 +155,10 @@ const Schedules = () => {
   useEffect(() => {
     const initializeSchedule = async () => {
       const id = await getTemporaryScheduleId();
-      console.log(id);
       if (!id) {
         const newDocId = await createNewSchedule();
         await updateScheduleContents(newDocId, 'scheduleId', newDocId);
         setScheduleArrangement('temporaryScheduleId', newDocId);
-        console.log(newDocId);
       } else {
         setScheduleArrangement('temporaryScheduleId', id);
       }
@@ -205,73 +179,38 @@ const Schedules = () => {
 
   //setScheduleBlocks when base block change(add new location / get data from db)
   useEffect(() => {
-    if (!baseBlock) return;
-    if (scheduleBlocks.length <= 1) {
-      setScheduleBlocks(baseBlock);
-    }
-    if (scheduleBlocks.length > 1) {
-      const updateScheduleBlocks = scheduleBlocks.map((block) => {
-        if (block.id === 'base_block') {
-          return { id: 'base_block', items: [...baseBlock[0].items] };
-        } else {
-          return block;
-        }
+    if (baseBlock.length === 0) return;
+    if (Object.keys(scheduleBlocks).length === 1) {
+      setScheduleArrangement('scheduleBlocks', {
+        notArrangedBlock: { items: baseBlock },
       });
-      setScheduleBlocks(updateScheduleBlocks);
+    } else {
+      const updateScheduleBlocks = {
+        ...scheduleBlocks,
+        notArrangedBlock: {
+          items: baseBlock,
+        },
+      };
+      setScheduleArrangement('scheduleBlocks', updateScheduleBlocks);
     }
   }, [baseBlock]);
 
-  //generate blocks according to the dates selection, reset the itineraries_datetime
+  //generate blocks according to the dates selection
   useEffect(() => {
+    if (selectedDates.length === 0) return;
     const generateDateBlocks = async () => {
-      if (selectedDates.length === 0) return;
-      const generatedBlock = selectedDates.map((date) => {
-        return {
-          id: date,
-          items: [],
-        };
-      });
+      const generatedBlocks = selectedDates.reduce((acc, cur) => {
+        acc[cur] = { items: [] };
+        return acc;
+      }, {});
       await getTemporaryLocations();
-      setScheduleBlocks([...generatedBlock, ...baseBlock]);
+      setScheduleArrangement('scheduleBlocks', {
+        ...generatedBlocks,
+        notArrangedBlock: { items: baseBlock },
+      });
     };
     generateDateBlocks();
-
-    const resetedDatetimes = itineraries_datetime.map((itinerary) => ({
-      ...itinerary,
-      datetime: undefined,
-    }));
-    setScheduleArrangement('itineraries_datetime', resetedDatetimes);
   }, [selectedDates]);
-
-  //update scheduleBlocks after dragging
-  useEffect(() => {
-    if (isSortEnd) {
-      const updateBlocks = scheduleBlocks.map((block) => {
-        const updateItemsWithDate = block.items.map((item) => ({
-          ...item,
-          date: block.id,
-        }));
-        return { ...block, items: updateItemsWithDate }; //keep id, renew date property
-      });
-
-      setScheduleBlocks(updateBlocks);
-      setIsSortEnd(false);
-    }
-  }, [isSortEnd]);
-
-  //update date properties to itineraries_dates
-  useEffect(() => {
-    const itineraries_dates = scheduleBlocks.reduce((acc, curr) => {
-      curr.items.forEach((item) => {
-        acc.push({
-          itineraryId: item.id,
-          date: item.date,
-        });
-      });
-      return acc;
-    }, []);
-    setScheduleArrangement('itineraries_dates', itineraries_dates);
-  }, [scheduleBlocks]);
 
   //set the new location on time
   useEffect(() => {
@@ -281,21 +220,17 @@ const Schedules = () => {
       id: newItinerary.itineraryId,
       name: newItinerary.location,
       number: locationNumber + 1,
+      timeStr: '00:00',
+      timeDiff: 0,
     };
-    const originalBaseBlocks = scheduleBlocks.filter(
-      (block) => block.id === 'base_block'
-    );
-    const updateNewBaseBlock = [...originalBaseBlocks[0].items, { ...newItem }];
+    const originalBaseBlock = scheduleBlocks.notArrangedBlock.items;
+    const updateNewBaseBlock = [...originalBaseBlock, newItem];
     if (!isSaved) {
-      setBaseBlock([
-        {
-          id: 'base_block',
-          items: [...updateNewBaseBlock],
-        },
-      ]);
+      setBaseBlock(updateNewBaseBlock);
     }
   }, [newItinerary]);
 
+  //display gpxPoints ob the map
   useEffect(() => {
     if (!gpxUrl) return;
     const parseGPX = async (url) => {
@@ -312,27 +247,24 @@ const Schedules = () => {
     parseGPX(gpxUrl);
   }, [gpxUrl]);
 
-  useEffect(() => {
-    if (!deletionId) return;
-    const updatedBlocks = scheduleBlocks.map((block) => {
-      const remainingItems = block.items.filter(
-        (item) => item.id !== deletionId
-      );
-      return { ...block, items: remainingItems };
-    });
-    setScheduleBlocks(updatedBlocks);
-  }, [deletionId]);
+  const onDragEnd = (event) => {
+    const { source, destination } = event;
+    if (!destination) return;
 
-  const handleSortEnd = (blockId, items) => {
-    setScheduleBlocks((prevBlocks) =>
-      prevBlocks.map((block) => {
-        if (block.id === blockId) {
-          return { ...block, items };
-        }
-        return block;
-      })
+    const newBlocks = { ...scheduleBlocks };
+    // splice(start, deleteCount, item )
+    // get the dragged item, cut and past to destination
+    const [remove] = newBlocks[source.droppableId].items.splice(
+      source.index,
+      1
     );
-    setIsSortEnd(true);
+    newBlocks[destination.droppableId].items.splice(
+      destination.index,
+      0,
+      remove
+    );
+
+    setScheduleArrangement('scheduleBlocks', newBlocks);
   };
 
   const handleUploadGPX = async (e) => {
@@ -345,55 +277,74 @@ const Schedules = () => {
   };
   return (
     <>
-      <PlanningText>
-        <TripName>
-          <label htmlFor="tripName">路線名稱</label>
-          <TripNameInput
-            id="tripName"
-            type="text"
-            placeholder="未命名的路線名稱"
-            value={tripName}
-            onChange={(e) => setScheduleArrangement('tripName', e.target.value)}
-            maxLength={10}
-          />
-        </TripName>
-        <CalendarDate selectDates={setSelectedDates} />
-      </PlanningText>
-      {scheduleBlocks.length > 0 &&
-        scheduleBlocks.map((block, index) => (
-          <ScheduleBlock key={block.id}>
-            {index < scheduleBlocks.length - 1 && (
-              <>
+      <div>
+        <PlanningText>
+          <TripName>
+            <label htmlFor="tripName">路線名稱</label>
+            <TripNameInput
+              id="tripName"
+              type="text"
+              placeholder="未命名的路線名稱"
+              value={tripName}
+              onChange={(e) =>
+                setScheduleArrangement('tripName', e.target.value)
+              }
+              maxLength={10}
+            />
+          </TripName>
+          <CalendarDate selectDates={setSelectedDates} />
+        </PlanningText>
+        <DragDropContext onDragEnd={onDragEnd}>
+          {Object.entries(scheduleBlocks).map(([date, items], index) => (
+            <div key={date}>
+              {index < Object.entries(scheduleBlocks).length - 1 ? (
                 <DaySplit>
                   <SplitLine />
-                  <Day>{`第${index + 1}天`}</Day>
+                  <Note>{`第${index + 1}天`}</Note>
                   <SplitLine />
                 </DaySplit>
-              </>
-            )}
-            <ReactSortable
-              className="sortable"
-              {...sortableOptions}
-              setList={(items) => {
-                handleSortEnd(block.id, items);
-              }}
-              list={block.items}
-            >
-              {block.items.map((item) => (
-                <Location
-                  key={item.id}
-                  name={item.name}
-                  id={item.id}
-                  number={item.number}
-                  deletionId={deletionId}
-                  setDeletion={setDeletionId}
-                  scheduleBlocks={scheduleBlocks}
-                  setBlocks={setScheduleBlocks}
-                />
-              ))}
-            </ReactSortable>
-          </ScheduleBlock>
-        ))}
+              ) : (
+                scheduleBlocks?.notArrangedBlock.items.length > 0 && (
+                  <NoteSplit>
+                    <SplitLine />
+                    <Note>往上拖曳、選取時間</Note>
+                    <SplitLine />
+                  </NoteSplit>
+                )
+              )}
+              <Droppable droppableId={date}>
+                {(provided) => (
+                  <ScheduleBlock
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {items.items.map((item, index) => (
+                      <Draggable
+                        key={item.id}
+                        draggableId={item.id}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <Location
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            ref={provided.innerRef}
+                            name={item.name}
+                            id={item.id}
+                            number={item.number}
+                            timeStr={item.timeStr}
+                          ></Location>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </ScheduleBlock>
+                )}
+              </Droppable>
+            </div>
+          ))}
+        </DragDropContext>
+      </div>
       <ButtonsContainer>
         <SaveScheduleBtn isSaved={isSaved} setSave={setIsSaved} />
         <input
@@ -422,4 +373,4 @@ const Schedules = () => {
   );
 };
 
-export default Schedules;
+export default PlanningSchedule;

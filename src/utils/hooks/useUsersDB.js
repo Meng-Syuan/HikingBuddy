@@ -36,28 +36,6 @@ const useUsersDB = () => {
     }
   };
 
-  const useSaveScheduleToUsersDB = async (scheduleId) => {
-    try {
-      const userSnapshot = await getDoc(userDocRef);
-      if (userSnapshot.exists()) {
-        const schedulesIDs = userSnapshot.data().schedulesIDs;
-        if (!schedulesIDs) {
-          await updateDoc(userDocRef, {
-            schedulesIDs: [scheduleId],
-          });
-        } else {
-          schedulesIDs.push(scheduleId);
-          await updateDoc(userDocRef, {
-            schedulesIDs,
-          });
-        }
-      }
-    } catch (error) {
-      console.log('Error with save current schedule to users DB: ');
-      console.log(error);
-    }
-  };
-
   const getUserData = async () => {
     try {
       const docSnap = await getDoc(userDocRef);
@@ -73,27 +51,6 @@ const useUsersDB = () => {
     }
   };
 
-  const updateActiveSchedule = async (scheduleId) => {
-    try {
-      await updateDoc(userDocRef, {
-        activeSchedule: scheduleId,
-      });
-    } catch (error) {
-      console.log('Failed to update the active schedule.');
-      console.log(error);
-    }
-  };
-
-  const updateHashedPassword = async (hashedPassword) => {
-    try {
-      await updateDoc(userDocRef, {
-        hashedPassword,
-      });
-    } catch (error) {
-      console.log('Error :' + error);
-    }
-  };
-
   const updateUserDoc = async (property, content) => {
     try {
       await updateDoc(userDocRef, { [property]: content });
@@ -103,17 +60,17 @@ const useUsersDB = () => {
     }
   };
 
-  const addUserInfo = async (property, postId) => {
+  const addUserInfo = async (property, id) => {
     try {
       const userSnapshot = await getDoc(userDocRef);
       if (userSnapshot.exists()) {
         const data = userSnapshot.data()[property];
         if (!data) {
           await updateDoc(userDocRef, {
-            [property]: [postId],
+            [property]: [id],
           });
         } else {
-          data.push(postId);
+          data.push(id);
           await updateDoc(userDocRef, {
             [property]: data,
           });
@@ -166,10 +123,7 @@ const useUsersDB = () => {
 
   return {
     setUsersDB,
-    useSaveScheduleToUsersDB,
     getUserData,
-    updateActiveSchedule,
-    updateHashedPassword,
     updateUserDoc,
     addUserInfo,
     getActiveScheduleIdByPassword,

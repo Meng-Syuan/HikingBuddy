@@ -21,7 +21,9 @@ const ScheduleWrapper = styled.section`
   background-color: ${color.lightBackgroundColor};
   flex: 0 1 340px;
   padding: 20px;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 const PathPlanner = () => {

@@ -21,18 +21,17 @@ const SaveScheduleBtn = ({ setSave }) => {
   const {
     temporaryScheduleId,
     tripName,
-    itineraries_dates,
-    itineraries_datetime,
-    setScheduleArrangement,
+    scheduleBlocks,
     gpxFileName,
+    resetScheduleArrangement,
   } = useScheduleArrangement();
-  const { useSaveScheduleToUsersDB } = useUsersDB();
+  const { addUserInfo } = useUsersDB();
   const { saveScheduleDetails } = useSchedulesDB();
   const navigate = useNavigate();
 
   const handleSaveClick = async () => {
-    const result = checkReqirement();
-    if (!result) {
+    const isFinished = checkReqirement();
+    if (!isFinished) {
       Toast.fire({
         position: 'bottom-end',
         title: '填寫未完成',
@@ -43,8 +42,8 @@ const SaveScheduleBtn = ({ setSave }) => {
       });
     } else {
       const { value: confirm } = await sweetAlert.confirm(
-        '確認',
         `儲存行程表 ${tripName} ？`,
+        '請再次確認地點、日期及時間',
         'question',
         '確認',
         '取消'
@@ -53,26 +52,18 @@ const SaveScheduleBtn = ({ setSave }) => {
       setSave(true); //stop listener for modification
       await saveScheduleDetails(
         temporaryScheduleId,
-        itineraries_dates,
-        itineraries_datetime,
         tripName,
-        gpxFileName
+        gpxFileName,
+        scheduleBlocks
       );
-      await useSaveScheduleToUsersDB(temporaryScheduleId);
+      await addUserInfo('schedulesIDs', temporaryScheduleId);
 
       const newSchedule = getNewScheduleInfo();
       const newFutureSchedules = [...futureSchedules, newSchedule];
       newFutureSchedules.sort((a, b) => a.lastDay - b.lastDay);
       setUserState('futureSchedules', newFutureSchedules);
 
-      setScheduleArrangement('tripName', '');
-      setScheduleArrangement('itineraries_dates', []);
-      setScheduleArrangement('itineraries_datetime', []);
-      setScheduleArrangement('temporaryScheduleId', null);
-      setScheduleArrangement('gpxPoints', null);
-      setScheduleArrangement('gpxFileName', '');
-      setScheduleArrangement('mapMarkers', []);
-      setScheduleArrangement('newItinerary', null);
+      resetScheduleArrangement();
       setSave(false);
       await Toast.fire({
         position: 'center',
@@ -85,7 +76,9 @@ const SaveScheduleBtn = ({ setSave }) => {
   };
 
   const getNewScheduleInfo = () => {
-    const dates = itineraries_dates.map((itinerary) => itinerary.date);
+    const dates = Object.keys(scheduleBlocks).filter(
+      (key) => key !== 'notArrangedBlock'
+    );
     const firstDay = Math.min(...dates);
     const lastDay = Math.max(...dates);
     return {
@@ -98,23 +91,8 @@ const SaveScheduleBtn = ({ setSave }) => {
   };
 
   const checkReqirement = () => {
-    const isDatesNotCompleted = itineraries_dates.find(
-      (itinerary) => isNaN(itinerary.date) || !itinerary.date
-    );
-    const isDatetimeNotCompelte = itineraries_datetime.find(
-      (itinerary) => isNaN(itinerary.datetime) || !itinerary.datetime
-    );
-    if (
-      itineraries_dates.length > 0 &&
-      itineraries_datetime.length > 0 &&
-      !isDatesNotCompleted &&
-      !isDatetimeNotCompelte &&
-      tripName
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    const isFinished = scheduleBlocks.notArrangedBlock.items.length === 0;
+    return isFinished && tripName;
   };
 
   return (

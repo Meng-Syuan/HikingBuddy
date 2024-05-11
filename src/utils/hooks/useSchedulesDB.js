@@ -81,12 +81,23 @@ const useSchedulesDB = () => {
 
   const saveScheduleDetails = async (
     id,
-    itineraries_dates,
-    itineraries_datetime,
     tripName,
-    gpxFileName
+    gpxFileName,
+    scheduleBlocks
   ) => {
-    const dates = itineraries_dates.map((itinerary) => itinerary.date);
+    const dates = [];
+    const itinerariesTimeInfo = [];
+    for (let key in scheduleBlocks) {
+      key !== 'notArrangedBlock' ? dates.push(Number(key)) : '';
+      scheduleBlocks[key].items.forEach((item) => {
+        itinerariesTimeInfo.push({
+          id: item.id,
+          date: Number(key),
+          datetime: Number(key) + item.timeDiff,
+        });
+      });
+    }
+
     const firstDay = Math.min(...dates);
     const lastDay = Math.max(...dates);
     const docRef = doc(schedulesRef, id);
@@ -138,20 +149,8 @@ const useSchedulesDB = () => {
         { id: '備用衣物（長袖、短袖、短褲、內褲、襪子）', isChecked: false },
       ],
     });
-    const mergedItineraries = [];
-    itineraries_dates.forEach((dateItem) => {
-      const item = itineraries_datetime.find(
-        (datetimeItem) => datetimeItem.itineraryId === dateItem.itineraryId
-      );
-      if (item) {
-        mergedItineraries.push({
-          id: item.itineraryId,
-          date: dateItem.date,
-          datetime: item.datetime,
-        });
-      }
-    });
-    const itinerariesPromise = mergedItineraries.map((itinerary) => {
+
+    const itinerariesPromise = itinerariesTimeInfo.map((itinerary) => {
       const itineraryDocRef = doc(docRef, 'itineraries', itinerary.id);
       return updateDoc(itineraryDocRef, {
         date: itinerary.date,
@@ -261,18 +260,6 @@ const useSchedulesDB = () => {
     }
   };
 
-  const addGPXtoDB = async (scheduleId, gpxPoints) => {
-    try {
-      const docRef = doc(schedulesRef, scheduleId);
-      await updateDoc(docRef, {
-        gpxPoints: { ...gpxPoints },
-      });
-    } catch (error) {
-      alert('Failed to add GPX to schedules DB. Check the console');
-      console.log(error);
-    }
-  };
-
   const updateScheduleContents = async (
     scheduleId,
     property,
@@ -306,7 +293,6 @@ const useSchedulesDB = () => {
     createNewSchedule,
     addLocationToDB,
     addArrivalTime,
-    addGPXtoDB,
     deleteItinerary,
     useNewItineraryListener,
     saveScheduleDetails,

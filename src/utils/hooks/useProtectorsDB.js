@@ -1,13 +1,5 @@
 import db from '../firebase/firebaseConfig.js';
-import {
-  doc,
-  collection,
-  setDoc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-} from 'firebase/firestore';
+import { doc, collection, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 
 const useProtectorsDB = () => {
   const hashKey = 'HIKING_BUDDY_protector';

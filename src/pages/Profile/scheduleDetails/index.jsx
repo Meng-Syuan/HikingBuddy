@@ -68,7 +68,7 @@ const SettingActionBtn = styled(StyledButton)`
 const ScheduleDetails = () => {
   const { getScheduleInfo, getScheduleDetails, updateScheduleContents } =
     useSchedulesDB();
-  const { updateActiveSchedule, updateHashedPassword } = useUsersDB();
+  const { updateUserDoc } = useUsersDB();
   const { hashKey, setProtectorsData } = useProtectorsDB();
   const {
     scheduleInfo,
@@ -161,18 +161,19 @@ const ScheduleDetails = () => {
   const handleToggleProtectorFunc = async (isActive) => {
     toggleActiveState();
     if (!isActive) {
-      await updateActiveSchedule('');
-      await updateHashedPassword('');
+      await updateUserDoc('activeSchedule', '');
+      await updateUserDoc('hashedPassword', '');
       setUserState('activeScheduleId', '');
-    } else {
-      await updateActiveSchedule(scheduleId);
-      await setProtectorsData(scheduleId);
-      const encryptedId = sha256(scheduleId);
-      const hashedPassword = sha256.hmac(encryptedId, hashKey);
-      await updateHashedPassword(hashedPassword);
-      setUserState('activeScheduleId', scheduleId);
+      return;
     }
+    await updateUserDoc('activeSchedule', scheduleId);
+    await setProtectorsData(scheduleId);
+    const encryptedId = sha256(scheduleId);
+    const hashedPassword = sha256.hmac(encryptedId, hashKey);
+    await updateUserDoc('hashedPassword', hashedPassword);
+    setUserState('activeScheduleId', scheduleId);
   };
+
   return (
     <ArticlesContainer>
       <ArticleWrapper>
