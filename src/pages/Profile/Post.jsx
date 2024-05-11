@@ -7,6 +7,8 @@ import { Tooltip } from 'react-tippy';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faXmark, faStar } from '@fortawesome/free-solid-svg-icons';
 import useUploadFile from '@utils/hooks/useUploadFile';
+import { useBlocker } from 'react-router-dom';
+import sweetAlert from '@utils/sweetAlert';
 //components
 import TripSelection from './PostTool/TripSelection';
 import Marker from './PostTool/Marker';
@@ -125,6 +127,18 @@ const Post = () => {
   const [lastUploadedImg, setLastUploadedImg] = useState();
 
   useEffect(() => {
+    if (!title && !content) return;
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      return (event.returnValue = '確定要離開嗎？您可能會遺失未儲存的變更。');
+    };
+    addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [title, content]);
+
+  useEffect(() => {
     if (!lastUploadedImg) return;
     const urls = [...allUploadPhotos, lastUploadedImg];
     setPostState('allUploadPhotos', urls);
@@ -159,6 +173,27 @@ const Post = () => {
     const mainPhotoUrl = allUploadPhotos.find((img) => img.url === id);
     setPostState('mainPhoto', mainPhotoUrl.url);
   };
+  // Block navigating elsewhere when post has been filled
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      (title || content) && currentLocation.pathname !== nextLocation.pathname
+  );
+
+  useEffect(() => {
+    const handleFilledPostNavigate = async () => {
+      if (blocker.state === 'blocked') {
+        const { value: confirm } = await sweetAlert.confirm(
+          '提醒',
+          '現在離開可能導致文章遺失。',
+          'warning',
+          '離開',
+          '停留'
+        );
+        confirm ? blocker.proceed() : blocker.reset();
+      }
+    };
+    handleFilledPostNavigate();
+  }, [title, content, blocker]);
 
   return (
     <PostContainer>
@@ -172,6 +207,7 @@ const Post = () => {
           margin="dense"
           value={title}
           onChange={(e) => setPostState('title', e.target.value)}
+          inputProps={{ maxLength: 30 }}
         />
         <TextField
           id="outlined-basic"

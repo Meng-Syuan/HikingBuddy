@@ -7,7 +7,7 @@ import usePostsDB from '@utils/hooks/usePostsDB';
 const TripSelection = () => {
   const { getPostData } = usePostsDB();
   const { pastSchedules } = useUserState();
-  const { postId, tripName, setPostState } = usePostState();
+  const { postId, tripName, setPostState, resetPostState } = usePostState();
   const [tripSelection, setTripSelection] = useState([]);
 
   useEffect(() => {
@@ -20,8 +20,7 @@ const TripSelection = () => {
   }, [pastSchedules]);
 
   useEffect(() => {
-    if (!postId) return;
-    const fetchPostData = async () => {
+    const fetchPostData = async (postId) => {
       const data = await getPostData(postId);
       if (data) {
         setPostState('title', data.title);
@@ -30,14 +29,15 @@ const TripSelection = () => {
         setPostState('allUploadPhotos', data.allUploadPhotos);
         setPostState('mainPhoto', data.mainPhoto);
       } else {
-        //initialize
-        setPostState('title', '');
-        setPostState('content', '');
-        setPostState('mainPhoto', '');
-        setPostState('allUploadPhotos', []);
+        resetPostState();
       }
     };
-    fetchPostData();
+
+    if (!postId) {
+      resetPostState();
+    } else {
+      fetchPostData(postId);
+    }
   }, [postId]);
 
   const handleChange = (e) => {

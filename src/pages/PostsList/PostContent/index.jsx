@@ -52,6 +52,7 @@ const TextContent = styled.p`
   width: 100%;
   text-indent: 2rem;
   letter-spacing: 2px;
+  word-break: break-all;
 `;
 
 const PhotoWrapper = styled.figure`

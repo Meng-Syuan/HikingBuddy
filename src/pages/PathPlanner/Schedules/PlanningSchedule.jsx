@@ -354,6 +354,7 @@ const Schedules = () => {
             placeholder="未命名的路線名稱"
             value={tripName}
             onChange={(e) => setScheduleArrangement('tripName', e.target.value)}
+            maxLength={10}
           />
         </TripName>
         <CalendarDate selectDates={setSelectedDates} />

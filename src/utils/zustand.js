@@ -101,6 +101,16 @@ export const usePostState = create((set) => ({
   mainPhoto: '',
   markers: [],
   setPostState: (key, value) => set({ [key]: value }),
+  resetPostState: () =>
+    set({
+      postId: '',
+      tripName: '',
+      title: '',
+      content: '',
+      allUploadPhotos: [],
+      mainPhoto: '',
+      markers: [],
+    }),
 }));
 
 export const usePostReadingState = create((set) => ({
