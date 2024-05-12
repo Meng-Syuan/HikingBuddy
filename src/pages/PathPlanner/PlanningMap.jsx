@@ -53,7 +53,7 @@ const scheduledMarker = (number) => {
 };
 
 const StyledMapContainer = styled(MapContainer)`
-  height: calc(100vh - 80px);
+  min-height: calc(100vh - 80px);
 `;
 
 const PopupContent = styled.span`
@@ -85,7 +85,6 @@ const SearchedPositionMarker = () => {
     geopoint,
     setSearchValid,
     setSearchInvalid,
-    isLoading,
   } = useSearchSingleLocationState();
 
   // useMapEvent should be used in MapContainer, get latlng and the marker

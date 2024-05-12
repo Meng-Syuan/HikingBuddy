@@ -151,13 +151,15 @@ const Protector = () => {
 
   return (
     <ProtectorContainer>
-      <TabsContainer>
-        <Tabs
-          isEditable={isEditable}
-          gpxPoints={gpxPoints}
-          valid={isUrlValid}
-        />
-      </TabsContainer>
+      {scheduleId !== 'no_active_schedule' && (
+        <TabsContainer>
+          <Tabs
+            isEditable={isEditable}
+            gpxPoints={gpxPoints}
+            valid={isUrlValid}
+          />
+        </TabsContainer>
+      )}
       <HikerInfo
         isEditable={isEditable}
         id={scheduleId}

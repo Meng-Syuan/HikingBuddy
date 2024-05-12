@@ -57,7 +57,7 @@ const Note = styled.h6`
 `;
 
 const ScheduleBlock = styled.div`
-  min-height: 120px;
+  min-height: 80px;
 `;
 
 const ButtonsContainer = styled.div`
