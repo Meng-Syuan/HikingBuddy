@@ -34,6 +34,18 @@ const GlobalStyle = createGlobalStyle`
 #root {
   overflow: hidden;
 }
+
+.driver-popover{
+  min-width: 180px;
+  max-width: 250px;
+  .driver-popover-title {
+  font:400 1rem "Noto Sans TC", sans-serif ;
+}
+.driver-popover-description{
+  font:300 0.875rem "Noto Sans TC", sans-serif ;
+  }
+}
+
 `;
 
 export default GlobalStyle;

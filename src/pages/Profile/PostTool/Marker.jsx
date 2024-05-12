@@ -43,7 +43,7 @@ const Marker = () => {
       {postId && (
         <FormControl sx={{ m: 1, minWidth: 150, maxWidth: 250 }} size="small">
           <InputLabel style={{ fontSize: '0.875rem' }}>
-            選擇首頁座標點
+            選擇日誌座標點
           </InputLabel>
           <Select
             multiple

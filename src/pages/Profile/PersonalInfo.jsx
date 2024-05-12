@@ -3,8 +3,8 @@ import color from '@utils/theme';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import useUsersDB from '@utils/hooks/useUsersDB';
 import useUploadFile from '@utils/hooks/useUploadFile';
-import { useState, useEffect } from 'react';
-import { useUserState } from '@utils/zustand';
+import { useState, useEffect, useRef } from 'react';
+import { useUserState, useRefStore } from '@utils/zustand';
 import Trip from './MinifyTrip';
 //#region
 const PersonalInfoWrapper = styled.section`
@@ -73,8 +73,16 @@ const PersonalInfo = () => {
   const { updateUserDoc } = useUsersDB();
   const [activeId, setActiveId] = useState('');
   const [imgUpload, setImgUpload] = useState('');
+  const { setRefStore } = useRefStore();
+  const futureTripsRef = useRef(null);
+  const pastTripsRef = useRef(null);
 
   const previewURL = imgUpload || userPhoto || default_photo;
+
+  useEffect(() => {
+    setRefStore('futureTripsRef', futureTripsRef);
+    setRefStore('pastTripsRef', pastTripsRef);
+  }, []);
 
   useEffect(() => {
     if (!userData) return;
@@ -103,7 +111,7 @@ const PersonalInfo = () => {
         {!userPhoto && <Tip>點選並上傳</Tip>}
       </UserPhoto>
       <TripsWrapper>
-        <FutureTrips>
+        <FutureTrips ref={futureTripsRef}>
           {futureSchedules.length > 0 &&
             futureSchedules.map((schedule) => (
               <Trip
@@ -118,7 +126,7 @@ const PersonalInfo = () => {
             ))}
         </FutureTrips>
         <Split />
-        <PastTrips>
+        <PastTrips ref={pastTripsRef}>
           {pastSchedules.length > 0 &&
             pastSchedules.map((schedule) => (
               <Trip

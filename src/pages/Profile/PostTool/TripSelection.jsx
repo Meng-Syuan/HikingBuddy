@@ -1,13 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { useUserState, usePostState } from '@utils/zustand';
+import { useUserState, usePostState, useRefStore } from '@utils/zustand';
 import usePostsDB from '@utils/hooks/usePostsDB';
 
 const TripSelection = () => {
   const { getPostData } = usePostsDB();
   const { pastSchedules } = useUserState();
+  const { setRefStore } = useRefStore();
   const { postId, tripName, setPostState, resetPostState } = usePostState();
   const [tripSelection, setTripSelection] = useState([]);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    setRefStore('tripSelectionRef', ref);
+  }, []);
 
   useEffect(() => {
     if (pastSchedules.length === 0) return;
@@ -48,7 +54,7 @@ const TripSelection = () => {
     setPostState('tripName', value);
   };
   return (
-    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+    <FormControl sx={{ m: 1, minWidth: 120 }} size="small" ref={ref}>
       <InputLabel id="tripNameSelection">路線</InputLabel>
       <Select
         labelId="tripNameSelection"
@@ -64,7 +70,7 @@ const TripSelection = () => {
             textAlign: 'center',
           }}
         >
-          選擇路線名稱
+          選擇過去路線名稱
         </MenuItem>
         {tripSelection &&
           tripSelection.map((selection) => (

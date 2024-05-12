@@ -3,6 +3,7 @@ import color from '@utils/theme';
 //components
 import PersonalInfo from './PersonalInfo';
 import Post from './Post';
+import TourGuide from './TourGuide';
 
 const ProfileWrapper = styled.section`
   display: flex;
@@ -12,6 +13,7 @@ const ProfileWrapper = styled.section`
 const ProfileHome = () => {
   return (
     <ProfileWrapper>
+      <TourGuide />
       <Post />
       <PersonalInfo />
     </ProfileWrapper>

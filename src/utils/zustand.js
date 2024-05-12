@@ -145,3 +145,10 @@ export const useHomepageMarkers = create((set) => ({
   postWithMarkers: [],
   setPostWithMarkers: (key, value) => set({ [key]: value }),
 }));
+
+export const useRefStore = create((set) => ({
+  tripSelectionRef: null,
+  futureTripsRef: null,
+  pastTripsRef: null,
+  setRefStore: (key, value) => set({ [key]: value }),
+}));

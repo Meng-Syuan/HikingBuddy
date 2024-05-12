@@ -33,6 +33,9 @@ const PostWrapper = styled.article`
   width: 100%;
   min-height: 55vh;
 `;
+const StyledTextField = styled(TextField)`
+  white-space: pre-wrap;
+`;
 
 const ToolBar = styled.div`
   display: flex;
@@ -138,15 +141,33 @@ const Post = () => {
     };
   }, [title, content]);
 
+  // Block navigating elsewhere when post has been filled
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      (title || content) && currentLocation.pathname !== nextLocation.pathname
+  );
+
+  useEffect(() => {
+    const handleFilledPostNavigate = async () => {
+      if (blocker.state === 'blocked') {
+        const { value: confirm } = await sweetAlert.confirm(
+          '提醒',
+          '現在離開可能導致文章遺失。',
+          'warning',
+          '離開',
+          '停留'
+        );
+        confirm ? blocker.proceed() : blocker.reset();
+      }
+    };
+    handleFilledPostNavigate();
+  }, [title, content, blocker]);
+
   useEffect(() => {
     if (!lastUploadedImg) return;
     const urls = [...allUploadPhotos, lastUploadedImg];
     setPostState('allUploadPhotos', urls);
   }, [lastUploadedImg]);
-
-  const handleContentChange = (e) => {
-    setPostState('content', e.target.value);
-  };
 
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
@@ -173,27 +194,6 @@ const Post = () => {
     const mainPhotoUrl = allUploadPhotos.find((img) => img.url === id);
     setPostState('mainPhoto', mainPhotoUrl.url);
   };
-  // Block navigating elsewhere when post has been filled
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      (title || content) && currentLocation.pathname !== nextLocation.pathname
-  );
-
-  useEffect(() => {
-    const handleFilledPostNavigate = async () => {
-      if (blocker.state === 'blocked') {
-        const { value: confirm } = await sweetAlert.confirm(
-          '提醒',
-          '現在離開可能導致文章遺失。',
-          'warning',
-          '離開',
-          '停留'
-        );
-        confirm ? blocker.proceed() : blocker.reset();
-      }
-    };
-    handleFilledPostNavigate();
-  }, [title, content, blocker]);
 
   return (
     <PostContainer>
@@ -209,7 +209,7 @@ const Post = () => {
           onChange={(e) => setPostState('title', e.target.value)}
           inputProps={{ maxLength: 30 }}
         />
-        <TextField
+        <StyledTextField
           id="outlined-basic"
           label="內文"
           variant="outlined"
@@ -218,7 +218,7 @@ const Post = () => {
           multiline
           minRows={13}
           value={content}
-          onChange={handleContentChange}
+          onChange={(e) => setPostState('content', e.target.value)}
         />
         {allUploadPhotos && (
           <Tooltip
