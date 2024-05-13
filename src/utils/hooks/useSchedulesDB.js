@@ -69,6 +69,7 @@ const useSchedulesDB = () => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'modified') {
             const data = change.doc.data();
+            console.log(data);
             setScheduleArrangement('newItinerary', data);
           }
         });

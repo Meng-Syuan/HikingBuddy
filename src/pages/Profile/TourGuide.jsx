@@ -2,7 +2,6 @@ import styled, { keyframes } from 'styled-components';
 import color from '@theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
-// import { Tooltip } from 'react-tippy';
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 import { useRefStore } from '@utils/zustand';

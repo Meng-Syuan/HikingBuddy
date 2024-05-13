@@ -36,7 +36,7 @@ L.Icon.Default.mergeOptions({
 
 const scheduledMarker = (number) => {
   return L.divIcon({
-    className: 'numbered-marker123',
+    className: 'numbered-marker',
     html: `
       <div class="marker-container" >
         <img src="${grayMarker}" alt="Marker" class="marker-image" style="width: 38px"/>
@@ -54,6 +54,7 @@ const scheduledMarker = (number) => {
 
 const StyledMapContainer = styled(MapContainer)`
   min-height: calc(100vh - 80px);
+  width: 100%;
 `;
 
 const PopupContent = styled.span`
@@ -115,6 +116,7 @@ const SearchedPositionMarker = () => {
   useEffect(() => {
     if (!geoJSON) return;
     const address = geoJSON.features[0].properties.address;
+    console.log(address);
     const {
       city,
       county,
@@ -124,10 +126,15 @@ const SearchedPositionMarker = () => {
       city_district,
       leisure,
       village,
+      highway,
+      amenity,
+      tourism,
     } = address;
     const searchedLocation = `${city || ''}${county || ''}${suburb || ''}${
       town || ''
-    }${city_district || ''}${road || ''}${leisure || ''}${village || ''}`;
+    }${city_district || ''}${road || ''}${leisure || ''}${village || ''}${
+      highway || ''
+    }${amenity || ''}${tourism || ''}`;
     if (!searchedLocation) {
       setSearchInvalid();
     } else {

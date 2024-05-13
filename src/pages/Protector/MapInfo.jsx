@@ -102,10 +102,10 @@ const Markers = ({ isEditable }) => {
   };
 
   return (
-    mapMarkers &&
+    mapMarkers.length > 1 &&
     mapMarkers.map((marker) => {
       const ETA = lightFormat(marker.ETA, 'M / d HH:mm');
-      const arrival = marker.arrivalTime
+      const arrivalTime = marker.arrivalTime
         ? lightFormat(marker.arrivalTime, 'M / d HH:mm')
         : '';
       if (!marker.isArrived) {
@@ -150,7 +150,7 @@ const Markers = ({ isEditable }) => {
                   5
                 )})`}</Geopoint>
                 <EstimatedArrival>預估抵達：{ETA}</EstimatedArrival>
-                <ArrivingTime>抵達時間：{arrival}</ArrivingTime>
+                <ArrivingTime>抵達時間：{arrivalTime}</ArrivingTime>
               </PopupContent>
             </Popup>
           </Marker>

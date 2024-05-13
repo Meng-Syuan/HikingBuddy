@@ -3,8 +3,8 @@ import Flatpickr from 'react-flatpickr';
 import { MandarinTraditional } from 'flatpickr/dist/l10n/zh-tw';
 import { eachDayOfInterval } from 'date-fns';
 import styled from 'styled-components';
-import color from '@utils/theme';
-import { useState } from 'react';
+import color from '@theme';
+import { useScheduleArrangement } from '@utils/zustand';
 
 //for custom style
 const StyledInputWrapper = styled.div`
@@ -22,7 +22,7 @@ const StyledInputWrapper = styled.div`
 `;
 
 const CalendarDate = ({ selectDates }) => {
-  const [dateValue, setDateValue] = useState('');
+  const { dateValue, setScheduleArrangement } = useScheduleArrangement();
   const handleDateChange = (selectedDates, dateStr) => {
     const startingDate = selectedDates[0];
     const endingDate = selectedDates?.[1];
@@ -32,7 +32,7 @@ const CalendarDate = ({ selectDates }) => {
     });
     const dateSelectionGetTime = dateSelection.map((date) => date.getTime());
     selectDates(dateSelectionGetTime);
-    setDateValue(dateStr);
+    setScheduleArrangement('dateValue', dateStr);
   };
   const flatpickrCalendarOptions = {
     // minDate: 'today',

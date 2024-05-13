@@ -26,6 +26,7 @@ export const useScheduleArrangement = create((set) => ({
   gpxUrl: null,
   gpxFileName: '',
   tripName: '',
+  dateValue: '',
   scheduleBlocks: {
     notArrangedBlock: {
       items: [],
@@ -46,6 +47,7 @@ export const useScheduleArrangement = create((set) => ({
       gpxUrl: null,
       gpxFileName: '',
       tripName: '',
+      dateValue: '',
       scheduleBlocks: {
         notArrangedBlock: {
           items: [],

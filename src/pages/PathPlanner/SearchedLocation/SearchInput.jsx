@@ -146,6 +146,7 @@ const SearchResultsList = () => {
           searchLocations?.map((location) => (
             <>
               <SearchResultItem
+                key={location.id}
                 onClick={() => handleLocationSelected(location.geopoint)}
               >
                 <ResultTitle>{`${location.name}`}</ResultTitle>
@@ -171,6 +172,7 @@ const SearchInputField = () => {
       setSearchLocations('notFound');
     } else {
       const organizedSearchResults = searchResults.features.map((feature) => {
+        const id = feature.properties.osm_id;
         const lat = feature.geometry.coordinates[1];
         const lng = feature.geometry.coordinates[0];
         const name = feature.properties.name;
@@ -178,21 +180,18 @@ const SearchInputField = () => {
           .split(', ')
           .reverse()
           .join('');
-        return { geopoint: { lat, lng }, name, display_name };
+        return { id, geopoint: { lat, lng }, name, display_name };
       });
       setSearchLocations(organizedSearchResults);
     }
   }, [searchResults]);
-
-  const handleInputChange = (e) => {
-    setSearchInput(e.target.value);
-  };
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
     setSearchInput('');
     setIsLoading(true);
     const geoJsonData = await getGeoJSON.inputSearch(searchInput);
+    console.log(geoJsonData);
     setSearchResults(geoJsonData);
     setIsLoading(false);
   };
@@ -202,7 +201,7 @@ const SearchInputField = () => {
         <Form onSubmit={handleSearchSubmit}>
           <SearchInput
             placeholder="搜尋地點或座標"
-            onChange={handleInputChange}
+            onChange={(e) => setSearchInput(e.target.value)}
             value={searchInput}
           />
           <SearchButton

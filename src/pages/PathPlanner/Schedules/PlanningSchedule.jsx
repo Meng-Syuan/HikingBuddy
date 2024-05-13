@@ -116,7 +116,6 @@ const PlanningSchedule = () => {
   } = useSchedulesDB();
   const { getUploadFileUrl } = useUploadFile();
   const [selectedDates, setSelectedDates] = useState([]);
-  //to maintain the datetime when add new location
   const [baseBlock, setBaseBlock] = useState([]);
 
   const [isSaved, setIsSaved] = useState(false);
@@ -147,6 +146,7 @@ const PlanningSchedule = () => {
       });
       setScheduleArrangement('mapMarkers', mapMarkers);
       setScheduleArrangement('locationNumber', locations.length);
+      return items;
     }
   }, [temporaryScheduleId]);
 
@@ -167,7 +167,7 @@ const PlanningSchedule = () => {
   }, []);
 
   useEffect(() => {
-    if (!temporaryScheduleId) return;
+    if (!temporaryScheduleId || Object.keys(scheduleBlocks).length > 1) return;
     const fetchScheduleData = async () => {
       await getTemporaryLocations();
       const data = await getScheduleInfo(temporaryScheduleId);
@@ -227,6 +227,7 @@ const PlanningSchedule = () => {
     const updateNewBaseBlock = [...originalBaseBlock, newItem];
     if (!isSaved) {
       setBaseBlock(updateNewBaseBlock);
+      setScheduleArrangement('newItinerary', null);
     }
   }, [newItinerary]);
 

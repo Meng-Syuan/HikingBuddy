@@ -149,7 +149,6 @@ const ScheduleInfo = () => {
     const checkedOthers = otherItemChecklist.filter((item) => item.isChecked);
     const checkedListItem = [...checkedGears, ...checkedOthers];
     setCheckedListItem(checkedListItem);
-    console.log(locationNotes);
   }, [scheduleInfo]);
   return (
     <InfoContainer>
