@@ -7,6 +7,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
+import styled from 'styled-components';
+import color from '@theme';
+
+const StyledInputLabel = styled(InputLabel)`
+  background: ${color.lightBackgroundColor};
+  padding: 0 5px;
+`;
 
 const Marker = () => {
   const { getScheduleDetails } = useSchedulesDB();
@@ -42,9 +49,9 @@ const Marker = () => {
     <>
       {postId && (
         <FormControl sx={{ m: 1, minWidth: 150, maxWidth: 250 }} size="small">
-          <InputLabel style={{ fontSize: '0.875rem' }}>
+          <StyledInputLabel style={{ fontSize: '0.875rem' }}>
             選擇日誌座標點
-          </InputLabel>
+          </StyledInputLabel>
           <Select
             multiple
             value={selections}

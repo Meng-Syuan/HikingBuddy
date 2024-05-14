@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import color from '@utils/theme';
-import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import useUsersDB from '@utils/hooks/useUsersDB';
 import useUploadFile from '@utils/hooks/useUploadFile';
 import { useState, useEffect, useRef } from 'react';

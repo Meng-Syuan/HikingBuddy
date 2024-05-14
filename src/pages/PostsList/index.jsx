@@ -12,15 +12,7 @@ import wireframe from '../../assets/img/wireframe.png';
 
 import Map from './PostsMap';
 
-const MiddleBackground = styled.div`
-  width: 1100px;
-  background-color: #d9d9d9;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const NoPostContainer = styled.main`
+const PostsContainer = styled.main`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,26 +23,22 @@ const NoPostContainer = styled.main`
   padding-bottom: 0;
 `;
 
-const PostsContainer = styled(NoPostContainer)`
-  width: 980px;
-`;
-
 const PostsList = styled.section`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding-bottom: 0.5rem;
   min-height: 50vh;
   max-height: 80vh;
+  max-height: 60vh;
   overflow-y: auto;
-  margin-bottom: 4rem;
+  margin: 1.5rem 0 4rem;
 `;
 
 const PostWrapper = styled.article`
   width: 620px;
   height: 168px;
-  border: ${color.borderColor} 1px solid;
   border-radius: 10px;
-  background-color: #fff;
   display: flex;
   &:hover {
     cursor: pointer;
@@ -71,7 +59,8 @@ const PhotoWrapper = styled.figure`
 `;
 
 const Photo = styled.img`
-  max-width: 92%;
+  border-radius: 10px 0 0 10px;
+  width: 100%;
   height: 100%;
   border: none;
   object-fit: cover;
@@ -79,11 +68,16 @@ const Photo = styled.img`
 
 const TextArea = styled.div`
   width: 400px;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 1rem;
   padding-bottom: 0.5rem;
+  border-radius: 0px 10px 10px 0px;
+  border: ${color.borderColor} 1px solid;
+  border-left: none;
+  background-color: #fff;
 `;
 
 const Title = styled.h2`
@@ -164,50 +158,48 @@ const Posts = () => {
     <>
       {userPostsIds.length < 1 && (
         <>
-          <NoPostContainer>
+          <PostsContainer>
             <Story>走進山裡，帶著回憶與故事回來</Story>
             <SubStory>期待你記錄下更多美好故事</SubStory>
             <Figure>
               <Img src={mountain} />
             </Figure>
-          </NoPostContainer>
+          </PostsContainer>
         </>
       )}
 
       {userPostsIds.length > 0 && (
-        <MiddleBackground>
-          <PostsContainer>
-            <Story>走進山裡，帶著回憶與故事回來</Story>
-            <PostsList>
-              {postsData.map((post) => {
-                const excerptObj = post.content.find(
-                  (index) => index.type === 'text'
-                );
-                const excerpt = `${excerptObj.content.slice(0, 20)} ...`;
-                const createTime = lightFormat(post.createTime, 'yyyy-MM-dd');
+        <PostsContainer>
+          <Story>走進山裡，帶著回憶與故事回來</Story>
+          <PostsList>
+            {postsData.map((post) => {
+              const excerptObj = post.content.find(
+                (index) => index.type === 'text'
+              );
+              const excerpt = `${excerptObj.content.slice(0, 20)} ...`;
+              const createTime = lightFormat(post.createTime, 'yyyy-MM-dd');
 
-                return (
-                  <NavLink to={`/post/${post.id}`} key={post.id}>
-                    <PostWrapper>
-                      <PhotoWrapper>
-                        <Photo src={post.mainPhoto} />
-                      </PhotoWrapper>
-                      <TextArea>
-                        <Title>{post.title}</Title>
-                        <Excerpt>{excerpt}</Excerpt>
-                        <CreateTime>{`發布日期：${createTime}`}</CreateTime>
-                      </TextArea>
-                    </PostWrapper>
-                  </NavLink>
-                );
-              })}
-            </PostsList>
-            <Story>找尋過往足跡</Story>
-            <MapContainer>
-              <Map />
-            </MapContainer>
-          </PostsContainer>
-        </MiddleBackground>
+              return (
+                <NavLink to={`/post/${post.id}`} key={post.id}>
+                  <PostWrapper>
+                    <PhotoWrapper>
+                      <Photo src={post.mainPhoto} />
+                    </PhotoWrapper>
+                    <TextArea>
+                      <Title>{post.title}</Title>
+                      <Excerpt>{excerpt}</Excerpt>
+                      <CreateTime>{`發布日期：${createTime}`}</CreateTime>
+                    </TextArea>
+                  </PostWrapper>
+                </NavLink>
+              );
+            })}
+          </PostsList>
+          <Story>找尋過往足跡</Story>
+          <MapContainer>
+            <Map />
+          </MapContainer>
+        </PostsContainer>
       )}
     </>
   );

@@ -23,11 +23,12 @@ const ArticlesContainer = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 900px;
+  width: 1100px;
   background-color: ${color.lightBackgroundColor};
   position: relative;
   left: 50%;
   transform: translateX(-50%);
+  padding-bottom: 2rem;
 `;
 const ArticleWrapper = styled.article`
   width: 100%;
@@ -45,14 +46,12 @@ const StyledSplitLine = styled.hr`
 `;
 
 const ButtonWrapper = styled.div`
-  width: 90%;
   position: relative;
   height: 30px;
+  align-self: flex-end;
+  right: 90px;
 `;
 const StyledButton = styled(Button)`
-  position: relative;
-  right: -80%;
-  transform: translateX(-50%);
   background-color: #8b572a;
   color: #fff;
 
@@ -62,7 +61,8 @@ const StyledButton = styled(Button)`
 `;
 
 const SettingActionBtn = styled(StyledButton)`
-  bottom: 30px;
+  position: relative;
+  bottom: 50px;
 `;
 
 const ScheduleDetails = () => {
@@ -186,7 +186,7 @@ const ScheduleDetails = () => {
               </StyledButton>
             ) : (
               <StyledButton variant="contained" onClick={handleTripsEdition}>
-                開始編輯
+                編輯備註
               </StyledButton>
             ))}
         </ButtonWrapper>
@@ -207,7 +207,7 @@ const ScheduleDetails = () => {
 
       <StyledSplitLine />
       <ArticleWrapper>
-        <ProtectorSetting salt={scheduleId} />
+        <ProtectorSetting salt={scheduleId} scheduleId={scheduleId} />
         <ButtonWrapper>
           {isActive ? (
             <SettingActionBtn

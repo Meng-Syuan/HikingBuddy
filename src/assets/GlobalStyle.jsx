@@ -35,6 +35,11 @@ const GlobalStyle = createGlobalStyle`
   overflow: hidden;
 }
 
+.tippy-tooltip-content{
+  font-size: 0.875rem;
+  letter-spacing: 1.25px;
+}
+
 .driver-popover{
   min-width: 180px;
   max-width: 250px;

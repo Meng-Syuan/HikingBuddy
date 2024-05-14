@@ -12,6 +12,9 @@ const TabsWrapper = styled(Box)`
   border-bottom: 1px solid #999;
   color: ${color.textColor};
   background-color: ${color.lightBackgroundColor};
+  .MuiTabs-indicator {
+    background-color: #704621;
+  }
 `;
 
 const StyledTab = styled(Tab)`
@@ -19,6 +22,17 @@ const StyledTab = styled(Tab)`
   height: 3.5rem;
   letter-spacing: 0.4rem;
   font-size: 1rem;
+  font-family: 'Noto Sans TC';
+  font-weight: 350;
+  color: ${color.textColor};
+  &.Mui-selected {
+    color: ${color.secondary};
+  }
+  &:focus {
+    color: ${color.secondary};
+    background-color: rgba(139, 87, 42, 0.1);
+    font-weight: 480;
+  }
 `;
 
 export default function ProtectorTabs({ isEditable, valid, gpxPoints }) {

@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { lightFormat } from 'date-fns';
-import color from '@utils/theme';
 import { useNavigate } from 'react-router-dom';
 import { useUserState, useScheduleState } from '@utils/zustand';
 import useUsersDB from '@utils/hooks/useUsersDB';
@@ -15,7 +14,7 @@ import { useEffect, useState } from 'react';
 
 const TripWrapper = styled.div`
   width: 100%;
-  height: 35px;
+  height: 45px;
   border-radius: 5px;
   display: flex;
   align-items: center;
@@ -30,34 +29,42 @@ const TripWrapper = styled.div`
     box-shadow: 2px 2px 2px rgba(100, 100, 100, 0.5);
   }
 `;
-const CheckBox = styled.div`
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background-color: ${(props) =>
-    props['data-is-checked'] ? color.secondary : color.borderColor};
-`;
-
-const PastTripPrefix = styled(CheckBox)`
-  visibility: hidden;
-`;
 
 const Content = styled.div`
   letter-spacing: 1px;
   margin-right: 1rem;
+  width: 115px;
+  text-align: center;
 `;
 
-const Badge = styled.div`
-  position: absolute;
-  right: 2.5rem;
+const BadgeWrapper = styled.div`
+  display: flex;
+  width: 70px;
+  gap: 3px;
+`;
+
+const BadgeProtector = styled.div`
   height: 1rem;
-  font-size: 0.6rem;
   border-radius: 15px;
-  border: 1px solid #ff8800;
   background-color: #e78f1b66;
-  padding: 2px;
+  padding: 1px 4px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  p {
+    font-weight: 450;
+    font-size: 0.6rem;
+    color: #754a11;
+    letter-spacing: 2px;
+    transform: translateX(1px);
+  }
+`;
+
+const BadgeChecked = styled(BadgeProtector)`
+  background-color: #93c5436f;
+  p {
+    color: #172e00;
+  }
 `;
 const MinifyTrip = ({ id, firstDay, lastDay, tripName, type }) => {
   const { deleteTargetData } = useUsersDB();
@@ -110,13 +117,19 @@ const MinifyTrip = ({ id, firstDay, lastDay, tripName, type }) => {
       style={{ width: '90%' }}
     >
       <TripWrapper onClick={showScheduleDetails}>
-        {type === 'futureSchedules' ? (
-          <CheckBox data-is-checked={isChecked}></CheckBox>
-        ) : (
-          <PastTripPrefix>readOnly</PastTripPrefix>
-        )}
         <Content>{content}</Content>
-        {id === activeScheduleId && <Badge>留守</Badge>}
+        <BadgeWrapper>
+          {isChecked && (
+            <BadgeChecked>
+              <p>裝備</p>
+            </BadgeChecked>
+          )}
+          {id === activeScheduleId && (
+            <BadgeProtector>
+              <p>留守</p>
+            </BadgeProtector>
+          )}
+        </BadgeWrapper>
         <IconButton onClick={(e) => handleDeleteTrip(e, type, id)}>
           <FontAwesomeIcon icon={faTrash} size="sm" />
         </IconButton>

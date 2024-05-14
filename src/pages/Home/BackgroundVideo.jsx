@@ -1,11 +1,13 @@
 import styled, { keyframes } from 'styled-components';
 import video from '../../assets/home_video.mp4';
 import scrollDownIcon from '../../assets/svg/whiteArrow.svg';
+import color from '@theme';
 
 const VideoWrapper = styled.div`
   position: relative;
   overflow: hidden;
   height: calc(100vh - 80px);
+  background-color: ${color.mainBackgound};
 `;
 
 const Video = styled.video`

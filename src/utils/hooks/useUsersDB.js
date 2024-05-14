@@ -10,10 +10,16 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { useAuth } from '@clerk/clerk-react';
+import { useUserState } from '../zustand.js';
 
 const useUsersDB = () => {
+  const { isTestingAccount } = useUserState();
   const { userId } = useAuth();
-  const userDocRef = userId ? doc(db, 'users', userId) : null;
+  const userDocRef = isTestingAccount
+    ? doc(db, 'users', 'testAccount')
+    : userId
+    ? doc(db, 'users', userId)
+    : null;
 
   const setUsersDB = async (userId, display_name, userPhtoUrl) => {
     try {

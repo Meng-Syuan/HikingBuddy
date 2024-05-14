@@ -24,15 +24,20 @@ const PostContainer = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 25px 40px;
-  .tooltip {
-    background-color: #fff;
-  }
 `;
 
 const PostWrapper = styled.article`
   width: 100%;
   min-height: 55vh;
 `;
+
+const PostHeader = styled.h3`
+  font-size: 1.5rem;
+  color: ${color.textColor};
+  font-weight: 450;
+  letter-spacing: 2px;
+`;
+
 const StyledTextField = styled(TextField)`
   white-space: pre-wrap;
 `;
@@ -198,6 +203,7 @@ const Post = () => {
   return (
     <PostContainer>
       <PostWrapper>
+        <PostHeader>發布日誌</PostHeader>
         <TextField
           id="outlined-basic"
           label="標題"
@@ -223,7 +229,7 @@ const Post = () => {
         {allUploadPhotos && (
           <Tooltip
             open={allUploadPhotos.length > 0 && allUploadPhotos.length < 5}
-            title="選擇最喜歡的照片"
+            title="選擇封面照片"
             arrow={true}
             position="left-end"
             size="small"

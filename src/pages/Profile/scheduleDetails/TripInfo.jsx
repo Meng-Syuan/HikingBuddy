@@ -50,12 +50,14 @@ const ItemWrapper = styled.div`
 const Time = styled.span`
   ${textBorder};
   font-size: 0.875rem;
+  background-color: transparent;
 `;
 const LocationName = styled.span`
   ${textBorder};
   text-align: center;
   flex: 1;
   min-height: 28px;
+  background-color: transparent;
 `;
 const NoteInput = styled.input`
   ${textBorder}

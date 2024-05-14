@@ -14,7 +14,7 @@ const ItemContainer = styled.div`
 const CheckBox = styled.div`
   width: 15px;
   height: 15px;
-  border-radius: 10px;
+  border-radius: 50%;
   border: 1px solid ${color.borderColor};
   background-color: ${(props) =>
     props['data-is-checked'] ? color.secondary : color.lightBackgroundColor};

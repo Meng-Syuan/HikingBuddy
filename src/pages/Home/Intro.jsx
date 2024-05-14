@@ -13,6 +13,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
 import { useUserState } from '@utils/zustand';
 import { Button } from '@mui/material';
+import AdsClickIcon from '@mui/icons-material/AdsClick';
 
 //#region
 
@@ -22,7 +23,7 @@ const IntroContainer = styled.div`
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 20vh;
+  gap: 10vh;
 `;
 
 const IntroWrapper = styled.section`
@@ -53,7 +54,6 @@ const CardWrapper = styled.section`
   gap: 10rem;
   background: linear-gradient(#cbdddfea, #8ebcc2);
   border-radius: 15px;
-  /* box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.6); */
   margin-bottom: 15vh;
 `;
 
@@ -112,13 +112,14 @@ const StyledContainedButton = styled(Button)`
     color: #ccc;
   }
 `;
-const LinkText = styled.p`
+const SignInText = styled.p`
   font-size: 1.25rem;
   color: #ccc;
 `;
 
 const StyledOutLinedButton = styled(Button)`
   border: #3f3d56 2px solid;
+  color: #3f3d56;
   &:hover {
     border: #58576d 2px solid;
     background-color: #58576d60;
@@ -129,7 +130,7 @@ const StyledOutLinedButton = styled(Button)`
   }
 `;
 
-const TestLink = styled(LinkText)`
+const LinkText = styled(SignInText)`
   color: #3f3d56;
 `;
 
@@ -219,7 +220,7 @@ const Intro = () => {
       ease: 'power2.out',
       scrollTrigger: {
         trigger: protectorSection.current,
-        start: 'top 80%',
+        start: 'top 100%',
         end: 'bottom 50%',
         scrub: 1,
       },
@@ -232,7 +233,7 @@ const Intro = () => {
       ease: 'power2.out',
       scrollTrigger: {
         trigger: postsSection.current,
-        start: 'top 80%',
+        start: 'top 100%',
         end: 'bottom 50%',
         scrub: 1,
       },
@@ -245,7 +246,7 @@ const Intro = () => {
       ease: 'power2.out',
       scrollTrigger: {
         trigger: cardSection.current,
-        start: 'top 80%',
+        start: 'top 90%',
         end: 'bottom 50%',
         scrub: 1,
       },
@@ -315,24 +316,28 @@ const Intro = () => {
               <FooterContext>開啟你的第一段旅程吧。</FooterContext>
               <StyledContainedButton variant="contained">
                 <SignInButton>
-                  <LinkText>立即註冊 / 登入</LinkText>
+                  <SignInText>立即註冊 / 登入</SignInText>
                 </SignInButton>
               </StyledContainedButton>
               {!isTestingAccount && (
                 <StyledOutLinedButton variant="outlined">
-                  <TestLink onClick={signInWithTestingAccount}>
+                  <LinkText onClick={signInWithTestingAccount}>
                     測試帳號登入
-                  </TestLink>
+                  </LinkText>
                 </StyledOutLinedButton>
               )}
             </>
           )}
           {(isSignedIn || isTestingAccount) && (
-            <>
+            <StyledOutLinedButton
+              variant="outlined"
+              endIcon={<AdsClickIcon />}
+              color="primary"
+            >
               <LinkText as={Link} to="/path-planner">
-                即刻開啟你的旅程吧。
+                即刻開啟你的旅程
               </LinkText>
-            </>
+            </StyledOutLinedButton>
           )}
         </CardContext>
         <Img src={world}></Img>

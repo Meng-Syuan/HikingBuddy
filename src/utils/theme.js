@@ -28,14 +28,8 @@ export const fieldWrapper = {
   marginBottom: '1rem',
 };
 
-export const inputFocusStyle = {
-  outline: 'none !important',
-  border: `1px solid ${color.secondary}`,
-  boxShadow: `0 0 6px ${color.secondary}`,
-};
-
 export const styledListTitle = {
-  padding: '1.25rem 0.875rem 0.75rem',
+  padding: '1.25rem 0.875rem',
   fontSize: '1.5rem',
   fontWeight: 'bold',
   color: color.textColor,

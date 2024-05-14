@@ -2,6 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useUserState, usePostState, useRefStore } from '@utils/zustand';
 import usePostsDB from '@utils/hooks/usePostsDB';
+import styled from 'styled-components';
+import color from '@theme';
+
+const StyledInputLabel = styled(InputLabel)`
+  background: ${color.lightBackgroundColor};
+  padding: 0 5px;
+`;
 
 const TripSelection = () => {
   const { getPostData } = usePostsDB();
@@ -55,7 +62,7 @@ const TripSelection = () => {
   };
   return (
     <FormControl sx={{ m: 1, minWidth: 120 }} size="small" ref={ref}>
-      <InputLabel id="tripNameSelection">路線</InputLabel>
+      <StyledInputLabel id="tripNameSelection">路線</StyledInputLabel>
       <Select
         labelId="tripNameSelection"
         value={tripName}

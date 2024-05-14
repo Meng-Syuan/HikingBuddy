@@ -60,6 +60,7 @@ export const useScheduleArrangement = create((set) => ({
 }));
 
 export const useUserState = create((set) => ({
+  isTestingAccount: false,
   userData: null,
   userPhoto: '',
   activeScheduleId: null,

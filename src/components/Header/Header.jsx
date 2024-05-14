@@ -15,6 +15,9 @@ const HeaderContainer = styled.header`
   border-bottom: solid 5px ${color.primary};
   display: flex;
   justify-content: center;
+  position: relative;
+  z-index: 1;
+  background: #fff;
 `;
 const HeaderContent = styled.div`
   width: 1100px;
@@ -25,7 +28,10 @@ const HeaderContent = styled.div`
 `;
 
 const LogoNavLink = styled(NavLink)`
-  height: 100%;
+  position: relative;
+  top: 3px;
+  left: 2px;
+  height: 85%;
   width: 140px;
 `;
 
@@ -34,14 +40,13 @@ const Logo = styled.img`
 `;
 
 const Navigation = styled.nav`
-  width: 50vw;
+  width: 100%;
 `;
 const UnorderedList = styled.ul`
   display: flex;
   justify-content: space-between;
   align-items: center;
   text-align: center;
-  width: 50vw;
 `;
 const ListItem = styled.li`
   width: 30%;
@@ -57,23 +62,29 @@ const Split = styled.hr`
 const AuthIconWrapper = styled.div`
   display: flex;
   align-items: center;
+  width: 130px;
 `;
 
 const Header = () => {
   const { isSignedIn } = useAuth();
   const { getUserData } = useUsersDB();
   const { sortSchedulesDates } = useSchedulesDB();
-  const { setUserState, activeScheduleId, userData, futureSchedules } =
-    useUserState();
+  const {
+    isTestingAccount,
+    setUserState,
+    activeScheduleId,
+    userData,
+    futureSchedules,
+  } = useUserState();
   const [scheduleId, setScheduleId] = useState('no_active_schedule');
 
   useEffect(() => {
-    if (!isSignedIn) return;
+    if (!isSignedIn && !isTestingAccount) return;
     const fetchUserData = async () => {
       const data = await getUserData();
       setUserState('userData', data);
-      setUserState('userPhoto', data.userPhoto || '');
-      setUserState('activeScheduleId', data.activeSchedule);
+      setUserState('userPhoto', data?.userPhoto || '');
+      setUserState('activeScheduleId', data?.activeSchedule);
       setUserState('userPostsIds', data.posts || []);
     };
     fetchUserData();
@@ -83,7 +94,6 @@ const Header = () => {
     if (!userData) return;
     const sortDates = async () => {
       const sortedResult = await sortSchedulesDates(userData);
-      console.log(sortedResult);
       setUserState('futureSchedules', sortedResult.futureSchedules);
       setUserState('pastSchedules', sortedResult.pastSchedules);
     };
@@ -153,8 +163,8 @@ const Header = () => {
           </UnorderedList>
         </Navigation>
         <AuthIconWrapper>
-          <SignIn title="個人頁面" />
-          <SignOut title="登出" />
+          <SignIn />
+          <SignOut />
         </AuthIconWrapper>
       </HeaderContent>
     </HeaderContainer>

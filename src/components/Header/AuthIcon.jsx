@@ -68,7 +68,7 @@ export const SignIn = () => {
   const { user } = useUser();
   const { getToken, isLoaded, isSignedIn, userId } = useAuth();
   const { getUserData, setUsersDB } = useUsersDB();
-  const { setUserState, userPhoto } = useUserState();
+  const { setUserState, userPhoto, isTestingAccount } = useUserState();
 
   const profileIcon = userPhoto || profileDefault;
 

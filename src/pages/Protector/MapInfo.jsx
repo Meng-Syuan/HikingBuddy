@@ -13,13 +13,15 @@ import Button from '@mui/material/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
+import { Toast } from '@utils/sweetAlert';
 
 //Adjust for invisible Marker after deploying due to webpack building
-import L from 'leaflet';
+import L, { icon } from 'leaflet';
 import grayMarker from '../../assets/img/grayMarker.png';
 import pinkMarker from '../../assets/img/pinkMarker.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 import { useEffect, useState, useRef } from 'react';
+import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 //#region
 const normalMarker = L.icon({
@@ -99,6 +101,15 @@ const Markers = ({ isEditable }) => {
     });
     setScheduleArrangement('mapMarkers', renewArrival);
     await addArrivalTime(activeScheduleId, id, datetime);
+    Toast.fire({
+      position: 'center',
+      timer: 800,
+      timerProgressBar: false,
+      title: '恭喜抵達🎉🎉',
+      text: `抵達時間：${lightFormat(datetime, 'M/d HH:mm')}`,
+      icon: 'success',
+      width: '300px',
+    });
   };
 
   return (

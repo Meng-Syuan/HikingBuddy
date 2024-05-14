@@ -1,11 +1,13 @@
 import styled from 'styled-components';
-import color, { inputFocusStyle } from '@theme';
+import color from '@theme';
 import { useProtectorPageData } from '@utils/zustand';
 import useUploadFile from '@utils/hooks/useUploadFile';
 import useProtectorsDB from '@utils/hooks/useProtectorsDB';
 import { Toast } from '../../utils/sweetAlert';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import { useState } from 'react';
 
 const HikerInfoContainer = styled.section`
   flex: 0 1 360px;
@@ -62,7 +64,8 @@ const StyledInput = styled.input`
   border-radius: 5px;
   padding: 5px;
   &:focus {
-    ${(props) => (props.readOnly ? '' : inputFocusStyle)}
+    outline: ${(props) =>
+      props.readOnly ? 'none' : `2px solid ${color.secondary}`};
   }
   background-color: ${(props) =>
     props.readOnly ? color.lightBackgroundColor : '#fff'};
@@ -76,7 +79,8 @@ const MessageInput = styled.textarea`
   border-radius: 5px;
   padding: 5px;
   &:focus {
-    ${(props) => (props.readOnly ? '' : inputFocusStyle)}
+    outline: ${(props) =>
+      props.readOnly ? 'none' : `2px solid ${color.secondary}`};
   }
   background-color: ${(props) =>
     props.readOnly ? color.lightBackgroundColor : '#fff'};
@@ -84,11 +88,42 @@ const MessageInput = styled.textarea`
 
 const SaveEditionBtn = styled(Button)`
   align-self: flex-end;
+  font-family: 'Noto Sans TC';
+  font-weight: 350;
+  border: 1px solid ${color.secondary};
+  color: ${color.secondary};
+  &:hover {
+    border-color: #8b572a66;
+    background-color: rgba(200, 200, 200, 0.1);
+  }
+`;
+
+const Note = styled.span`
+  align-self: flex-end;
+  font-weight: 350;
+  font-size: 0.8125rem;
+  line-height: 1.75;
+  letter-spacing: 0.08rem;
+  padding: 3px 9px;
+  border-radius: 4px;
+  color: ${color.secondary};
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  &:hover {
+    cursor: default;
+  }
+`;
+const StyledWritingIcon = styled(BorderColorIcon)`
+  width: 1.2rem;
+  height: 1.2rem;
+  color: ${color.secondary};
 `;
 
 const default_photo = `https://react.semantic-ui.com/images/wireframe/image.png`;
 
 const HikerInfo = ({ isEditable, id, valid }) => {
+  const [sendable, setSendable] = useState(false);
   const { getUploadFileUrl } = useUploadFile();
   const { updateProtectorDoc } = useProtectorsDB();
   const { hikerInfo, hikerPhoto, updateHikerInfo, setProtectorPageData } =
@@ -102,9 +137,14 @@ const HikerInfo = ({ isEditable, id, valid }) => {
     setProtectorPageData('hikerPhoto', url); //renew global state
     await updateProtectorDoc(id, 'hiker_photo', url); //renew protectorsDB
   };
+  const handleTextChange = (e, type) => {
+    updateHikerInfo(type, e.target.value);
+    setSendable(true);
+  };
   const handleUploadHikerInfo = async () => {
     const newHikerInfo = { ...hikerInfo, hiker_photo: hikerPhoto };
     await updateProtectorDoc(id, '', newHikerInfo);
+    setSendable(false);
     Toast.fire({
       position: 'bottom-end',
       timer: 1000,
@@ -143,7 +183,7 @@ const HikerInfo = ({ isEditable, id, valid }) => {
             <StyledInput
               value={hikerInfo.clothe_color}
               readOnly={!isEditable}
-              onChange={(e) => updateHikerInfo('clothe_color', e.target.value)}
+              onChange={(e) => handleTextChange(e, 'clothe_color')}
             ></StyledInput>
           </InputWrapper>
           <InputWrapper>
@@ -151,9 +191,7 @@ const HikerInfo = ({ isEditable, id, valid }) => {
             <StyledInput
               value={hikerInfo.backpack_color}
               readOnly={!isEditable}
-              onChange={(e) =>
-                updateHikerInfo('backpack_color', e.target.value)
-              }
+              onChange={(e) => handleTextChange(e, 'backpack_color')}
             ></StyledInput>
           </InputWrapper>
           <InputWrapper>
@@ -161,9 +199,7 @@ const HikerInfo = ({ isEditable, id, valid }) => {
             <StyledInput
               value={hikerInfo.shuttle_driver}
               readOnly={!isEditable}
-              onChange={(e) =>
-                updateHikerInfo('shuttle_driver', e.target.value)
-              }
+              onChange={(e) => handleTextChange(e, 'shuttle_driver')}
             ></StyledInput>
           </InputWrapper>
           <InputWrapper>
@@ -172,11 +208,12 @@ const HikerInfo = ({ isEditable, id, valid }) => {
               placeholder="下山時間及聯絡時間"
               value={hikerInfo.message}
               readOnly={!isEditable}
-              onChange={(e) => updateHikerInfo('message', e.target.value)}
+              onChange={(e) => handleTextChange(e, 'message')}
+              autoFocus
             ></MessageInput>
           </InputWrapper>
         </InfoWrapper>
-        {isEditable && (
+        {isEditable && sendable ? (
           <SaveEditionBtn
             onClick={handleUploadHikerInfo}
             variant="outlined"
@@ -185,6 +222,13 @@ const HikerInfo = ({ isEditable, id, valid }) => {
           >
             上傳資訊
           </SaveEditionBtn>
+        ) : isEditable ? (
+          <Note variant="outlined" size="small">
+            編輯資訊
+            <StyledWritingIcon size="small" />
+          </Note>
+        ) : (
+          ''
         )}
       </HikerInfoContainer>
     )

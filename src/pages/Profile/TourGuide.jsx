@@ -4,7 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
-import { useRefStore } from '@utils/zustand';
+import { useRefStore, useUserState } from '@utils/zustand';
+import { useEffect } from 'react';
+import useUsersDB from '@utils/hooks/useUsersDB';
 
 const flip = keyframes`
   0% {
@@ -39,6 +41,13 @@ const TourGuideWrapper = styled.div`
 
 const TourGuide = () => {
   const { tripSelectionRef, futureTripsRef, pastTripsRef } = useRefStore();
+  const { userData } = useUserState();
+  const { updateUserDoc } = useUsersDB();
+  useEffect(() => {
+    if (!userData?.isFirstSignIn) return;
+    driverObj.drive();
+    updateUserDoc('isFirstSignIn', false);
+  }, [userData]);
   //for tutorial
   const driverObj = driver({
     steps: [
