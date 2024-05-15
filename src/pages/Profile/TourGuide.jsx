@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
-import { useRefStore, useUserState } from '@utils/zustand';
+import { useTourGuideRefStore, useUserState } from '@utils/zustand';
 import { useEffect } from 'react';
 import useUsersDB from '@utils/hooks/useUsersDB';
 
@@ -40,7 +40,8 @@ const TourGuideWrapper = styled.div`
 `;
 
 const TourGuide = () => {
-  const { tripSelectionRef, futureTripsRef, pastTripsRef } = useRefStore();
+  const { tripSelectionRef, futureTripsRef, pastTripsRef } =
+    useTourGuideRefStore();
   const { userData } = useUserState();
   const { updateUserDoc } = useUsersDB();
   useEffect(() => {

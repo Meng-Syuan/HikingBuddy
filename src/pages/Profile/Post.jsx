@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import color from '@utils/theme';
 import { TextField } from '@mui/material';
-import { usePostState } from '@utils/zustand';
+import { usePostWritingState } from '@utils/zustand';
 import { useState, useEffect } from 'react';
 import { Tooltip } from 'react-tippy';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,7 +11,7 @@ import { useBlocker } from 'react-router-dom';
 import sweetAlert from '@utils/sweetAlert';
 //components
 import TripSelection from './PostTool/TripSelection';
-import Marker from './PostTool/Marker';
+import Marker from './PostTool/MarkerSelection';
 import ReleaseBtn from './PostTool/ReleaseBtn';
 import TempSave from './PostTool/TempSave';
 
@@ -130,7 +130,7 @@ const Span = styled.span`
 const uploadLimit = 6;
 const Post = () => {
   const { title, content, allUploadPhotos, mainPhoto, setPostState } =
-    usePostState();
+    usePostWritingState();
   const { getUploadFileUrl, compressImage } = useUploadFile();
   const [lastUploadedImg, setLastUploadedImg] = useState();
 

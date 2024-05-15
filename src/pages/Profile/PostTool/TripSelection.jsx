@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { useUserState, usePostState, useRefStore } from '@utils/zustand';
+import {
+  useUserState,
+  usePostWritingState,
+  useTourGuideRefStore,
+} from '@utils/zustand';
 import usePostsDB from '@utils/hooks/usePostsDB';
 import styled from 'styled-components';
 import color from '@theme';
@@ -13,8 +17,9 @@ const StyledInputLabel = styled(InputLabel)`
 const TripSelection = () => {
   const { getPostData } = usePostsDB();
   const { pastSchedules } = useUserState();
-  const { setRefStore } = useRefStore();
-  const { postId, tripName, setPostState, resetPostState } = usePostState();
+  const { setRefStore } = useTourGuideRefStore();
+  const { postId, tripName, setPostState, resetPostState } =
+    usePostWritingState();
   const [tripSelection, setTripSelection] = useState([]);
   const ref = useRef(null);
 

@@ -1,5 +1,9 @@
 import styled from 'styled-components';
-import { usePostState, useUserState, useHomepageMarkers } from '@utils/zustand';
+import {
+  usePostWritingState,
+  useUserState,
+  usePostMapState,
+} from '@utils/zustand';
 import usePostsDB from '@utils/hooks/usePostsDB';
 import useUsersDB from '@utils/hooks/useUsersDB';
 
@@ -19,16 +23,15 @@ const IconWrapper = styled(IconButton)`
 const ReleaseBtn = () => {
   const {
     postId,
-    tripName,
     title,
     mainPhoto,
     markers,
     allUploadPhotos,
     content,
     setPostState,
-  } = usePostState();
+  } = usePostWritingState();
   const { deleteTrip, userPostsIds, postsData, setUserState } = useUserState();
-  const { postWithMarkers, setPostWithMarkers } = useHomepageMarkers();
+  const { postMarkers, setPostMarkers } = usePostMapState();
   const { publishPost } = usePostsDB();
   const { addUserInfo, deleteTargetData } = useUsersDB();
 
@@ -51,7 +54,7 @@ const ReleaseBtn = () => {
     const newPostsIds = [...userPostsIds, postId];
     setUserState('userPostsIds', newPostsIds);
     const newMarkers = updateHomepageMarkers(createTime);
-    setPostWithMarkers('postWithMarkers', [...postWithMarkers, ...newMarkers]);
+    setPostMarkers('postMarkers', [...postMarkers, ...newMarkers]);
     await addUserInfo('posts', postId);
     await deleteTargetData('schedulesIDs', postId);
     deleteTrip('pastSchedules', postId);

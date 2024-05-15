@@ -3,7 +3,7 @@ import color from '@utils/theme';
 import useUsersDB from '@utils/hooks/useUsersDB';
 import useUploadFile from '@utils/hooks/useUploadFile';
 import { useState, useEffect, useRef } from 'react';
-import { useUserState, useRefStore } from '@utils/zustand';
+import { useUserState, useTourGuideRefStore } from '@utils/zustand';
 import Trip from './MinifyTrip';
 //#region
 const PersonalInfoWrapper = styled.section`
@@ -72,7 +72,7 @@ const PersonalInfo = () => {
   const { updateUserDoc } = useUsersDB();
   const [activeId, setActiveId] = useState('');
   const [imgUpload, setImgUpload] = useState('');
-  const { setRefStore } = useRefStore();
+  const { setRefStore } = useTourGuideRefStore();
   const futureTripsRef = useRef(null);
   const pastTripsRef = useRef(null);
 

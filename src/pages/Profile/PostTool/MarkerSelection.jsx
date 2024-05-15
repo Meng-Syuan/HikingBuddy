@@ -1,6 +1,6 @@
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import { useEffect, useState } from 'react';
-import { usePostState } from '@utils/zustand';
+import { usePostWritingState } from '@utils/zustand';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -17,7 +17,7 @@ const StyledInputLabel = styled(InputLabel)`
 
 const Marker = () => {
   const { getScheduleDetails } = useSchedulesDB();
-  const { postId, markers, setPostState } = usePostState();
+  const { postId, setPostState } = usePostWritingState();
   const [locations, setlocations] = useState([]);
   const [selections, setSelections] = useState([]);
   useEffect(() => {

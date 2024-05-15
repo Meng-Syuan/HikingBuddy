@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { usePostState } from '@utils/zustand';
+import { usePostWritingState } from '@utils/zustand';
 import usePostsDB from '@utils/hooks/usePostsDB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookmark } from '@fortawesome/free-solid-svg-icons';
@@ -26,7 +26,7 @@ const TempSave = () => {
     allUploadPhotos,
     mainPhoto,
     setPostState,
-  } = usePostState();
+  } = usePostWritingState();
   const { saveTempPost } = usePostsDB();
 
   const handleTempPost = async () => {

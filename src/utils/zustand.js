@@ -114,7 +114,7 @@ export const useProtectorPageData = create((set) => ({
     })),
 }));
 
-export const usePostState = create((set) => ({
+export const usePostWritingState = create((set) => ({
   postId: '', //required
   tripName: '',
   title: '',
@@ -144,12 +144,12 @@ export const usePostReadingState = create((set) => ({
   setPostReadingState: (key, value) => set({ [key]: value }),
 }));
 
-export const useHomepageMarkers = create((set) => ({
-  postWithMarkers: [],
-  setPostWithMarkers: (key, value) => set({ [key]: value }),
+export const usePostMapState = create((set) => ({
+  postMarkers: [],
+  setPostMarkers: (key, value) => set({ [key]: value }),
 }));
 
-export const useRefStore = create((set) => ({
+export const useTourGuideRefStore = create((set) => ({
   tripSelectionRef: null,
   futureTripsRef: null,
   pastTripsRef: null,
