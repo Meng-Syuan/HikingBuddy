@@ -57,7 +57,7 @@ const Note = styled.h6`
 `;
 
 const ScheduleBlock = styled.div`
-  min-height: 80px;
+  min-height: ${({ $isBaseBlock }) => ($isBaseBlock ? `200px` : '80px')};
 `;
 
 const ButtonsContainer = styled.div`
@@ -318,6 +318,7 @@ const PlanningSchedule = () => {
                   <ScheduleBlock
                     ref={provided.innerRef}
                     {...provided.droppableProps}
+                    $isBaseBlock={date === 'notArrangedBlock'}
                   >
                     {items.items.map((item, index) => (
                       <Draggable
