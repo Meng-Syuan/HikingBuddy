@@ -69,6 +69,7 @@ const ReleaseBtn = () => {
       icon: 'success',
       title: '發送成功',
       text: '可至山閱足跡查看文章',
+      position: 'center',
     });
   };
 

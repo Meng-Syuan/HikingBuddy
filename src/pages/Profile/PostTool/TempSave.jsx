@@ -30,8 +30,6 @@ const TempSave = () => {
   const { saveTempPost } = usePostsDB();
 
   const handleTempPost = async () => {
-    console.log(postId);
-    console.log('postId');
     if (!postId) {
       Toast.fire({
         icon: 'error',
@@ -57,7 +55,7 @@ const TempSave = () => {
         icon: 'success',
         title: '暫存成功 🤗',
         position: 'center',
-        timer: 1500,
+        timer: 1200,
       });
     }
   };

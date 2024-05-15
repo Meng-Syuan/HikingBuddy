@@ -70,6 +70,7 @@ const SaveScheduleBtn = ({ setSave }) => {
         title: '儲存成功',
         text: '導向個人頁面查看行程😎',
         icon: 'success',
+        timer: 1000,
       });
       navigate('/profile');
     }
