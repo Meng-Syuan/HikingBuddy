@@ -88,16 +88,6 @@ export const SignIn = () => {
     fetchUserData();
   }, [isSignedIn]);
 
-  useEffect(() => {
-    if (!userId) return;
-    Toast.fire({
-      icon: 'success',
-      title: '登入成功🎉',
-      timer: 1500,
-      width: '220px',
-    });
-  }, [userId]);
-
   const signInWithClerk = async () => {
     const token = await getToken({ template: 'integration_firebase' });
     const userCredentials = await signInWithCustomToken(auth, token || '');
