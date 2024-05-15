@@ -4,9 +4,10 @@ import logo from '/src/assets/img/logo.png';
 import { NavLink } from 'react-router-dom';
 import { SignIn, SignOut } from './AuthIcon';
 import { useAuth } from '@clerk/clerk-react';
-import { useUserState } from '@utils/zustand';
+import { useUserState, usePostMapState } from '@utils/zustand';
 import { useEffect, useState } from 'react';
 import useUsersDB from '@utils/hooks/useUsersDB';
+import usePostsDB from '@utils/hooks/usePostsDB';
 import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 
 const HeaderContainer = styled.header`
@@ -69,6 +70,7 @@ const Header = () => {
   const { isSignedIn } = useAuth();
   const { getUserData } = useUsersDB();
   const { sortSchedulesDates } = useSchedulesDB();
+  const { getPostsList } = usePostsDB();
   const {
     isTestingAccount,
     setUserState,
@@ -76,6 +78,7 @@ const Header = () => {
     userData,
     futureSchedules,
   } = useUserState();
+  const { setPostMarkers } = usePostMapState();
   const [scheduleId, setScheduleId] = useState('no_active_schedule');
 
   useEffect(() => {
@@ -98,6 +101,26 @@ const Header = () => {
       setUserState('pastSchedules', sortedResult.pastSchedules);
     };
     sortDates();
+  }, [userData]);
+
+  useEffect(() => {
+    if (!userData) return;
+    (async () => {
+      const postIds = userData.posts;
+      const result = await getPostsList(postIds);
+      const postMarkers = result.map((post) => {
+        const markers = Object.values(post.markers);
+        return markers.map((marker) => {
+          return {
+            id: post.id,
+            title: post.title,
+            coordinates: marker,
+            createTime: post.createTime,
+          };
+        });
+      });
+      setPostMarkers('postMarkers', postMarkers.flat());
+    })();
   }, [userData]);
 
   useEffect(() => {

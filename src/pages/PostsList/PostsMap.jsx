@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import mapboxgl from 'mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
-import usePostsDB from '@utils/hooks/usePostsDB';
-import { useUserState, useHomepageMarkers } from '@utils/zustand';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import { usePostMapState } from '@utils/zustand';
 import { lightFormat } from 'date-fns';
 
 mapboxgl.accessToken =
@@ -28,7 +28,7 @@ const MapContainer = styled.div`
     }
     .popup-title {
       border-radius: 5px 5px 0 0;
-      padding: 5px 12px;
+      padding: 5px 1rem;
       background-color: #fffacd;
       letter-spacing: 2px;
       text-align: center;
@@ -60,9 +60,7 @@ const Map = () => {
   const [lng, setLng] = useState(121.1604);
   const [lat, setLat] = useState(23.7898);
   const [zoom, setZoom] = useState(7);
-  const { getPostsList } = usePostsDB();
-  const { userData } = useUserState();
-  const { postWithMarkers, setPostWithMarkers } = useHomepageMarkers();
+  const { postMarkers } = usePostMapState();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -82,33 +80,12 @@ const Map = () => {
   }, []);
 
   useEffect(() => {
-    if (!userData) return;
-    const fetchPostsAndMarkers = async () => {
-      const postIds = userData.posts;
-      const result = await getPostsList(postIds);
-      const postWithMarkers = result.map((post) => {
-        const markers = Object.values(post.markers);
-        return markers.map((marker) => {
-          return {
-            id: post.id,
-            title: post.title,
-            coordinates: marker,
-            createTime: post.createTime,
-          };
-        });
-      });
-      setPostWithMarkers('postWithMarkers', postWithMarkers.flat());
-    };
-    fetchPostsAndMarkers();
-  }, [userData]);
-
-  useEffect(() => {
-    if (postWithMarkers.length === 0) return;
-    const popupClickHandler = (marker) => {
-      handleNavigateToPost(marker.id);
+    if (postMarkers.length === 0) return;
+    const handlePopupClick = (marker) => {
+      navigate(`/post/${marker.id}`);
     };
 
-    postWithMarkers.map((marker) => {
+    postMarkers.map((marker) => {
       const createTime = lightFormat(marker.createTime, 'yyyy-MM-dd');
       const popup = new mapboxgl.Popup().setHTML(
         `<div class="wrapper">
@@ -125,15 +102,12 @@ const Map = () => {
 
       popup.on('open', () => {
         popup._content.addEventListener('click', () => {
-          popupClickHandler(marker);
+          handlePopupClick(marker);
         });
       });
     });
-  }, [postWithMarkers]);
+  }, [postMarkers]);
 
-  const handleNavigateToPost = (postId) => {
-    navigate(`/post/${postId}`);
-  };
   return (
     <>
       <Sidebar>
