@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
-import color from '@utils/theme';
+import color from '@theme';
+import ReactLoading from 'react-loading';
 //components
 import Header from './components/Header/Header';
 
@@ -16,12 +17,21 @@ const StyledBackground = styled.div`
   justify-content: center;
 `;
 
+const LoadingWrapper = styled.div`
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 function App() {
   return (
     <>
       <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
         <ClerkLoading>
-          <div>Loading</div>
+          <LoadingWrapper>
+            <ReactLoading type="spinningBubbles" color={color.textColor} />
+          </LoadingWrapper>
         </ClerkLoading>
         <ClerkLoaded>
           <Header />
