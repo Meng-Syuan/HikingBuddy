@@ -67,8 +67,6 @@ const AuthIconWrapper = styled.div`
 `;
 
 const Header = () => {
-  const { isSignedIn } = useAuth();
-  const { getUserData } = useUsersDB();
   const { sortSchedulesDates } = useSchedulesDB();
   const { getPostsList } = usePostsDB();
   const {
@@ -80,18 +78,6 @@ const Header = () => {
   } = useUserState();
   const { setPostMarkers } = usePostMapState();
   const [scheduleId, setScheduleId] = useState('no_active_schedule');
-
-  useEffect(() => {
-    if (!isSignedIn && !isTestingAccount) return;
-    const fetchUserData = async () => {
-      const data = await getUserData();
-      setUserState('userData', data);
-      setUserState('userPhoto', data?.userPhoto || '');
-      setUserState('activeScheduleId', data?.activeSchedule);
-      setUserState('userPostsIds', data.posts || []);
-    };
-    fetchUserData();
-  }, [isSignedIn]);
 
   useEffect(() => {
     if (!userData) return;

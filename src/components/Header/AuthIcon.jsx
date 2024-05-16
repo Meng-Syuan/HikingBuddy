@@ -14,7 +14,7 @@ import {
 import { useNavigate, NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import sweetAlert, { Toast } from '@utils/sweetAlert';
+import sweetAlert from '@utils/sweetAlert';
 import { useEffect } from 'react';
 
 import { signInWithCustomToken, updateProfile } from 'firebase/auth';
@@ -73,15 +73,15 @@ export const SignIn = () => {
   const profileIcon = userPhoto || profileDefault;
 
   useEffect(() => {
-    if (!isSignedIn) return;
+    if (!isSignedIn && !isTestingAccount) return;
     const fetchUserData = async () => {
       const data = await getUserData();
       if (!data) {
         signInWithClerk();
       } else {
         setUserState('userData', data);
-        setUserState('userPhoto', data.userPhoto || '');
-        setUserState('activeScheduleId', data.activeSchedule);
+        setUserState('userPhoto', data?.userPhoto || '');
+        setUserState('activeScheduleId', data?.activeSchedule);
         setUserState('userPostsIds', data.posts || []);
       }
     };
