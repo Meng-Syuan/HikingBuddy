@@ -12,7 +12,7 @@ import App from './App.jsx';
 import Home from './pages/Home/Home.jsx';
 import Profile from './pages/Profile';
 import ProfileHome from './pages/Profile/ProfileHome.jsx';
-import ScheduleDetails from './pages/Profile/scheduleDetails';
+import ScheduleDetails from './pages/Profile/ScheduleDetails';
 import PathPlanner from './pages/PathPlanner';
 import Protector from './pages/Protector';
 import PostLists from './pages/PostsList';
