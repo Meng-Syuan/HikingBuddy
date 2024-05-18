@@ -1,11 +1,5 @@
 import styled from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  useUserState,
-  useProtectorPageData,
-  useScheduleState,
-  useScheduleArrangement,
-} from '@utils/zustand';
 import { useAuth } from '@clerk/clerk-react';
 import gpxParser from 'gpxparser';
 
@@ -13,10 +7,19 @@ import HikerInfo from './HikerInfo';
 import Tabs from './Tabs';
 import { useState, useEffect } from 'react';
 import { sha256 } from 'js-sha256';
-import useProtectorsDB from '@utils/hooks/useProtectorsDB';
-import useUsersDB from '@utils/hooks/useUsersDB';
-import useSchedulesDB from '@utils/hooks/useSchedulesDB';
-import { Toast } from '@utils/sweetAlert';
+
+import useUsersDB from '@/hooks/useUsersDB';
+import useSchedulesDB from '@/hooks/useSchedulesDB';
+import { Toast, showErrorToast } from '@/utils/sweetAlert';
+
+//utils
+import {
+  useUserState,
+  useProtectorPageData,
+  useScheduleState,
+  useScheduleArrangement,
+} from '@/zustand';
+import getDocById from '@/firestore/getDocById';
 //#region
 const ProtectorContainer = styled.main`
   width: 1100px;
@@ -31,6 +34,7 @@ const TabsContainer = styled.section`
 const firestoreDocIdLength = 20;
 //#endregion
 const Protector = () => {
+  const HASH_KEY = 'testing..rewrite later';
   const [isEditable, setIsEditable] = useState(false);
   const [isUrlValid, setIsUrlValid] = useState(false);
   const [gpxUrl, setGPXurl] = useState(null);
@@ -43,14 +47,13 @@ const Protector = () => {
     useScheduleState();
   const { setScheduleArrangement } = useScheduleArrangement();
   const { setProtectorPageData } = useProtectorPageData();
-  const { hashKey, getProtectorDoc } = useProtectorsDB();
   const { getActiveScheduleIdByPassword } = useUsersDB();
   const { getScheduleDetails, getScheduleInfo } = useSchedulesDB();
 
   //determine the perspective and fetch the target data
   useEffect(() => {
     const checkStatus = async () => {
-      const hashedPassword = sha256.hmac(scheduleId, hashKey);
+      const hashedPassword = sha256.hmac(scheduleId, HASH_KEY);
       if (!isSignedIn && scheduleId.length <= firestoreDocIdLength) {
         Toast.fire({
           title: '未登入',
@@ -59,12 +62,16 @@ const Protector = () => {
         });
       } else if (isSignedIn && scheduleId.length <= firestoreDocIdLength) {
         const encryptedId = sha256(scheduleId);
-        const hashedPassword = sha256.hmac(encryptedId, hashKey);
+        const hashedPassword = sha256.hmac(encryptedId, HASH_KEY);
         const id = await getActiveScheduleIdByPassword(hashedPassword);
         if (id) {
-          const hikerInfo = await getProtectorDoc(id);
-          setProtectorPageData('hikerInfo', hikerInfo);
-          setProtectorPageData('hikerPhoto', hikerInfo.hiker_photo);
+          try {
+            const hikerInfo = await getDocById('protectors', id);
+            setProtectorPageData('hikerInfo', hikerInfo || '');
+            setProtectorPageData('hikerPhoto', hikerInfo?.hiker_photo || '');
+          } catch (error) {
+            await showErrorToast('讀取登山者資訊發生錯誤', error.message);
+          }
           const scheduleDetails = await getScheduleDetails(id);
           const scheduleInfo = await getScheduleInfo(id);
           setScheduleState('scheduleDetails', scheduleDetails);
@@ -83,9 +90,14 @@ const Protector = () => {
       } else if (scheduleId.length > firestoreDocIdLength) {
         const id = await getActiveScheduleIdByPassword(hashedPassword);
         if (id) {
-          const hikerInfo = await getProtectorDoc(id);
-          setProtectorPageData('hikerInfo', hikerInfo);
-          setProtectorPageData('hikerPhoto', hikerInfo.hiker_photo);
+          try {
+            const hikerInfo = await getDocById('protectors', id);
+            setProtectorPageData('hikerInfo', hikerInfo || '');
+            setProtectorPageData('hikerPhoto', hikerInfo?.hiker_photo || '');
+          } catch (error) {
+            await showErrorToast('讀取登山者資訊發生錯誤', error.message);
+          }
+
           const scheduleDetails = await getScheduleDetails(id);
           const scheduleInfo = await getScheduleInfo(id);
           setScheduleState('scheduleDetails', scheduleDetails);
@@ -125,7 +137,7 @@ const Protector = () => {
         lng: location.geopoint._long,
         id: location.itineraryId,
         name: location.location,
-        ETA: location.datetime,
+        ETA: location?.datetime,
         isArrived: location?.isArrived,
         arrivalTime: location?.arrivalTime,
       };

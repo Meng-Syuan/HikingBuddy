@@ -1,13 +1,15 @@
 import styled from 'styled-components';
-import color from '@theme';
-import { useProtectorPageData } from '@utils/zustand';
-import useUploadFile from '@utils/hooks/useUploadFile';
-import useProtectorsDB from '@utils/hooks/useProtectorsDB';
-import { Toast } from '../../utils/sweetAlert';
+import color from '@/theme';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import { useState } from 'react';
+
+//utils
+import { useProtectorPageData } from '@/zustand';
+import useUploadFile from '@/hooks/useUploadFile';
+import { Toast, showErrorToast } from '@/utils/sweetAlert';
+import setFirestoreDoc from '@/firestore/setFirestoreDoc';
 
 const HikerInfoContainer = styled.section`
   flex: 0 1 360px;
@@ -125,7 +127,6 @@ const default_photo = `https://react.semantic-ui.com/images/wireframe/image.png`
 const HikerInfo = ({ isEditable, id, valid }) => {
   const [sendable, setSendable] = useState(false);
   const { getUploadFileUrl } = useUploadFile();
-  const { updateProtectorDoc } = useProtectorsDB();
   const { hikerInfo, hikerPhoto, updateHikerInfo, setProtectorPageData } =
     useProtectorPageData();
 
@@ -135,22 +136,32 @@ const HikerInfo = ({ isEditable, id, valid }) => {
     const file = e.target.files[0];
     const url = await getUploadFileUrl('hiker_photo', file, id);
     setProtectorPageData('hikerPhoto', url); //renew global state
-    await updateProtectorDoc(id, 'hiker_photo', url); //renew protectorsDB
+    try {
+      const firestoreItem = { hiker_photo: url };
+      await setFirestoreDoc('protectors', id, firestoreItem);
+    } catch (error) {
+      await showErrorToast('發生錯誤', error.message);
+    }
   };
+
   const handleTextChange = (e, type) => {
     updateHikerInfo(type, e.target.value);
     setSendable(true);
   };
+
   const handleUploadHikerInfo = async () => {
-    const newHikerInfo = { ...hikerInfo, hiker_photo: hikerPhoto };
-    await updateProtectorDoc(id, '', newHikerInfo);
-    setSendable(false);
-    Toast.fire({
-      position: 'bottom-end',
-      timer: 1000,
-      title: '資料上傳完成',
-      icon: 'success',
-    });
+    try {
+      await setFirestoreDoc('protectors', id, hikerInfo);
+      setSendable(false);
+      Toast.fire({
+        position: 'bottom-end',
+        timer: 1000,
+        title: '資料上傳完成',
+        icon: 'success',
+      });
+    } catch (error) {
+      await showErrorToast('上傳資料發生錯誤', error.message);
+    }
   };
 
   return (
