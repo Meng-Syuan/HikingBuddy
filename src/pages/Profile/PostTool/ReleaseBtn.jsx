@@ -1,17 +1,13 @@
 import styled from 'styled-components';
-import {
-  usePostWritingState,
-  useUserState,
-  usePostMapState,
-} from '@utils/zustand';
-import usePostsDB from '@utils/hooks/usePostsDB';
-import useUsersDB from '@utils/hooks/useUsersDB';
+import { usePostWritingState, useUserState, usePostMapState } from '@/zustand';
+import useUsersDB from '@/hooks/useUsersDB';
+import setFirestoreDoc from '@/firestore/setFirestoreDoc';
 
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconButton } from '@mui/material';
 import { Tooltip } from 'react-tippy';
-import { Toast } from '@utils/sweetAlert';
+import { Toast, showErrorToast } from '@/utils/sweetAlert';
 
 const IconWrapper = styled(IconButton)`
   &:hover {
@@ -28,49 +24,49 @@ const ReleaseBtn = () => {
     markers,
     allUploadPhotos,
     content,
-    setPostState,
+    resetPostWritingState,
   } = usePostWritingState();
-  const { deleteTrip, userPostsIds, postsData, setUserState } = useUserState();
+  const { deleteTrip, userPostsIds, setUserState } = useUserState();
   const { postMarkers, setPostMarkers } = usePostMapState();
-  const { publishPost } = usePostsDB();
   const { addUserInfo, deleteTargetData } = useUsersDB();
 
   const handlePublication = async () => {
     const result = checkReqirement();
     if (!result) return;
+
     const reorderedPhotos = reorderPhotos();
     const parsedContent = structureContent(reorderedPhotos);
     const createTime = new Date().getTime();
-    await publishPost(postId, title, parsedContent, mainPhoto, markers);
-    const newPost = {
-      id: postId,
+
+    const firestoreItem = {
+      postId,
       title,
-      content: parsedContent,
+      parsedContent,
       mainPhoto,
-      createTime,
+      marker: { ...markers },
+      isTemp: false,
+      createAt: createTime,
     };
-    const newPostsData = [newPost, ...postsData];
-    setUserState('postsData', newPostsData);
-    const newPostsIds = [...userPostsIds, postId];
-    setUserState('userPostsIds', newPostsIds);
-    const newMarkers = updateHomepageMarkers(createTime);
-    setPostMarkers('postMarkers', [...postMarkers, ...newMarkers]);
-    await addUserInfo('posts', postId);
-    await deleteTargetData('schedulesIDs', postId);
-    deleteTrip('pastSchedules', postId);
-    setPostState('postId', '');
-    setPostState('tripName', '');
-    setPostState('title', '');
-    setPostState('content', '');
-    setPostState('mainPhoto', '');
-    setPostState('markers', '');
-    setPostState('allUploadPhotos', '');
-    await Toast.fire({
-      icon: 'success',
-      title: '發送成功',
-      text: '可至山閱足跡查看文章',
-      position: 'center',
-    });
+    try {
+      await setFirestoreDoc('posts', postId, firestoreItem);
+      //to renew postsData and posts page map markers
+      setUserState('userPostsIds', [...userPostsIds, postId]);
+      const newPostMarkers = updatePostsMarkers(createTime);
+      setPostMarkers('postMarkers', [...postMarkers, ...newPostMarkers]);
+
+      await addUserInfo('posts', postId);
+      await deleteTargetData('schedulesIDs', postId);
+      deleteTrip('pastSchedules', postId);
+      resetPostWritingState();
+      await Toast.fire({
+        icon: 'success',
+        title: '發送成功',
+        text: '可至山閱足跡查看文章',
+        position: 'center',
+      });
+    } catch (error) {
+      await showErrorToast('發生錯誤', error.message);
+    }
   };
 
   const checkReqirement = async () => {
@@ -143,16 +139,14 @@ const ReleaseBtn = () => {
       return parsedContent;
     }
   };
-  const updateHomepageMarkers = (createTime) => {
-    const result = markers.map((marker) => {
-      return {
-        id: postId,
-        title,
-        createTime,
-        coordinates: marker,
-      };
-    });
-    return result;
+  const updatePostsMarkers = (createTime) => {
+    const postMarkers = markers.map((marker) => ({
+      id: postId,
+      title,
+      createTime,
+      coordinates: marker,
+    }));
+    return postMarkers;
   };
 
   return (

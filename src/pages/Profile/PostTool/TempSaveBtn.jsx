@@ -1,12 +1,12 @@
 import styled from 'styled-components';
-import { usePostWritingState } from '@utils/zustand';
-import usePostsDB from '@utils/hooks/usePostsDB';
+import { usePostWritingState } from '@/zustand';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookmark } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
 import { Tooltip } from 'react-tippy';
 import 'react-tippy/dist/tippy.css';
-import { Toast } from '@utils/sweetAlert';
+import { Toast, showErrorToast } from '@/utils/sweetAlert';
+import setFirestoreDoc from '@/firestore/setFirestoreDoc';
 
 const IconWrapper = styled(IconButton)`
   &:hover {
@@ -17,7 +17,7 @@ const IconWrapper = styled(IconButton)`
   }
 `;
 
-const TempSave = () => {
+const TempSaveBtn = () => {
   const {
     postId,
     tripName,
@@ -25,9 +25,8 @@ const TempSave = () => {
     content,
     allUploadPhotos,
     mainPhoto,
-    setPostState,
+    resetPostWritingState,
   } = usePostWritingState();
-  const { saveTempPost } = usePostsDB();
 
   const handleTempPost = async () => {
     if (!postId) {
@@ -38,25 +37,27 @@ const TempSave = () => {
         timerProgressBar: false,
       });
     } else {
-      await saveTempPost(
-        postId,
-        tripName,
-        title,
-        content,
-        allUploadPhotos,
-        mainPhoto
-      );
-      setPostState('postId', '');
-      setPostState('tripName', '');
-      setPostState('title', '');
-      setPostState('content', '');
-      setPostState('allUploadPhotos', '');
-      Toast.fire({
-        icon: 'success',
-        title: '暫存成功 🤗',
-        position: 'center',
-        timer: 1200,
-      });
+      try {
+        const firestoreItem = {
+          postId,
+          tripName,
+          title,
+          content,
+          allUploadPhotos,
+          mainPhoto,
+          isTemporary: true,
+        };
+        await setFirestoreDoc('posts', postId, firestoreItem);
+        resetPostWritingState();
+        Toast.fire({
+          icon: 'success',
+          title: '暫存成功 🤗',
+          position: 'center',
+          timer: 1200,
+        });
+      } catch (error) {
+        await showErrorToast('發生錯誤', error.message);
+      }
     }
   };
 
@@ -69,4 +70,4 @@ const TempSave = () => {
   );
 };
 
-export default TempSave;
+export default TempSaveBtn;
