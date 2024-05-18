@@ -115,15 +115,15 @@ export const useProtectorPageData = create((set) => ({
 }));
 
 export const usePostWritingState = create((set) => ({
-  postId: '', //required
+  postId: 0, //required
   tripName: '',
   title: '',
   content: '',
   allUploadPhotos: [],
   mainPhoto: '',
   markers: [],
-  setPostState: (key, value) => set({ [key]: value }),
-  resetPostState: () =>
+  setPostWritingState: (key, value) => set({ [key]: value }),
+  resetPostWritingState: () =>
     set({
       postId: '',
       tripName: '',

@@ -17,7 +17,7 @@ const StyledInputLabel = styled(InputLabel)`
 
 const Marker = () => {
   const { getScheduleDetails } = useSchedulesDB();
-  const { postId, setPostState } = usePostWritingState();
+  const { postId, setPostWritingState } = usePostWritingState();
   const [locations, setlocations] = useState([]);
   const [selections, setSelections] = useState([]);
   useEffect(() => {
@@ -37,7 +37,7 @@ const Marker = () => {
 
   useEffect(() => {
     const markers = selections.map((selection) => selection.geopoint);
-    setPostState('markers', markers);
+    setPostWritingState('markers', markers);
   }, [selections]);
 
   const handleChange = (e) => {

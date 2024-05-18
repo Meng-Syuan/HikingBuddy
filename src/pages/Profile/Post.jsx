@@ -13,7 +13,7 @@ import sweetAlert from '@utils/sweetAlert';
 import TripSelection from './PostTool/TripSelection';
 import Marker from './PostTool/MarkerSelection';
 import ReleaseBtn from './PostTool/ReleaseBtn';
-import TempSave from './PostTool/TempSave';
+import TempSaveBtn from './PostTool/TempSaveBtn';
 
 //#region
 
@@ -129,7 +129,7 @@ const Span = styled.span`
 
 const uploadLimit = 6;
 const Post = () => {
-  const { title, content, allUploadPhotos, mainPhoto, setPostState } =
+  const { title, content, allUploadPhotos, mainPhoto, setPostWritingState } =
     usePostWritingState();
   const { getUploadFileUrl, compressImage } = useUploadFile();
   const [lastUploadedImg, setLastUploadedImg] = useState();
@@ -171,7 +171,7 @@ const Post = () => {
   useEffect(() => {
     if (!lastUploadedImg) return;
     const urls = [...allUploadPhotos, lastUploadedImg];
-    setPostState('allUploadPhotos', urls);
+    setPostWritingState('allUploadPhotos', urls);
   }, [lastUploadedImg]);
 
   const handlePhotoUpload = async (e) => {
@@ -179,7 +179,7 @@ const Post = () => {
     const compressedImg = await compressImage(file);
     const url = await getUploadFileUrl(`post_photos`, compressedImg, file.name);
     setLastUploadedImg({ id: `[${file.name}-${allUploadPhotos.length}]`, url });
-    setPostState(
+    setPostWritingState(
       'content',
       content + `[${file.name}-${allUploadPhotos.length}]`
     );
@@ -189,15 +189,15 @@ const Post = () => {
     const id = e.currentTarget.id;
     console.log(id);
     const updateImgUrls = allUploadPhotos.filter((img) => img.id !== id);
-    setPostState('allUploadPhotos', updateImgUrls);
+    setPostWritingState('allUploadPhotos', updateImgUrls);
     const updatedContent = content.replace(id, '');
-    setPostState('content', updatedContent);
+    setPostWritingState('content', updatedContent);
   };
 
   const handleMainPhoto = (e) => {
     const id = e.currentTarget.id;
     const mainPhotoUrl = allUploadPhotos.find((img) => img.url === id);
-    setPostState('mainPhoto', mainPhotoUrl.url);
+    setPostWritingState('mainPhoto', mainPhotoUrl.url);
   };
 
   return (
@@ -212,7 +212,7 @@ const Post = () => {
           fullWidth
           margin="dense"
           value={title}
-          onChange={(e) => setPostState('title', e.target.value)}
+          onChange={(e) => setPostWritingState('title', e.target.value)}
           inputProps={{ maxLength: 30 }}
         />
         <StyledTextField
@@ -224,7 +224,7 @@ const Post = () => {
           multiline
           minRows={13}
           value={content}
-          onChange={(e) => setPostState('content', e.target.value)}
+          onChange={(e) => setPostWritingState('content', e.target.value)}
         />
         {allUploadPhotos && (
           <Tooltip
@@ -291,7 +291,7 @@ const Post = () => {
             <Marker />
           </ToolWrapper>
           <ButtonWrapper>
-            <TempSave />
+            <TempSaveBtn />
             <ReleaseBtn />
           </ButtonWrapper>
         </ToolBar>
