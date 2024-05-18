@@ -3,6 +3,7 @@ import color from '@/theme';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
+import wireframe from '/src/assets/img/wireframe.png';
 import { useState } from 'react';
 
 //utils
@@ -122,15 +123,13 @@ const StyledWritingIcon = styled(BorderColorIcon)`
   color: ${color.secondary};
 `;
 
-const default_photo = `https://react.semantic-ui.com/images/wireframe/image.png`;
-
 const HikerInfo = ({ isEditable, id, valid }) => {
   const [sendable, setSendable] = useState(false);
   const { getUploadFileUrl } = useUploadFile();
   const { hikerInfo, hikerPhoto, updateHikerInfo, setProtectorPageData } =
     useProtectorPageData();
 
-  const previewURL = hikerPhoto || default_photo;
+  const previewURL = hikerPhoto || wireframe;
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];

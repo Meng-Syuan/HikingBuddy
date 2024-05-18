@@ -1,9 +1,14 @@
 import styled from 'styled-components';
-import color from '@utils/theme';
-import useUsersDB from '@utils/hooks/useUsersDB';
-import useUploadFile from '@utils/hooks/useUploadFile';
+import color from '@/theme';
+import wireframe from '/src/assets/img/wireframe.png';
 import { useState, useEffect, useRef } from 'react';
-import { useUserState, useTourGuideRefStore } from '@utils/zustand';
+
+//utils
+import { useUserState, useTourGuideRefStore } from '@/utils/zustand';
+import useUsersDB from '@/hooks/useUsersDB';
+import useUploadFile from '@/hooks/useUploadFile';
+
+//components
 import Trip from './MinifyTrip';
 //#region
 const PersonalInfoWrapper = styled.section`
@@ -61,7 +66,6 @@ const Split = styled.hr`
   background-color: #888;
   margin: 1rem 5px;
 `;
-const default_photo = `https://react.semantic-ui.com/images/wireframe/image.png`;
 
 //#endregion
 const PersonalInfo = () => {
@@ -76,7 +80,7 @@ const PersonalInfo = () => {
   const futureTripsRef = useRef(null);
   const pastTripsRef = useRef(null);
 
-  const previewURL = imgUpload || userPhoto || default_photo;
+  const previewURL = imgUpload || userPhoto || wireframe;
 
   useEffect(() => {
     setRefStore('futureTripsRef', futureTripsRef);
