@@ -12,6 +12,15 @@ export const Toast = Swal.mixin({
   },
 });
 
+export function showErrorToast(errorTitle, errorMessage) {
+  Toast.fire({
+    icon: 'error',
+    title: errorTitle,
+    text: errorMessage,
+    position: 'center',
+  });
+}
+
 export default {
   confirm(title, text, icon, showConfirmButton, showDenyButton) {
     return Swal.fire({

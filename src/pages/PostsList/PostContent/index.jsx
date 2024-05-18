@@ -1,11 +1,13 @@
 import styled from 'styled-components';
-import { Toast } from '@utils/sweetAlert';
 import { useAuth } from '@clerk/clerk-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import usePostsDB from '@utils/hooks/usePostsDB';
-import { usePostReadingState } from '@utils/zustand';
+import { usePostReadingState } from '@/utils/zustand';
 import lightFormat from 'date-fns/lightFormat';
+
+//utils
+import getDocById from '@/firestore/getDocById';
+import { Toast, showErrorToast } from '@/utils/sweetAlert';
 
 const MainBackground = styled.div`
   width: 1100px;
@@ -66,7 +68,6 @@ const Post = () => {
   const { isSignedIn } = useAuth();
   const { postId } = useParams();
   const navigate = useNavigate();
-  const { getPostData } = usePostsDB();
   const { setPostReadingState, id, title, content, createTime } =
     usePostReadingState();
 
@@ -80,11 +81,14 @@ const Post = () => {
   }, []);
 
   useEffect(() => {
-    if (postId) {
-      const fetchPostData = async () => {
-        const data = await getPostData(postId);
-        const createTimestamp = data.createAt;
-        const createTime = lightFormat(createTimestamp, 'yyyy-MM-dd');
+    if (!postId) return;
+    (async () => {
+      try {
+        const data = await getDocById('posts', postId);
+        if (!data) return;
+        const createTime = data.createAt
+          ? lightFormat(data.createAt, 'yyyy-MM-dd')
+          : '';
         const content = data.parsedContent;
         const title = data.title;
         const id = data.id;
@@ -92,9 +96,10 @@ const Post = () => {
         setPostReadingState('content', content);
         setPostReadingState('title', title);
         setPostReadingState('id', id);
-      };
-      fetchPostData();
-    }
+      } catch (error) {
+        await showErrorToast('發生錯誤', error.message);
+      }
+    })();
   }, [postId]);
 
   return (
