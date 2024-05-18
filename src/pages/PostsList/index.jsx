@@ -1,16 +1,16 @@
 import styled from 'styled-components';
-import color from '@theme';
+import color from '@/theme';
 import { useAuth } from '@clerk/clerk-react';
-import { useUserState } from '@utils/zustand';
-import { Toast } from '@utils/sweetAlert';
+import { useUserState } from '@/zustand';
+import { Toast, showErrorToast } from '@/utils/sweetAlert';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import mountain from '../../assets/img/mountain.jpg';
-import usePostsDB from '@utils/hooks/usePostsDB';
+import mountain from '/src/assets/img/mountain.jpg';
 import lightFormat from 'date-fns/lightFormat';
-import wireframe from '../../assets/img/wireframe.png';
+import wireframe from '/src/assets/img/wireframe.png';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import getPostsList from '@/firestore/getPostsList';
 
 import Map from './PostsMap';
 
@@ -34,9 +34,6 @@ const PostsList = styled.section`
   max-height: 80vh;
   overflow-y: auto;
   margin: 1.5rem 0 4rem;
-  .skeletonWrapper {
-    width: 620px;
-  }
 `;
 
 const PostWrapper = styled.article`
@@ -48,6 +45,9 @@ const PostWrapper = styled.article`
     cursor: pointer;
     transition: all 0.15s;
     box-shadow: 2px 2px 2px rgba(100, 100, 100, 0.5);
+  }
+  .skeletonWrapper {
+    width: 620px;
   }
 `;
 
@@ -136,7 +136,6 @@ const Posts = () => {
   const { isSignedIn } = useAuth();
   const { userPostsIds, postsData, setUserState } = useUserState();
   const navigate = useNavigate();
-  const { getPostsList } = usePostsDB();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -150,13 +149,16 @@ const Posts = () => {
 
   useEffect(() => {
     if (userPostsIds.length === 0) return;
-    const fetchAllPosts = async () => {
+    (async () => {
       setIsLoading(true);
-      const postsData = await getPostsList(userPostsIds);
-      setUserState('postsData', postsData.reverse());
+      try {
+        const postsData = await getPostsList(userPostsIds);
+        setUserState('postsData', postsData.reverse());
+      } catch (error) {
+        await showErrorToast('發生錯誤', error.message);
+      }
       setIsLoading(false);
-    };
-    fetchAllPosts();
+    })();
   }, [userPostsIds]);
 
   return (
@@ -174,11 +176,20 @@ const Posts = () => {
         <>
           <PostsList>
             {isLoading ? (
-              <Skeleton
-                containerClassName="skeletonWrapper"
-                height="168px"
-                count={2}
-              />
+              <>
+                <PostWrapper>
+                  <Skeleton
+                    containerClassName="skeletonWrapper"
+                    height="168px"
+                  />
+                </PostWrapper>
+                <PostWrapper>
+                  <Skeleton
+                    containerClassName="skeletonWrapper"
+                    height="168px"
+                  />
+                </PostWrapper>
+              </>
             ) : (
               postsData.map((post) => {
                 const excerptObj = post.content.find(

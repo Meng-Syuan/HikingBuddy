@@ -1,14 +1,13 @@
 import styled from 'styled-components';
-import color from '@theme';
+import color from '@/theme';
 import logo from '/src/assets/img/logo.png';
 import { NavLink } from 'react-router-dom';
 import { SignIn, SignOut } from './AuthIcon';
-import { useAuth } from '@clerk/clerk-react';
-import { useUserState, usePostMapState } from '@utils/zustand';
+import { useUserState, usePostMapState } from '@/zustand';
 import { useEffect, useState } from 'react';
-import useUsersDB from '@utils/hooks/useUsersDB';
-import usePostsDB from '@utils/hooks/usePostsDB';
-import useSchedulesDB from '@utils/hooks/useSchedulesDB';
+import useSchedulesDB from '@/hooks/useSchedulesDB';
+import getPostsList from '@/firestore/getPostsList';
+import { showErrorToast } from '@/utils/sweetAlert';
 
 const HeaderContainer = styled.header`
   height: 80px;
@@ -68,9 +67,8 @@ const AuthIconWrapper = styled.div`
 
 const Header = () => {
   const { sortSchedulesDates } = useSchedulesDB();
-  const { getPostsList } = usePostsDB();
   const {
-    isTestingAccount,
+    // isTestingAccount,
     setUserState,
     activeScheduleId,
     userData,
@@ -93,19 +91,23 @@ const Header = () => {
     if (!userData) return;
     (async () => {
       const postIds = userData.posts;
-      const result = await getPostsList(postIds);
-      const postMarkers = result.map((post) => {
-        const markers = Object.values(post.markers);
-        return markers.map((marker) => {
-          return {
-            id: post.id,
-            title: post.title,
-            coordinates: marker,
-            createTime: post.createTime,
-          };
+      try {
+        const postsData = await getPostsList(postIds);
+        const postMarkers = postsData.map((post) => {
+          const markers = Object.values(post.markers);
+          return markers.map((marker) => {
+            return {
+              id: post.id,
+              title: post.title,
+              coordinates: marker,
+              createTime: post.createTime,
+            };
+          });
         });
-      });
-      setPostMarkers('postMarkers', postMarkers.flat());
+        setPostMarkers('postMarkers', postMarkers.flat());
+      } catch (error) {
+        await showErrorToast('發生錯誤', error.message);
+      }
     })();
   }, [userData]);
 
