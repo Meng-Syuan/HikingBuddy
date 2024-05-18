@@ -9,17 +9,13 @@ import {
   query,
   where,
   GeoPoint,
-  onSnapshot,
   deleteDoc,
 } from 'firebase/firestore';
 import { useAuth } from '@clerk/clerk-react';
-import { useEffect } from 'react';
-import { useScheduleArrangement } from '../zustand.js';
 import { isFuture } from 'date-fns';
 
 const useSchedulesDB = () => {
   const { userId } = useAuth();
-  const { setScheduleArrangement } = useScheduleArrangement();
   const schedulesRef = collection(db, 'schedules');
   const q_temporarySchedule = query(
     schedulesRef,
@@ -59,25 +55,6 @@ const useSchedulesDB = () => {
   const deleteItinerary = async (id, itineraryId) => {
     const deletionDoc = doc(schedulesRef, id, 'itineraries', itineraryId);
     await deleteDoc(deletionDoc);
-  };
-
-  const useNewItineraryListener = (id) => {
-    useEffect(() => {
-      if (!id) return;
-      const itinerariesRef = collection(schedulesRef, id, 'itineraries');
-      const unsubscribe = onSnapshot(itinerariesRef, (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === 'modified') {
-            const data = change.doc.data();
-            console.log(data);
-            setScheduleArrangement('newItinerary', data);
-          }
-        });
-      });
-      return () => {
-        unsubscribe();
-      };
-    }, [id]);
   };
 
   const saveScheduleDetails = async (
@@ -295,7 +272,6 @@ const useSchedulesDB = () => {
     addLocationToDB,
     addArrivalTime,
     deleteItinerary,
-    useNewItineraryListener,
     saveScheduleDetails,
     sortSchedulesDates,
     getScheduleInfo,
