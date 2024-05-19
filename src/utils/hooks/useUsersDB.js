@@ -4,7 +4,6 @@ import {
   collection,
   query,
   where,
-  setDoc,
   getDoc,
   getDocs,
   updateDoc,
@@ -20,28 +19,6 @@ const useUsersDB = () => {
     : userId
     ? doc(db, 'users', userId)
     : null;
-
-  const addUserInfo = async (property, id) => {
-    try {
-      const userSnapshot = await getDoc(userDocRef);
-      if (userSnapshot.exists()) {
-        const data = userSnapshot.data()[property];
-        if (!data) {
-          await updateDoc(userDocRef, {
-            [property]: [id],
-          });
-        } else {
-          data.push(id);
-          await updateDoc(userDocRef, {
-            [property]: data,
-          });
-        }
-      }
-    } catch (error) {
-      console.log(`Failed to update user's ${property}:  `);
-      console.log(error);
-    }
-  };
 
   const getActiveScheduleIdByPassword = async (password) => {
     try {
@@ -83,7 +60,6 @@ const useUsersDB = () => {
   };
 
   return {
-    addUserInfo,
     getActiveScheduleIdByPassword,
     deleteTargetData,
   };

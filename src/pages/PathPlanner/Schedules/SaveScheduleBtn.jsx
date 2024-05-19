@@ -8,7 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import useFirestoreSchedules from '@/hooks/useFirestoreSchedules';
 import useUsersDB from '@/hooks/useUsersDB';
 import { useScheduleArrangement, useUserState } from '@/zustand';
-import sweetAlert, { Toast } from '@/utils/sweetAlert';
+import sweetAlert, { Toast, showErrorToast } from '@/utils/sweetAlert';
+import setFirestoreDoc from '../../../utils/firestore/setFirestoreDoc';
 
 const StyledBtn = styled(FontAwesomeIcon)`
   font-size: 2rem;
@@ -19,7 +20,7 @@ const StyledBtn = styled(FontAwesomeIcon)`
   }
 `;
 const SaveScheduleBtn = ({ setSave }) => {
-  const { futureSchedules, setUserState } = useUserState();
+  const { userData, futureSchedules, setUserState } = useUserState();
   const {
     temporaryScheduleId,
     tripName,
@@ -27,7 +28,6 @@ const SaveScheduleBtn = ({ setSave }) => {
     gpxFileName,
     resetScheduleArrangement,
   } = useScheduleArrangement();
-  const { addUserInfo } = useUsersDB();
   const { saveScheduleDetails } = useFirestoreSchedules();
   const navigate = useNavigate();
 
@@ -52,29 +52,38 @@ const SaveScheduleBtn = ({ setSave }) => {
       );
       if (!confirm) return;
       setSave(true); //stop listener for modification
-      await saveScheduleDetails(
-        temporaryScheduleId,
-        tripName,
-        gpxFileName,
-        scheduleBlocks
-      );
-      await addUserInfo('schedulesIDs', temporaryScheduleId);
 
-      const newSchedule = getNewScheduleInfo();
-      const newFutureSchedules = [...futureSchedules, newSchedule];
-      newFutureSchedules.sort((a, b) => a.lastDay - b.lastDay);
-      setUserState('futureSchedules', newFutureSchedules);
+      try {
+        await saveScheduleDetails(
+          temporaryScheduleId,
+          tripName,
+          gpxFileName,
+          scheduleBlocks
+        );
+        const renewedScheduleIDs = {
+          schedulesIDs: [...userData.schedulesIDs, temporaryScheduleId],
+        };
+        await setFirestoreDoc('users', userData.userId, renewedScheduleIDs);
 
-      resetScheduleArrangement();
-      setSave(false);
-      await Toast.fire({
-        position: 'center',
-        title: '儲存成功',
-        text: '導向個人頁面查看行程😎',
-        icon: 'success',
-        timer: 1000,
-      });
-      navigate('/profile');
+        //state management
+        const newSchedule = getNewScheduleInfo();
+        const newFutureSchedules = [...futureSchedules, newSchedule];
+        newFutureSchedules.sort((a, b) => a.lastDay - b.lastDay);
+        setUserState('futureSchedules', newFutureSchedules);
+        resetScheduleArrangement();
+        setSave(false);
+
+        await Toast.fire({
+          position: 'center',
+          title: '儲存成功',
+          text: '導向個人頁面查看行程😎',
+          icon: 'success',
+          timer: 1000,
+        });
+        navigate('/profile');
+      } catch (error) {
+        await showErrorToast('發生錯誤', error.message);
+      }
     }
   };
 

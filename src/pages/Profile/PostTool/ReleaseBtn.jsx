@@ -26,9 +26,9 @@ const ReleaseBtn = () => {
     content,
     resetPostWritingState,
   } = usePostWritingState();
-  const { deleteTrip, userPostsIds, setUserState } = useUserState();
+  const { userData, deleteTrip, userPostsIds, setUserState } = useUserState();
   const { postMarkers, setPostMarkers } = usePostMapState();
-  const { addUserInfo, deleteTargetData } = useUsersDB();
+  const { deleteTargetData } = useUsersDB();
 
   const handlePublication = async () => {
     const result = checkReqirement();
@@ -49,12 +49,14 @@ const ReleaseBtn = () => {
     };
     try {
       await setFirestoreDoc('posts', postId, firestoreItem);
+      await setFirestoreDoc('users', userData.userId, {
+        posts: [...userPostsIds, postId],
+      });
+
       //to renew postsData and posts page map markers
       setUserState('userPostsIds', [...userPostsIds, postId]);
       const newPostMarkers = updatePostsMarkers(createTime);
       setPostMarkers('postMarkers', [...postMarkers, ...newPostMarkers]);
-
-      await addUserInfo('posts', postId);
       await deleteTargetData('schedulesIDs', postId);
       deleteTrip('pastSchedules', postId);
       resetPostWritingState();
