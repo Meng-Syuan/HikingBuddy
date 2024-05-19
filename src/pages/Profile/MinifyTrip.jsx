@@ -9,8 +9,8 @@ import { lightFormat } from 'date-fns';
 import { Tooltip } from 'react-tippy';
 
 import { useUserState } from '@/zustand';
-import useUsersDB from '@/hooks/useUsersDB';
-import sweetAlert from '@/utils/sweetAlert';
+import sweetAlert, { showErrorToast } from '@/utils/sweetAlert';
+import updateFirestoreTargetData from '@/firestore/updateFirestoreTargetData';
 
 const TripWrapper = styled.div`
   width: 100%;
@@ -67,8 +67,8 @@ const BadgeChecked = styled(BadgeProtector)`
   }
 `;
 const MinifyTrip = ({ id, firstDay, lastDay, tripName, type }) => {
-  const { deleteTargetData } = useUsersDB();
-  const { activeScheduleId, deleteTrip, listsConfirmedStatus } = useUserState();
+  const { userData, activeScheduleId, deleteTrip, listsConfirmedStatus } =
+    useUserState();
   const [isChecked, setIsChecked] = useState();
   const navigate = useNavigate();
   const firstDayContent = lightFormat(firstDay, 'M/d');
@@ -94,7 +94,15 @@ const MinifyTrip = ({ id, firstDay, lastDay, tripName, type }) => {
     );
     if (!willDelete) return;
     deleteTrip(type, id);
-    await deleteTargetData('schedulesIDs', id);
+    try {
+      await updateFirestoreTargetData(
+        `users/${userData.userId}`,
+        'schedulesIDs',
+        id
+      );
+    } catch (error) {
+      await showErrorToast('發生錯誤', error.message);
+    }
   };
 
   return (

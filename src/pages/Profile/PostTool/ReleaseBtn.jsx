@@ -1,12 +1,13 @@
 import styled from 'styled-components';
-import { usePostWritingState, useUserState, usePostMapState } from '@/zustand';
-import useUsersDB from '@/hooks/useUsersDB';
-import setFirestoreDoc from '@/firestore/setFirestoreDoc';
-
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconButton } from '@mui/material';
 import { Tooltip } from 'react-tippy';
+
+//utils
+import { usePostWritingState, useUserState, usePostMapState } from '@/zustand';
+import setFirestoreDoc from '@/firestore/setFirestoreDoc';
+import updateFirestoreTargetData from '@/firestore/updateFirestoreTargetData';
 import { Toast, showErrorToast } from '@/utils/sweetAlert';
 
 const IconWrapper = styled(IconButton)`
@@ -28,7 +29,6 @@ const ReleaseBtn = () => {
   } = usePostWritingState();
   const { userData, deleteTrip, userPostsIds, setUserState } = useUserState();
   const { postMarkers, setPostMarkers } = usePostMapState();
-  const { deleteTargetData } = useUsersDB();
 
   const handlePublication = async () => {
     const result = checkReqirement();
@@ -52,13 +52,17 @@ const ReleaseBtn = () => {
       await setFirestoreDoc('users', userData.userId, {
         posts: [...userPostsIds, postId],
       });
+      await updateFirestoreTargetData(
+        `users/${userData.userId}`,
+        'schedulesIDs',
+        postId
+      );
+      deleteTrip('pastSchedules', postId);
 
       //to renew postsData and posts page map markers
       setUserState('userPostsIds', [...userPostsIds, postId]);
       const newPostMarkers = updatePostsMarkers(createTime);
       setPostMarkers('postMarkers', [...postMarkers, ...newPostMarkers]);
-      await deleteTargetData('schedulesIDs', postId);
-      deleteTrip('pastSchedules', postId);
       resetPostWritingState();
       await Toast.fire({
         icon: 'success',
