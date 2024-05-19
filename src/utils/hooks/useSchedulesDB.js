@@ -23,11 +23,6 @@ const useSchedulesDB = () => {
     where('isTemporary', '==', true)
   );
 
-  const deleteItinerary = async (id, itineraryId) => {
-    const deletionDoc = doc(schedulesRef, id, 'itineraries', itineraryId);
-    await deleteDoc(deletionDoc);
-  };
-
   const saveScheduleDetails = async (
     id,
     tripName,
@@ -240,7 +235,6 @@ const useSchedulesDB = () => {
   return {
     getTemporaryScheduleId,
     createNewSchedule,
-    deleteItinerary,
     saveScheduleDetails,
     sortSchedulesDates,
     getScheduleInfo,

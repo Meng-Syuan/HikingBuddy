@@ -1,12 +1,16 @@
 import styled from 'styled-components';
-import color from '@utils/theme.js';
-import Flatpickr from 'react-flatpickr';
-import { useState, useEffect, forwardRef } from 'react';
-import { useScheduleArrangement } from '@utils/zustand';
-import useSchedulesDB from '@utils/hooks/useSchedulesDB';
+import color from '@/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
+
+import Flatpickr from 'react-flatpickr';
+
+import { useState, useEffect, forwardRef } from 'react';
+//utils
+import { useScheduleArrangement } from '@/zustand';
+import deleteFirestoreDoc from '@/firestore/deleteFirestoreDoc';
+import { showErrorToast } from '@/utils/sweetAlert';
 
 const ContentWrapper = styled.div`
   min-height: 25px;
@@ -52,7 +56,6 @@ const SingleLocation = forwardRef(
       setScheduleArrangement,
       mapMarkers,
     } = useScheduleArrangement();
-    const { deleteItinerary } = useSchedulesDB();
     const [timeDiff, setTimeDiff] = useState('');
 
     useEffect(() => {
@@ -92,17 +95,25 @@ const SingleLocation = forwardRef(
     };
 
     const handleDeleteItinerary = async (id) => {
-      await deleteItinerary(temporaryScheduleId, id);
-      const remainingMarkers = mapMarkers.filter((marker) => marker.id !== id);
-      setScheduleArrangement('mapMarkers', remainingMarkers);
-
-      const updatedScheduleBlocks = {};
-      for (let key in scheduleBlocks) {
-        updatedScheduleBlocks[key] = {
-          items: scheduleBlocks[key].items.filter((item) => item.id !== id),
-        };
+      try {
+        await deleteFirestoreDoc(
+          `schedules/${temporaryScheduleId}/itineraries`,
+          id
+        );
+        const remainingMarkers = mapMarkers.filter(
+          (marker) => marker.id !== id
+        );
+        setScheduleArrangement('mapMarkers', remainingMarkers);
+        const updatedScheduleBlocks = {};
+        for (let key in scheduleBlocks) {
+          updatedScheduleBlocks[key] = {
+            items: scheduleBlocks[key].items.filter((item) => item.id !== id),
+          };
+        }
+        setScheduleArrangement('scheduleBlocks', updatedScheduleBlocks);
+      } catch (error) {
+        await showErrorToast('發生錯誤', error.message);
       }
-      setScheduleArrangement('scheduleBlocks', updatedScheduleBlocks);
     };
 
     return (
@@ -122,3 +133,4 @@ const SingleLocation = forwardRef(
 );
 
 export default SingleLocation;
+SingleLocation.displayName = 'SingleLocation'; //for ESLint
