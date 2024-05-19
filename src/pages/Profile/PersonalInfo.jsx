@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 
 //utils
 import { useUserState, useTourGuideRefStore } from '@/zustand';
-import useUploadFile from '@/hooks/useUploadFile';
+import uploadFile from '@/utils/uploadFile';
 import setFirestoreDoc from '@/firestore/setFirestoreDoc';
 import { showErrorToast } from '@/utils/sweetAlert';
 
@@ -73,7 +73,7 @@ const PersonalInfo = () => {
   const { userData, userPhoto, futureSchedules, pastSchedules, setUserState } =
     useUserState();
 
-  const { getUploadFileUrl } = useUploadFile();
+  const { getUploadFileUrl } = uploadFile();
   const [activeId, setActiveId] = useState('');
   const [imgUpload, setImgUpload] = useState('');
   const { setRefStore } = useTourGuideRefStore();

@@ -1,19 +1,21 @@
 import styled from 'styled-components';
-import color from '@utils/theme';
+import color from '@/theme';
 import { TextField } from '@mui/material';
-import { usePostWritingState } from '@utils/zustand';
-import { useState, useEffect } from 'react';
-import { Tooltip } from 'react-tippy';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faXmark, faStar } from '@fortawesome/free-solid-svg-icons';
-import useUploadFile from '@utils/hooks/useUploadFile';
+import { useState, useEffect } from 'react';
+import { Tooltip } from 'react-tippy';
 import { useBlocker } from 'react-router-dom';
-import sweetAlert from '@utils/sweetAlert';
 //components
 import TripSelection from './PostTool/TripSelection';
 import Marker from './PostTool/MarkerSelection';
 import ReleaseBtn from './PostTool/ReleaseBtn';
 import TempSaveBtn from './PostTool/TempSaveBtn';
+
+//utils
+import { usePostWritingState } from '@/zustand';
+import uploadFile from '@/utils/uploadFile';
+import sweetAlert from '@/utils/sweetAlert';
 
 //#region
 
@@ -131,7 +133,7 @@ const uploadLimit = 6;
 const Post = () => {
   const { title, content, allUploadPhotos, mainPhoto, setPostWritingState } =
     usePostWritingState();
-  const { getUploadFileUrl, compressImage } = useUploadFile();
+  const { getUploadFileUrl, compressImage } = uploadFile();
   const [lastUploadedImg, setLastUploadedImg] = useState();
 
   useEffect(() => {

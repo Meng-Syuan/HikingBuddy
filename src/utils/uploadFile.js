@@ -6,7 +6,7 @@ import {
 } from 'firebase/storage';
 import imageCompression from 'browser-image-compression';
 
-const useUploadFile = () => {
+const uploadFile = () => {
   const getUploadFileUrl = async (type, file, id) => {
     try {
       const ref = storageRef(storage, `${type}/${id}`);
@@ -14,13 +14,11 @@ const useUploadFile = () => {
       const url = await getDownloadURL(snapshot.ref);
       return url;
     } catch (error) {
-      console.log('Failed to upload file');
-      console.log(error);
+      throw new Error('上傳失敗，稍後再試，或聯絡系統管理員。');
     }
   };
 
   const compressImage = async (file) => {
-    console.log('Original file size:', file.size / 1024 / 1024, 'MB');
     const getMaxSizeMB = (originalSize) => {
       // return unit:KB
       if (originalSize <= 1200) return 0.9;
@@ -36,15 +34,9 @@ const useUploadFile = () => {
 
     try {
       const compressedFile = await imageCompression(file, options);
-      console.log(
-        'Compressed file size:',
-        compressedFile.size / 1024 / 1024,
-        'MB'
-      );
       return compressedFile;
     } catch (error) {
-      console.log('Failed to compress image.');
-      console.log(error);
+      throw new Error('壓縮失敗，稍後再試，或聯絡系統管理員。');
     }
   };
   return {
@@ -53,4 +45,4 @@ const useUploadFile = () => {
   };
 };
 
-export default useUploadFile;
+export default uploadFile;

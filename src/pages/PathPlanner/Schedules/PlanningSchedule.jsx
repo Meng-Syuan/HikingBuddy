@@ -10,7 +10,7 @@ import { useAuth } from '@clerk/clerk-react';
 import { useState, useEffect, useCallback } from 'react';
 //utils
 import useFirestoreSchedules from '@/hooks/useFirestoreSchedules';
-import useUploadFile from '@/hooks/useUploadFile';
+import uploadFile from '@/utils/uploadFile';
 import { useScheduleArrangement } from '@/zustand';
 import useNewItineraryListener from '@/hooks/useNewItineraryListener';
 import { showErrorToast } from '@/utils/sweetAlert';
@@ -118,7 +118,7 @@ const PlanningSchedule = () => {
     scheduleBlocks,
   } = useScheduleArrangement();
   const { getTemporaryScheduleId } = useFirestoreSchedules();
-  const { getUploadFileUrl } = useUploadFile();
+  const { getUploadFileUrl } = uploadFile();
   const [selectedDates, setSelectedDates] = useState([]);
   const [baseBlock, setBaseBlock] = useState([]);
 

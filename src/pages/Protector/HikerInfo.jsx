@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 //utils
 import { useProtectorPageData } from '@/zustand';
-import useUploadFile from '@/hooks/useUploadFile';
+import uploadFile from '@/utils/uploadFile';
 import { Toast, showErrorToast } from '@/utils/sweetAlert';
 import setFirestoreDoc from '@/firestore/setFirestoreDoc';
 
@@ -125,7 +125,7 @@ const StyledWritingIcon = styled(BorderColorIcon)`
 
 const HikerInfo = ({ isEditable, id, valid }) => {
   const [sendable, setSendable] = useState(false);
-  const { getUploadFileUrl } = useUploadFile();
+  const { getUploadFileUrl } = uploadFile();
   const { hikerInfo, hikerPhoto, updateHikerInfo, setProtectorPageData } =
     useProtectorPageData();
 
