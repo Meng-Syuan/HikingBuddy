@@ -69,8 +69,6 @@ const NavWrapper = styled.div`
 `;
 
 const NavList = styled.ul`
-  /* overflow: hidden; */
-
   list-style: none;
   background-color: #fff;
   margin: 0;
@@ -86,7 +84,7 @@ const NavList = styled.ul`
   animation-fill-mode: forwards;
 `;
 
-const Poc = () => {
+const HeaderNavBtn = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <NavContainer>
@@ -112,4 +110,4 @@ const Poc = () => {
   );
 };
 
-export default Poc;
+export default HeaderNavBtn;

@@ -1,8 +1,7 @@
 import styled from 'styled-components';
-import Poc from './Poc';
 import BackgroundVideo from './BackgroundVideo';
 import Intro from './Intro';
-import mountainBackground from '../../assets/img/mountain_background.jpg';
+import mountainBackground from '/src/assets/img/mountain_background.jpg';
 
 const HomeContainer = styled.main`
   display: flex;
