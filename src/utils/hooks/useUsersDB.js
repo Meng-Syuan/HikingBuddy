@@ -10,7 +10,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { useAuth } from '@clerk/clerk-react';
-import { useUserState } from '../zustand.js';
+import { useUserState } from '@/zustand';
 
 const useUsersDB = () => {
   const { isTestingAccount } = useUserState();
@@ -20,42 +20,6 @@ const useUsersDB = () => {
     : userId
     ? doc(db, 'users', userId)
     : null;
-
-  const setUsersDB = async (userId, display_name, userPhtoUrl) => {
-    try {
-      if (userDocRef) {
-        await setDoc(
-          userDocRef,
-          {
-            userId,
-            username: display_name,
-            userPhoto: userPhtoUrl,
-          },
-          { merge: true }
-        );
-        console.log('users data has been stored.');
-      } else {
-        console.log('User ID is null');
-      }
-    } catch (error) {
-      console.log('Error: ' + error);
-    }
-  };
-
-  const getUserData = async () => {
-    try {
-      const docSnap = await getDoc(userDocRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        return data;
-      } else {
-        console.log('No this user info.');
-        return null;
-      }
-    } catch (error) {
-      console.log('Error: ' + error);
-    }
-  };
 
   const updateUserDoc = async (property, content) => {
     try {
@@ -128,8 +92,6 @@ const useUsersDB = () => {
   };
 
   return {
-    setUsersDB,
-    getUserData,
     updateUserDoc,
     addUserInfo,
     getActiveScheduleIdByPassword,

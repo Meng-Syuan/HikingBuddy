@@ -1,8 +1,11 @@
 import styled from 'styled-components';
-import color from '@theme';
+import color from '@/theme';
 import { LoginHover_icon, Login_icon } from '/src/assets/svg/svgIcons';
-import profileDefault from '../../assets/img/profileDefault.png';
-import hoverMixin from '@utils/hoverMixin';
+import profileDefault from '/src/assets/img/profileDefault.png';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+
+import { signInWithCustomToken, updateProfile } from 'firebase/auth';
 import {
   SignedIn,
   SignedOut,
@@ -12,15 +15,16 @@ import {
   useClerk,
 } from '@clerk/clerk-react';
 import { useNavigate, NavLink } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import sweetAlert from '@utils/sweetAlert';
 import { useEffect } from 'react';
 
-import { signInWithCustomToken, updateProfile } from 'firebase/auth';
-import { auth } from '@utils/firebase/firebaseConfig.js';
-import useUsersDB from '@utils/hooks/useUsersDB';
-import { useUserState } from '@utils/zustand';
+//utils
+import hoverMixin from '@/utils/hoverMixin';
+import { auth } from '@/utils/firebase/firebaseConfig.js';
+import useUsersDB from '@/hooks/useUsersDB';
+import { useUserState } from '@/zustand';
+import setFirestoreDoc from '@/firestore/setFirestoreDoc';
+import getDocById from '@/firestore/getDocById';
+import sweetAlert, { showErrorToast } from '@/utils/sweetAlert';
 
 const LoginBtn = styled.div`
   display: flex;
@@ -67,26 +71,28 @@ const SignOutBtn = styled(FontAwesomeIcon)`
 export const SignIn = () => {
   const { user } = useUser();
   const { getToken, isLoaded, isSignedIn, userId } = useAuth();
-  const { getUserData, setUsersDB } = useUsersDB();
   const { setUserState, userPhoto, isTestingAccount } = useUserState();
 
   const profileIcon = userPhoto || profileDefault;
 
   useEffect(() => {
     if (!isSignedIn && !isTestingAccount) return;
-    const fetchUserData = async () => {
-      const data = await getUserData();
-      if (!data) {
-        signInWithClerk();
-      } else {
-        setUserState('userData', data);
-        setUserState('userPhoto', data?.userPhoto || '');
-        setUserState('activeScheduleId', data?.activeSchedule);
-        setUserState('userPostsIds', data.posts || []);
+    (async () => {
+      try {
+        const userData = await getDocById('users', userId);
+        if (!userData) {
+          signInWithClerk();
+        } else {
+          setUserState('userData', userData);
+          setUserState('userPhoto', userData?.userPhoto || '');
+          setUserState('activeScheduleId', userData?.activeSchedule);
+          setUserState('userPostsIds', userData.posts || []);
+        }
+      } catch (error) {
+        await showErrorToast('取得使用者資料錯誤', error.message);
       }
-    };
-    fetchUserData();
-  }, [isSignedIn]);
+    })();
+  }, [isSignedIn, isTestingAccount]);
 
   const signInWithClerk = async () => {
     const token = await getToken({ template: 'integration_firebase' });
@@ -96,7 +102,16 @@ export const SignIn = () => {
       displayName: user.username,
     });
     //sync users data with firestore
-    await setUsersDB(userId, user.username, user.imageUrl || '');
+    try {
+      const newUserInfo = {
+        userId,
+        username: user.username,
+        userPhoto: user.imageUrl || '',
+      };
+      await setFirestoreDoc('users', userId, newUserInfo);
+    } catch (error) {
+      await showErrorToast('使用者資料寫入錯誤', error.message);
+    }
   };
 
   const userInfo = user
