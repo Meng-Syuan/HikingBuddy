@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components';
-import color from '@utils/theme';
+import color from '@/theme';
 import { useState } from 'react';
 
 const NavContainer = styled.div``;
