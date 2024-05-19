@@ -8,7 +8,6 @@ import { isFuture } from 'date-fns';
 
 //utils
 import { Toast, showErrorToast } from '@/utils/sweetAlert';
-import useUsersDB from '@/hooks/useUsersDB';
 import { useScheduleState, useUserState } from '@/zustand';
 import getDocById from '@/firestore/getDocById';
 import getFirestoreDocs from '@/firestore/getFirestoreDocs';

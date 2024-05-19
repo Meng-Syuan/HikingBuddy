@@ -20,7 +20,6 @@ import { useEffect } from 'react';
 //utils
 import hoverMixin from '@/utils/hoverMixin';
 import { auth } from '@/utils/firebase/firebaseConfig.js';
-import useUsersDB from '@/hooks/useUsersDB';
 import { useUserState } from '@/zustand';
 import setFirestoreDoc from '@/firestore/setFirestoreDoc';
 import getDocById from '@/firestore/getDocById';

@@ -6,10 +6,9 @@ import { Tooltip } from 'react-tippy';
 import { useNavigate } from 'react-router-dom';
 //utils
 import useFirestoreSchedules from '@/hooks/useFirestoreSchedules';
-import useUsersDB from '@/hooks/useUsersDB';
 import { useScheduleArrangement, useUserState } from '@/zustand';
 import sweetAlert, { Toast, showErrorToast } from '@/utils/sweetAlert';
-import setFirestoreDoc from '../../../utils/firestore/setFirestoreDoc';
+import setFirestoreDoc from '@/firestore/setFirestoreDoc';
 
 const StyledBtn = styled(FontAwesomeIcon)`
   font-size: 2rem;
