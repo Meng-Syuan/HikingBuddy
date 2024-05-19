@@ -9,7 +9,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useAuth } from '@clerk/clerk-react';
 import { useState, useEffect, useCallback } from 'react';
 //utils
-import useSchedulesDB from '@/hooks/useSchedulesDB';
+import useFirestoreSchedules from '@/hooks/useFirestoreSchedules';
 import useUploadFile from '@/hooks/useUploadFile';
 import { useScheduleArrangement } from '@/zustand';
 import useNewItineraryListener from '@/hooks/useNewItineraryListener';
@@ -117,7 +117,7 @@ const PlanningSchedule = () => {
     gpxUrl,
     scheduleBlocks,
   } = useScheduleArrangement();
-  const { getTemporaryScheduleId } = useSchedulesDB();
+  const { getTemporaryScheduleId } = useFirestoreSchedules();
   const { getUploadFileUrl } = useUploadFile();
   const [selectedDates, setSelectedDates] = useState([]);
   const [baseBlock, setBaseBlock] = useState([]);

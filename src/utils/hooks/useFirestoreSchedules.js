@@ -12,7 +12,7 @@ import {
 import { useAuth } from '@clerk/clerk-react';
 import { isFuture } from 'date-fns';
 
-const useSchedulesDB = () => {
+const useFirestoreSchedules = () => {
   const { userId } = useAuth();
   const schedulesRef = collection(db, 'schedules');
   const q_temporarySchedule = query(
@@ -162,4 +162,4 @@ const useSchedulesDB = () => {
   };
 };
 
-export default useSchedulesDB;
+export default useFirestoreSchedules;

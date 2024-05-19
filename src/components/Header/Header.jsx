@@ -2,13 +2,16 @@ import styled from 'styled-components';
 import color from '@/theme';
 import logo from '/src/assets/img/logo.png';
 import { NavLink } from 'react-router-dom';
-import { SignIn, SignOut } from './AuthIcon';
-import { useUserState, usePostMapState } from '@/zustand';
 import { useEffect, useState } from 'react';
-import useSchedulesDB from '@/hooks/useSchedulesDB';
+
+//utils
+import { useUserState, usePostMapState } from '@/zustand';
+import useFirestoreSchedules from '@/hooks/useFirestoreSchedules';
 import getPostsList from '@/firestore/getPostsList';
 import { showErrorToast } from '@/utils/sweetAlert';
 
+//component
+import { SignIn, SignOut } from './AuthIcon';
 const HeaderContainer = styled.header`
   height: 80px;
   border-top: solid 10px #4f8700;
@@ -66,7 +69,7 @@ const AuthIconWrapper = styled.div`
 `;
 
 const Header = () => {
-  const { sortSchedulesDates } = useSchedulesDB();
+  const { sortSchedulesDates } = useFirestoreSchedules();
   const {
     // isTestingAccount,
     setUserState,

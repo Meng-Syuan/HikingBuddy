@@ -1,12 +1,14 @@
 import styled from 'styled-components';
-import useSchedulesDB from '@utils/hooks/useSchedulesDB';
-import useUsersDB from '@utils/hooks/useUsersDB';
-import { useScheduleArrangement, useUserState } from '@utils/zustand';
-import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip } from 'react-tippy';
-import sweetAlert, { Toast } from '@utils/sweetAlert';
+
+import { useNavigate } from 'react-router-dom';
+//utils
+import useFirestoreSchedules from '@/hooks/useFirestoreSchedules';
+import useUsersDB from '@/hooks/useUsersDB';
+import { useScheduleArrangement, useUserState } from '@/zustand';
+import sweetAlert, { Toast } from '@/utils/sweetAlert';
 
 const StyledBtn = styled(FontAwesomeIcon)`
   font-size: 2rem;
@@ -26,7 +28,7 @@ const SaveScheduleBtn = ({ setSave }) => {
     resetScheduleArrangement,
   } = useScheduleArrangement();
   const { addUserInfo } = useUsersDB();
-  const { saveScheduleDetails } = useSchedulesDB();
+  const { saveScheduleDetails } = useFirestoreSchedules();
   const navigate = useNavigate();
 
   const handleSaveClick = async () => {
