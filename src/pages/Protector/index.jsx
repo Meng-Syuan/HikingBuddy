@@ -12,9 +12,9 @@ import Tabs from './Tabs';
 
 //utils
 import useUsersDB from '@/hooks/useUsersDB';
-import useSchedulesDB from '@/hooks/useSchedulesDB';
 import { Toast, showErrorToast } from '@/utils/sweetAlert';
 import getDocById from '@/firestore/getDocById';
+import getFirestoreDocs from '@/firestore/getFirestoreDocs';
 import {
   useUserState,
   useProtectorPageData,
@@ -49,7 +49,6 @@ const Protector = () => {
   const { setScheduleArrangement } = useScheduleArrangement();
   const { setProtectorPageData } = useProtectorPageData();
   const { getActiveScheduleIdByPassword } = useUsersDB();
-  const { getScheduleDetails } = useSchedulesDB();
 
   //determine the perspective and fetch the target data
   useEffect(() => {
@@ -71,8 +70,11 @@ const Protector = () => {
             setProtectorPageData('hikerInfo', hikerInfo || '');
             setProtectorPageData('hikerPhoto', hikerInfo?.hiker_photo || '');
 
-            const scheduleDetails = await getScheduleDetails(id);
-
+            const scheduleDetails = await getFirestoreDocs(
+              `schedules/${id}/itineraries`
+            );
+            console.log('scheduleDetails');
+            console.log(scheduleDetails);
             const scheduleInfo = await getDocById('schedules', id);
             setScheduleState('scheduleDetails', scheduleDetails);
             setScheduleState('scheduleInfo', scheduleInfo);
@@ -98,7 +100,11 @@ const Protector = () => {
             setProtectorPageData('hikerInfo', hikerInfo || '');
             setProtectorPageData('hikerPhoto', hikerInfo?.hiker_photo || '');
 
-            const scheduleDetails = await getScheduleDetails(id);
+            const scheduleDetails = await getFirestoreDocs(
+              `schedules/${id}/itineraries`
+            );
+            console.log('scheduleDetails');
+            console.log(scheduleDetails);
             const scheduleInfo = await getDocById('schedules', id);
             setScheduleState('scheduleDetails', scheduleDetails);
             setScheduleState('scheduleInfo', scheduleInfo);

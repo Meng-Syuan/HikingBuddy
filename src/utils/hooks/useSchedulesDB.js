@@ -142,24 +142,6 @@ const useSchedulesDB = () => {
     }
   };
 
-  const getScheduleDetails = async (id) => {
-    try {
-      const itinerariesRef = collection(schedulesRef, id, 'itineraries');
-      const itinerariesSnapshot = await getDocs(itinerariesRef);
-      if (itinerariesSnapshot.empty) {
-        return null;
-      } else {
-        const locations = [];
-        itinerariesSnapshot.forEach((doc) => {
-          locations.push(doc.data());
-        });
-        return locations;
-      }
-    } catch (error) {
-      console.log('Failed to fetch the current schedule details: ' + error);
-    }
-  };
-
   const getTemporaryScheduleId = async () => {
     try {
       const querySnapshot = await getDocs(q_temporarySchedule);
@@ -221,7 +203,6 @@ const useSchedulesDB = () => {
     createNewSchedule,
     saveScheduleDetails,
     sortSchedulesDates,
-    getScheduleDetails,
     updateScheduleContents,
   };
 };

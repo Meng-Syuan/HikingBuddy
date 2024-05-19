@@ -3,19 +3,20 @@ import color from '@/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
 
-import CalendarDate from './CalendarDate';
 import gpxParser from 'gpxparser';
 import { Tooltip } from 'react-tippy';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useState, useEffect, useCallback } from 'react';
 //utils
-import useSchedulesDB from '@/utils/hooks/useSchedulesDB';
-import useUploadFile from '@/utils/hooks/useUploadFile';
+import useSchedulesDB from '@/hooks/useSchedulesDB';
+import useUploadFile from '@/hooks/useUploadFile';
 import { useScheduleArrangement } from '@/zustand';
 import useNewItineraryListener from '@/hooks/useNewItineraryListener';
 import { showErrorToast } from '@/utils/sweetAlert';
 import getDocById from '@/firestore/getDocById';
+import getFirestoreDocs from '@/firestore/getFirestoreDocs';
 //components
+import CalendarDate from './CalendarDate';
 import Location from './SingleLocation';
 import SaveScheduleBtn from './SaveScheduleBtn';
 //#region
@@ -112,12 +113,8 @@ const PlanningSchedule = () => {
     gpxUrl,
     scheduleBlocks,
   } = useScheduleArrangement();
-  const {
-    getTemporaryScheduleId,
-    createNewSchedule,
-    updateScheduleContents,
-    getScheduleDetails,
-  } = useSchedulesDB();
+  const { getTemporaryScheduleId, createNewSchedule, updateScheduleContents } =
+    useSchedulesDB();
   const { getUploadFileUrl } = useUploadFile();
   const [selectedDates, setSelectedDates] = useState([]);
   const [baseBlock, setBaseBlock] = useState([]);
@@ -125,32 +122,38 @@ const PlanningSchedule = () => {
   const [isSaved, setIsSaved] = useState(false);
 
   const getTemporaryLocations = useCallback(async () => {
-    const locations = await getScheduleDetails(temporaryScheduleId);
-    if (!locations) {
-      setScheduleArrangement('mapMarkers', []);
-    } else {
-      //for right section(schedules) render
-      const items = locations.map((location, index) => ({
-        id: location.itineraryId,
-        name: location.location,
-        number: index + 1,
-        timeDiff: 0,
-        timeStr: '00:00',
-      }));
-      setBaseBlock(items);
-      //for left section(OSM) render
-      const mapMarkers = locations.map((location, index) => {
-        return {
-          lat: location.geopoint._lat,
-          lng: location.geopoint._long,
+    try {
+      const locations = await getFirestoreDocs(
+        `schedules/${temporaryScheduleId}/itineraries`
+      );
+      if (!locations) {
+        setScheduleArrangement('mapMarkers', []);
+      } else {
+        //for right section(schedules) render
+        const items = locations.map((location, index) => ({
           id: location.itineraryId,
           name: location.location,
           number: index + 1,
-        };
-      });
-      setScheduleArrangement('mapMarkers', mapMarkers);
-      setScheduleArrangement('locationNumber', locations.length);
-      return items;
+          timeDiff: 0,
+          timeStr: '00:00',
+        }));
+        setBaseBlock(items);
+        //for left section(OSM) render
+        const mapMarkers = locations.map((location, index) => {
+          return {
+            lat: location.geopoint._lat,
+            lng: location.geopoint._long,
+            id: location.itineraryId,
+            name: location.location,
+            number: index + 1,
+          };
+        });
+        setScheduleArrangement('mapMarkers', mapMarkers);
+        setScheduleArrangement('locationNumber', locations.length);
+        return items;
+      }
+    } catch (error) {
+      await showErrorToast('發生錯誤', error.message);
     }
   }, [temporaryScheduleId]);
 
