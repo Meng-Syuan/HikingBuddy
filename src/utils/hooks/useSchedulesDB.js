@@ -8,7 +8,6 @@ import {
   updateDoc,
   query,
   where,
-  GeoPoint,
   deleteDoc,
 } from 'firebase/firestore';
 
@@ -23,19 +22,6 @@ const useSchedulesDB = () => {
     where('userId', '==', userId),
     where('isTemporary', '==', true)
   );
-
-  const addArrivalTime = async (scheduleId, itineraryId, time) => {
-    try {
-      const docRef = doc(schedulesRef, scheduleId, 'itineraries', itineraryId);
-      await updateDoc(docRef, {
-        arrivalTime: time,
-        isArrived: true,
-      });
-    } catch (error) {
-      console.log(`Failed to write arrival time to ${itineraryId} itinerary.`);
-      console.log(error);
-    }
-  };
 
   const deleteItinerary = async (id, itineraryId) => {
     const deletionDoc = doc(schedulesRef, id, 'itineraries', itineraryId);
@@ -254,7 +240,6 @@ const useSchedulesDB = () => {
   return {
     getTemporaryScheduleId,
     createNewSchedule,
-    addArrivalTime,
     deleteItinerary,
     saveScheduleDetails,
     sortSchedulesDates,

@@ -1,3 +1,8 @@
+import styled from 'styled-components';
+import Button from '@mui/material/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
+
 import {
   MapContainer,
   TileLayer,
@@ -6,22 +11,19 @@ import {
   Popup,
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import styled from 'styled-components';
-import { useScheduleArrangement, useUserState } from '@utils/zustand';
 import { lightFormat } from 'date-fns';
-import Button from '@mui/material/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import useSchedulesDB from '@utils/hooks/useSchedulesDB';
-import { Toast } from '@utils/sweetAlert';
+
+//utils
+import { useScheduleArrangement, useUserState } from '@/zustand';
+import { Toast, showErrorToast } from '@/utils/sweetAlert';
+import setFirestoreDoc from '@/firestore/setFirestoreDoc';
 
 //Adjust for invisible Marker after deploying due to webpack building
-import L, { icon } from 'leaflet';
+import L from 'leaflet';
 import grayMarker from '../../assets/img/grayMarker.png';
 import pinkMarker from '../../assets/img/pinkMarker.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 import { useEffect, useState, useRef } from 'react';
-import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 //#region
 const normalMarker = L.icon({
@@ -88,34 +90,44 @@ const StyledButton = styled(Button)`
 const Markers = ({ isEditable }) => {
   const { activeScheduleId } = useUserState();
   const { mapMarkers, setScheduleArrangement } = useScheduleArrangement();
-  const { addArrivalTime } = useSchedulesDB();
 
   const handleArrival = async (id) => {
-    const datetime = Date.now();
-    const renewArrival = mapMarkers.map((marker) => {
+    const currentTimestamp = Date.now();
+    const mapMarkersWithArrivalInfo = mapMarkers.map((marker) => {
       if (marker.id === id) {
-        return { ...marker, isArrived: true, arrivalTime: datetime };
+        return { ...marker, isArrived: true, arrivalTime: currentTimestamp };
       } else {
         return marker;
       }
     });
-    setScheduleArrangement('mapMarkers', renewArrival);
-    await addArrivalTime(activeScheduleId, id, datetime);
-    Toast.fire({
-      position: 'center',
-      timer: 800,
-      timerProgressBar: false,
-      title: '恭喜抵達🎉🎉',
-      text: `抵達時間：${lightFormat(datetime, 'M/d HH:mm')}`,
-      icon: 'success',
-      width: '300px',
-    });
+    setScheduleArrangement('mapMarkers', mapMarkersWithArrivalInfo);
+
+    const firestoreItem = { arrivalTime: currentTimestamp, isArrived: true };
+
+    try {
+      await setFirestoreDoc(
+        `schedules/${activeScheduleId}/itineraries`,
+        id,
+        firestoreItem
+      );
+      Toast.fire({
+        position: 'center',
+        timer: 800,
+        timerProgressBar: false,
+        title: '恭喜抵達🎉🎉',
+        text: `抵達時間：${lightFormat(currentTimestamp, 'M/d HH:mm')}`,
+        icon: 'success',
+        width: '300px',
+      });
+    } catch (error) {
+      await showErrorToast('發生錯誤', error.message);
+    }
   };
 
   return (
     mapMarkers.length > 1 &&
     mapMarkers.map((marker) => {
-      const ETA = lightFormat(marker.ETA, 'M / d HH:mm');
+      const ETA = lightFormat(marker?.ETA, 'M / d HH:mm');
       const arrivalTime = marker.arrivalTime
         ? lightFormat(marker.arrivalTime, 'M / d HH:mm')
         : '';
