@@ -107,6 +107,7 @@ export const SignIn = () => {
         userId,
         username: user.username,
         userPhoto: user.imageUrl || '',
+        isFirstSignIn: true,
       };
       await setFirestoreDoc('users', userId, newUserInfo);
     } catch (error) {

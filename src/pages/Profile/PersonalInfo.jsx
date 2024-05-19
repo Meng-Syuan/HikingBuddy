@@ -4,9 +4,10 @@ import profileDefault from '/src/assets/img/profileDefault.png';
 import { useState, useEffect, useRef } from 'react';
 
 //utils
-import { useUserState, useTourGuideRefStore } from '@/utils/zustand';
-import useUsersDB from '@/hooks/useUsersDB';
+import { useUserState, useTourGuideRefStore } from '@/zustand';
 import useUploadFile from '@/hooks/useUploadFile';
+import setFirestoreDoc from '@/firestore/setFirestoreDoc';
+import { showErrorToast } from '@/utils/sweetAlert';
 
 //components
 import Trip from './MinifyTrip';
@@ -73,7 +74,6 @@ const PersonalInfo = () => {
     useUserState();
 
   const { getUploadFileUrl } = useUploadFile();
-  const { updateUserDoc } = useUsersDB();
   const [activeId, setActiveId] = useState('');
   const [imgUpload, setImgUpload] = useState('');
   const { setRefStore } = useTourGuideRefStore();
@@ -98,7 +98,12 @@ const PersonalInfo = () => {
     const url = await getUploadFileUrl('user_photo', file, userData.userId);
     setImgUpload(url);
     setUserState('userPhoto', url);
-    await updateUserDoc('userPhoto', url);
+    try {
+      const firestoreItem = { userPhoto: url };
+      await setFirestoreDoc('users', userData.userId, firestoreItem);
+    } catch (error) {
+      await showErrorToast('照片上傳失敗', error.message);
+    }
   };
   return (
     <PersonalInfoWrapper>

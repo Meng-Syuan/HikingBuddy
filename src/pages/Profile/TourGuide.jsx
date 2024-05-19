@@ -1,12 +1,16 @@
 import styled, { keyframes } from 'styled-components';
-import color from '@theme';
+import color from '@/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
+
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
-import { useTourGuideRefStore, useUserState } from '@utils/zustand';
 import { useEffect } from 'react';
-import useUsersDB from '@utils/hooks/useUsersDB';
+
+//utils
+import { useTourGuideRefStore, useUserState } from '@/zustand';
+import setFirestoreDoc from '@/firestore/setFirestoreDoc';
+import { showErrorToast } from '@/utils/sweetAlert';
 
 const flip = keyframes`
   0% {
@@ -43,13 +47,18 @@ const TourGuide = () => {
   const { tripSelectionRef, futureTripsRef, pastTripsRef } =
     useTourGuideRefStore();
   const { userData } = useUserState();
-  const { updateUserDoc } = useUsersDB();
+
   useEffect(() => {
     if (!userData?.isFirstSignIn) return;
     driverObj.drive();
-    updateUserDoc('isFirstSignIn', false);
+    try {
+      const updatedLoginStatus = { isFirstSignIn: false };
+      setFirestoreDoc('users', userData.userId, updatedLoginStatus);
+    } catch (error) {
+      showErrorToast('網頁導覽發生錯誤', error.message);
+    }
   }, [userData]);
-  //for tutorial
+
   const driverObj = driver({
     steps: [
       {

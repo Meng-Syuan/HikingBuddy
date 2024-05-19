@@ -71,7 +71,6 @@ const SettingActionBtn = styled(StyledButton)`
 
 const ScheduleDetails = () => {
   const HASH_KEY = 'testing..rewrite later';
-  const { updateUserDoc } = useUsersDB();
   const {
     scheduleInfo,
     locationNotes,
@@ -81,7 +80,7 @@ const ScheduleDetails = () => {
     otherItemChecklist,
     setScheduleState,
   } = useScheduleState();
-  const { setUserState, activeScheduleId, listsConfirmedStatus } =
+  const { userData, setUserState, activeScheduleId, listsConfirmedStatus } =
     useUserState();
   const { scheduleId } = useParams();
   const [tripsEditable, setTripsEditable] = useState(false);
@@ -167,16 +166,34 @@ const ScheduleDetails = () => {
   const handleToggleProtectorFunc = async (isActive) => {
     toggleActiveState();
     if (!isActive) {
-      await updateUserDoc('activeSchedule', '');
-      await updateUserDoc('hashedPassword', '');
-      setUserState('activeScheduleId', '');
+      try {
+        const stoppedProtectorSetting = {
+          activeSchedule: '',
+          hashedPassword: '',
+        };
+        await setFirestoreDoc(
+          'users',
+          userData.userId,
+          stoppedProtectorSetting
+        );
+        setUserState('activeScheduleId', '');
+      } catch (error) {
+        await showErrorToast('暫停留守功能發生錯誤', error.message);
+      }
       return;
     }
-    await updateUserDoc('activeSchedule', scheduleId);
-    const encryptedId = sha256(scheduleId);
-    const hashedPassword = sha256.hmac(encryptedId, HASH_KEY);
-    await updateUserDoc('hashedPassword', hashedPassword);
-    setUserState('activeScheduleId', scheduleId);
+    try {
+      const encryptedId = sha256(scheduleId);
+      const hashedPassword = sha256.hmac(encryptedId, HASH_KEY);
+      const activeProtectorSetting = {
+        activeSchedule: scheduleId,
+        hashedPassword,
+      };
+      await setFirestoreDoc('users', userData.userId, activeProtectorSetting);
+      setUserState('activeScheduleId', scheduleId);
+    } catch (error) {
+      await showErrorToast('啟用留守功能發生錯誤', error.message);
+    }
   };
 
   return (

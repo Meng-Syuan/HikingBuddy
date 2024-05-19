@@ -21,15 +21,6 @@ const useUsersDB = () => {
     ? doc(db, 'users', userId)
     : null;
 
-  const updateUserDoc = async (property, content) => {
-    try {
-      await updateDoc(userDocRef, { [property]: content });
-    } catch (error) {
-      console.log('Failed to update userDoc info: ');
-      console.log(error);
-    }
-  };
-
   const addUserInfo = async (property, id) => {
     try {
       const userSnapshot = await getDoc(userDocRef);
@@ -92,7 +83,6 @@ const useUsersDB = () => {
   };
 
   return {
-    updateUserDoc,
     addUserInfo,
     getActiveScheduleIdByPassword,
     deleteTargetData,
