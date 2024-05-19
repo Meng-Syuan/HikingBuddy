@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import color from '@/theme';
-import wireframe from '/src/assets/img/wireframe.png';
+import profileDefault from '/src/assets/img/profileDefault.png';
 import { useState, useEffect, useRef } from 'react';
 
 //utils
@@ -80,7 +80,7 @@ const PersonalInfo = () => {
   const futureTripsRef = useRef(null);
   const pastTripsRef = useRef(null);
 
-  const previewURL = imgUpload || userPhoto || wireframe;
+  const previewURL = imgUpload || userPhoto || profileDefault;
 
   useEffect(() => {
     setRefStore('futureTripsRef', futureTripsRef);
@@ -111,7 +111,7 @@ const PersonalInfo = () => {
       ></input>
       <UserPhoto as="label" htmlFor="userPhoto">
         <Image src={previewURL} alt="user photo in profile" />
-        {!userPhoto && <Tip>點選並上傳</Tip>}
+        {!userPhoto && <Tip>點選並上傳個人照片</Tip>}
       </UserPhoto>
       <TripsWrapper>
         <FutureTrips ref={futureTripsRef}>
