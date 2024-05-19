@@ -93,7 +93,6 @@ const ReleaseBtn = () => {
   const reorderPhotos = () => {
     if (allUploadPhotos.length === 0) return null;
     const idGroup = allUploadPhotos.map((photo) => photo.id);
-    console.log(idGroup);
     const orderedIds = idGroup.map((id) => {
       return {
         order: content.indexOf(id),

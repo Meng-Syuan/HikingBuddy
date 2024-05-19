@@ -137,7 +137,7 @@ const useFirestoreSchedules = () => {
       pastSchedules.sort((a, b) => b.lastDay - a.lastDay);
       return { futureSchedules, pastSchedules };
     } catch (error) {
-      console.log('Failed to group schedules : ' + error);
+      throw new Error('Failed to sort schedules dates: ', error.message);
     }
   };
 
@@ -151,7 +151,7 @@ const useFirestoreSchedules = () => {
         return result;
       }
     } catch (error) {
-      console.log('Failed to get temporarySchedule docs.');
+      throw new Error('Failed to get temp schedule Id: ', error);
     }
   };
 

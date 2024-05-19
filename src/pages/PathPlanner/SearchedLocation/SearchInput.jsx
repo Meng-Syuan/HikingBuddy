@@ -191,7 +191,6 @@ const SearchInputField = () => {
     setSearchInput('');
     setIsLoading(true);
     const geoJsonData = await getGeoJSON.inputSearch(searchInput);
-    console.log(geoJsonData);
     setSearchResults(geoJsonData);
     setIsLoading(false);
   };

@@ -140,7 +140,6 @@ const ScheduleInfo = () => {
       return acc;
     }, []);
     setGroupItineraries(groupItineraries);
-    console.log(groupItineraries);
   }, [sortedDates]);
 
   useEffect(() => {

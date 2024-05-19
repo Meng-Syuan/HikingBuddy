@@ -117,7 +117,6 @@ const SearchedPositionMarker = () => {
   useEffect(() => {
     if (!geoJSON) return;
     const address = geoJSON.features[0].properties.address;
-    console.log(address);
     const {
       city,
       county,

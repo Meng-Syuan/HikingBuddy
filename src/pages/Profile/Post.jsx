@@ -189,7 +189,6 @@ const Post = () => {
 
   const handleDeletePhoto = (e) => {
     const id = e.currentTarget.id;
-    console.log(id);
     const updateImgUrls = allUploadPhotos.filter((img) => img.id !== id);
     setPostWritingState('allUploadPhotos', updateImgUrls);
     const updatedContent = content.replace(id, '');

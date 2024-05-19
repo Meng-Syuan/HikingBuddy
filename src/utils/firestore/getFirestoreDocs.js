@@ -10,14 +10,12 @@ export default async function getFirestoreDocs(path, queryKey, queryValue) {
         : await getDocs(collectionRef);
 
     if (snapshot.empty) {
-      console.log('沒找到');
       return null;
     }
     const result = [];
     snapshot.forEach((doc) => {
       result.push(doc.data());
     });
-    console.log(result);
     return result;
   } catch (error) {
     throw new Error('讀取資料失敗，請稍後再試，或聯絡系統管理員😵');
