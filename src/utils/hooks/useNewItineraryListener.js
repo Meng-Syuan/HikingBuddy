@@ -1,7 +1,7 @@
 import db from '../firebase/firebaseConfig.js';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { useEffect } from 'react';
-import { useScheduleArrangement } from '@utils/zustand.js';
+import { useScheduleArrangement } from '@/zustand';
 
 export default function useNewItineraryListener(id) {
   const { setScheduleArrangement } = useScheduleArrangement();

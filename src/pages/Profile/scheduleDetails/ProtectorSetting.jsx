@@ -1,15 +1,17 @@
 import styled from 'styled-components';
+import color, { fieldWrapper } from '@/theme';
 import { sha256 } from 'js-sha256';
-import color, { fieldWrapper } from '@utils/theme';
-import { useScheduleState } from '@utils/zustand';
 import { SharedListTitle } from './index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
-import { Toast } from '@utils/sweetAlert';
 import { Tooltip } from 'react-tippy';
-import help from '../../../assets/svg/question.svg';
+import help from '/src/assets/svg/question.svg';
 import { Link } from 'react-router-dom';
+
+//utils
+import { Toast } from '@/utils/sweetAlert';
+import { useScheduleState } from '@/zustand';
 
 const SettingContainer = styled.div`
   ${fieldWrapper}

@@ -1,14 +1,18 @@
 import styled, { keyframes } from 'styled-components';
-import color, { fieldWrapper } from '@utils/theme';
-import { useScheduleState } from '@utils/zustand';
-import { useState, useEffect, useRef } from 'react';
+import color, { fieldWrapper } from '@/theme';
 import { SharedListTitle } from './index';
-import ListItem from './ListItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileCirclePlus } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
-import help from '../../../assets/svg/question.svg';
+import help from '/src/assets/svg/question.svg';
+import { useState } from 'react';
 import { Tooltip } from 'react-tippy';
+
+//components
+import ListItem from './ListItem';
+
+//utils
+import { useScheduleState } from '@/zustand';
 
 //#region
 const ChecklistsWrapper = styled.div`
@@ -147,6 +151,7 @@ const CheckList = ({ isFuture }) => {
           {gearChecklist.length > 0 &&
             gearChecklist.map((item) => (
               <ListItem
+                key={item.id}
                 id={item.id}
                 isChecked={item.isChecked}
                 type="gearChecklist"
@@ -170,6 +175,7 @@ const CheckList = ({ isFuture }) => {
           {otherItemChecklist.length &&
             otherItemChecklist.map((item) => (
               <ListItem
+                key={item.id}
                 id={item.id}
                 isChecked={item.isChecked}
                 type="otherItemChecklist"

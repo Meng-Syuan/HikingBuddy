@@ -1,3 +1,4 @@
+import styled from 'styled-components';
 import {
   MapContainer,
   TileLayer,
@@ -7,13 +8,13 @@ import {
   useMapEvent,
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import styled from 'styled-components';
-import getGeoJSON from '@utils/osmApi';
+import { useEffect, useRef } from 'react';
+//utils
 import {
   useSearchSingleLocationState,
   useScheduleArrangement,
-} from '@utils/zustand';
-import { useEffect, useState, useRef } from 'react';
+} from '@/zustand';
+import getGeoJSON from '@/utils/osmApi';
 
 //components
 import SearchInputField from './SearchedLocation/SearchInput';

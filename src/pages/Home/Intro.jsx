@@ -1,20 +1,23 @@
 import styled, { keyframes } from 'styled-components';
-import color from '@utils/theme';
-import schedulePlanner from '../../assets/svg/mapPlanning.svg';
-import hiking from '../../assets/svg/hiking.svg';
-import protector from '../../assets/svg/protector.svg';
-import world from '../../assets/svg/homepageWorld.svg';
-import upToTopIcon from '../../assets/svg/arrow.svg';
+import color from '@/theme';
 import { SignInButton, useAuth } from '@clerk/clerk-react';
-import { useRef, useState, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
-import { useUserState } from '@utils/zustand';
 import { Button } from '@mui/material';
 import AdsClickIcon from '@mui/icons-material/AdsClick';
+import { useRef, useState, useEffect } from 'react';
 
+//components
+import schedulePlanner from '/src/assets/svg/mapPlanning.svg';
+import hiking from '/src/assets/svg/hiking.svg';
+import protector from '/src/assets/svg/protector.svg';
+import world from '/src/assets/svg/homepageWorld.svg';
+import upToTopIcon from '/src/assets/svg/arrow.svg';
+
+//utils
+import { useUserState } from '@/zustand';
 //#region
 
 const IntroContainer = styled.div`

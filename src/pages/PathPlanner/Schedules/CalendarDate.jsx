@@ -1,10 +1,10 @@
+import styled from 'styled-components';
+import color from '@/theme';
 import 'flatpickr/dist/themes/material_blue.css';
 import Flatpickr from 'react-flatpickr';
 import { MandarinTraditional } from 'flatpickr/dist/l10n/zh-tw';
 import { eachDayOfInterval } from 'date-fns';
-import styled from 'styled-components';
-import color from '@theme';
-import { useScheduleArrangement } from '@utils/zustand';
+import { useScheduleArrangement } from '@/zustand';
 
 //for custom style
 const StyledInputWrapper = styled.div`

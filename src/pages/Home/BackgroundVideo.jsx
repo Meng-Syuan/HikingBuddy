@@ -1,7 +1,7 @@
 import styled, { keyframes } from 'styled-components';
-import video from '../../assets/home_video.mp4';
-import scrollDownIcon from '../../assets/svg/whiteArrow.svg';
-import color from '@theme';
+import video from '/src/assets/home_video.mp4';
+import scrollDownIcon from '/src/assets/svg/whiteArrow.svg';
+import color from '@/theme';
 
 const VideoWrapper = styled.div`
   position: relative;

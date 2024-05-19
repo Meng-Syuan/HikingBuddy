@@ -1,8 +1,8 @@
 import styled from 'styled-components';
+import color, { textBorder, fieldWrapper, styledListTitle } from '@/theme';
 import { lightFormat, format } from 'date-fns';
-import color, { textBorder, fieldWrapper, styledListTitle } from '@utils/theme';
-import { useScheduleState } from '@utils/zustand';
 import { useEffect, useState } from 'react';
+import { useScheduleState } from '@/zustand';
 
 //#region
 const InfoContainer = styled.section`

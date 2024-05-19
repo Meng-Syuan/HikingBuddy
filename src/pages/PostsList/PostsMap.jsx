@@ -3,8 +3,8 @@ import { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { usePostMapState } from '@utils/zustand';
 import { lightFormat } from 'date-fns';
+import { usePostMapState } from '@/zustand';
 
 mapboxgl.accessToken =
   'pk.eyJ1IjoibWVuZ3N5dWFuIiwiYSI6ImNsdXBkMnl5djFsa24yanBvNHF2cWg1cW8ifQ.ern3CJP54d0LtA9e2VDwxQ';

@@ -1,9 +1,10 @@
 import styled from 'styled-components';
-import { lightFormat, format } from 'date-fns';
-import color, { textBorder, fieldWrapper } from '@utils/theme';
-import { useScheduleState } from '@utils/zustand';
-import { useEffect, useState } from 'react';
+import color, { textBorder, fieldWrapper } from '@/theme';
 import { SharedListTitle } from './index';
+import { lightFormat, format } from 'date-fns';
+import { useEffect, useState } from 'react';
+
+import { useScheduleState } from '@/zustand';
 
 export const TripInfoWrapper = styled.div`
   ${fieldWrapper}

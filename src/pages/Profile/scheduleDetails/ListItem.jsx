@@ -1,14 +1,15 @@
 import styled from 'styled-components';
-import color from '@utils/theme';
-import { useScheduleState } from '@utils/zustand';
+import color from '@/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
+import { useScheduleState } from '@/zustand';
 
 const ItemContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: ${({ $isFuture }) => ($isFuture ? 'auto' : '260px')};
 `;
 
 const CheckBox = styled.div`
@@ -16,16 +17,16 @@ const CheckBox = styled.div`
   height: 15px;
   border-radius: 50%;
   border: 1px solid ${color.borderColor};
-  background-color: ${(props) =>
-    props['data-is-checked'] ? color.secondary : color.lightBackgroundColor};
+  background-color: ${({ $isChecked }) =>
+    $isChecked ? color.secondary : color.lightBackgroundColor};
 `;
 
 const ItemWrapper = styled.div`
   padding: 2px 4px 2px 14px;
   border: 1px solid ${color.borderColor};
   border-radius: 20px;
-  background-color: ${(props) =>
-    props['data-is-future'] ? '#fff' : color.lightBackgroundColor};
+  background-color: ${({ $isFuture }) =>
+    $isFuture ? '#fff' : color.lightBackgroundColor};
   display: flex;
   align-items: center;
   min-height: 35px;
@@ -34,7 +35,7 @@ const ItemWrapper = styled.div`
 const ItemName = styled.span`
   width: 200px;
   line-height: 1.25rem;
-  text-align: ${(props) => (props['data-is-future'] ? '' : 'center')};
+  text-align: ${({ $isFuture }) => ($isFuture ? '' : 'center')};
 `;
 
 const StyledIcon = styled(IconButton)`
@@ -81,17 +82,17 @@ const ListItem = ({ isChecked, id, type, isFuture }) => {
     }
   };
   return (
-    <ItemContainer>
+    <ItemContainer $isFuture={isFuture}>
       {isFuture ? (
         <CheckBox
-          data-is-checked={isChecked}
+          $isChecked={isChecked}
           onClick={() => handleToggleCheckBox(id)}
         />
       ) : (
-        <CheckBox data-is-checked={isChecked} />
+        <CheckBox $isChecked={isChecked} />
       )}
       <ItemWrapper>
-        <ItemName data-is-future={isFuture}>{id}</ItemName>
+        <ItemName $isFuture={isFuture}>{id}</ItemName>
         {isFuture && (
           <StyledIcon onClick={() => handleDeleteItem(id)}>
             <FontAwesomeIcon icon={faX} size="2xs" />

@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 import { useAuth } from '@clerk/clerk-react';
-import { Toast } from '@utils/sweetAlert';
 import { useEffect } from 'react';
+
+import { Toast } from '@/utils/sweetAlert';
 
 //components
 import { Outlet } from 'react-router-dom';
 
 const ProfileContainer = styled.main`
   width: 1100px;
-  /* background-color: #d9d9d9; */
 `;
 
 const Profile = () => {

@@ -1,11 +1,13 @@
-import Map from './PlanningMap';
-import Schedule from './Schedules/PlanningSchedule';
 import styled from 'styled-components';
-import color from '@utils/theme';
+import color from '@/theme';
 import 'leaflet/dist/leaflet.css';
 import { useAuth } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+
+//components
+import Map from './PlanningMap';
+import Schedule from './Schedules/PlanningSchedule';
 
 const PlannerContainer = styled.main`
   display: flex;

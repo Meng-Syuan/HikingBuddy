@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
-import color from '@theme';
+import color from '@/theme';
 import ReactLoading from 'react-loading';
 //components
 import Header from './components/Header/Header';

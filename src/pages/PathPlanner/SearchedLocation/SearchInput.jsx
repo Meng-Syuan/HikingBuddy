@@ -1,16 +1,16 @@
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
-import {
-  useSearchSingleLocationState,
-  useSearchLocations,
-} from '@utils/zustand.js';
-import getGeoJSON from '@utils/osmApi';
-import color from '@utils/theme';
+import color from '@/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import ReactLoading from 'react-loading';
 import ClearIcon from '@mui/icons-material/Clear';
 import IconButton from '@mui/material/IconButton';
+
+import { useEffect, useState } from 'react';
+import ReactLoading from 'react-loading';
+
+//utils
+import { useSearchSingleLocationState, useSearchLocations } from '@/zustand';
+import getGeoJSON from '@/utils/osmApi';
 
 const StyledSearchField = styled.div`
   position: absolute;

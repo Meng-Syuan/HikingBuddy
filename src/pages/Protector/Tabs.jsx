@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color from '@utils/theme';
+import color from '@/theme';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
