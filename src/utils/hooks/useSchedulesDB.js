@@ -156,20 +156,6 @@ const useSchedulesDB = () => {
     }
   };
 
-  const createNewSchedule = async () => {
-    try {
-      const newDocRef = await addDoc(schedulesRef, {
-        isTemporary: true,
-        isFinished: false,
-        userId,
-      });
-      return newDocRef.id;
-    } catch (error) {
-      console.log('Failed to createNewSchedule');
-      console.log(error);
-    }
-  };
-
   const updateScheduleContents = async (
     scheduleId,
     property,
@@ -200,7 +186,6 @@ const useSchedulesDB = () => {
 
   return {
     getTemporaryScheduleId,
-    createNewSchedule,
     saveScheduleDetails,
     sortSchedulesDates,
     updateScheduleContents,

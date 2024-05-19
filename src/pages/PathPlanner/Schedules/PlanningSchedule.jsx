@@ -6,6 +6,7 @@ import { faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
 import gpxParser from 'gpxparser';
 import { Tooltip } from 'react-tippy';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { useAuth } from '@clerk/clerk-react';
 import { useState, useEffect, useCallback } from 'react';
 //utils
 import useSchedulesDB from '@/hooks/useSchedulesDB';
@@ -15,6 +16,7 @@ import useNewItineraryListener from '@/hooks/useNewItineraryListener';
 import { showErrorToast } from '@/utils/sweetAlert';
 import getDocById from '@/firestore/getDocById';
 import getFirestoreDocs from '@/firestore/getFirestoreDocs';
+import addFirestoreDoc from '@/firestore/addFirestoreDoc';
 //components
 import CalendarDate from './CalendarDate';
 import Location from './SingleLocation';
@@ -103,6 +105,7 @@ const GPXfileName = styled.span`
 //#endregion
 
 const PlanningSchedule = () => {
+  const { userId } = useAuth();
   const {
     setScheduleArrangement,
     temporaryScheduleId,
@@ -113,8 +116,7 @@ const PlanningSchedule = () => {
     gpxUrl,
     scheduleBlocks,
   } = useScheduleArrangement();
-  const { getTemporaryScheduleId, createNewSchedule, updateScheduleContents } =
-    useSchedulesDB();
+  const { getTemporaryScheduleId, updateScheduleContents } = useSchedulesDB();
   const { getUploadFileUrl } = useUploadFile();
   const [selectedDates, setSelectedDates] = useState([]);
   const [baseBlock, setBaseBlock] = useState([]);
@@ -160,18 +162,29 @@ const PlanningSchedule = () => {
   useNewItineraryListener(temporaryScheduleId);
 
   useEffect(() => {
-    const initializeSchedule = async () => {
+    (async () => {
       const id = await getTemporaryScheduleId();
       if (!id) {
-        const newDocId = await createNewSchedule();
-        await updateScheduleContents(newDocId, 'scheduleId', newDocId);
-        setScheduleArrangement('temporaryScheduleId', newDocId);
+        const firestoreNewItem = {
+          isTemporary: true,
+          isFinished: false,
+          userId,
+        };
+        try {
+          const newDocId = await addFirestoreDoc(
+            'schedules',
+            firestoreNewItem,
+            'scheduleId'
+          );
+          setScheduleArrangement('temporaryScheduleId', newDocId);
+        } catch (error) {
+          await showErrorToast('創建行程表發生錯誤', error.message);
+        }
       } else {
         setScheduleArrangement('temporaryScheduleId', id);
       }
-    };
-    initializeSchedule();
-  }, []);
+    })();
+  }, [userId]);
 
   useEffect(() => {
     if (!temporaryScheduleId || Object.keys(scheduleBlocks).length > 1) return;
