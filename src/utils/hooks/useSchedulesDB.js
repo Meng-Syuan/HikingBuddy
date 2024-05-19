@@ -2,7 +2,6 @@ import db from '../firebase/firebaseConfig.js';
 import {
   collection,
   doc,
-  addDoc,
   getDoc,
   getDocs,
   updateDoc,
@@ -156,39 +155,10 @@ const useSchedulesDB = () => {
     }
   };
 
-  const updateScheduleContents = async (
-    scheduleId,
-    property,
-    content,
-    otherContent
-  ) => {
-    try {
-      const scheduleDocRef = doc(schedulesRef, scheduleId);
-      if (property === 'locationNotes') {
-        await updateDoc(scheduleDocRef, {
-          locationNotes: { ...content },
-        });
-      } else if (property === 'checklist') {
-        await updateDoc(scheduleDocRef, {
-          gearChecklist: [...content],
-          otherItemChecklist: [...otherContent],
-        });
-      } else {
-        await updateDoc(scheduleDocRef, {
-          [property]: content,
-        });
-      }
-    } catch (error) {
-      console.log('Failed to update contents to current schedule.');
-      console.log(error);
-    }
-  };
-
   return {
     getTemporaryScheduleId,
     saveScheduleDetails,
     sortSchedulesDates,
-    updateScheduleContents,
   };
 };
 

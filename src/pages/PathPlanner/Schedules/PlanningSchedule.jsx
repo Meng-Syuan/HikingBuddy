@@ -17,6 +17,7 @@ import { showErrorToast } from '@/utils/sweetAlert';
 import getDocById from '@/firestore/getDocById';
 import getFirestoreDocs from '@/firestore/getFirestoreDocs';
 import addFirestoreDoc from '@/firestore/addFirestoreDoc';
+import setFirestoreDoc from '@/firestore/setFirestoreDoc';
 //components
 import CalendarDate from './CalendarDate';
 import Location from './SingleLocation';
@@ -116,7 +117,7 @@ const PlanningSchedule = () => {
     gpxUrl,
     scheduleBlocks,
   } = useScheduleArrangement();
-  const { getTemporaryScheduleId, updateScheduleContents } = useSchedulesDB();
+  const { getTemporaryScheduleId } = useSchedulesDB();
   const { getUploadFileUrl } = useUploadFile();
   const [selectedDates, setSelectedDates] = useState([]);
   const [baseBlock, setBaseBlock] = useState([]);
@@ -294,11 +295,18 @@ const PlanningSchedule = () => {
 
   const handleUploadGPX = async (e) => {
     const file = e.target.files[0];
-    setScheduleArrangement('gpxFileName', file.name); //global state
-    await updateScheduleContents(temporaryScheduleId, 'gpxFileName', file.name); //DB
     const url = await getUploadFileUrl('gpx_file', file, temporaryScheduleId); //storage
-    await updateScheduleContents(temporaryScheduleId, 'gpxUrl', url); //DB
-    setScheduleArrangement('gpxUrl', url);
+    try {
+      const firestoreItem = {
+        gpxFileName: file.name,
+        gpxUrl: url,
+      };
+      await setFirestoreDoc('schedules', temporaryScheduleId, firestoreItem);
+      setScheduleArrangement('gpxFileName', file.name); //global state
+      setScheduleArrangement('gpxUrl', url);
+    } catch (error) {
+      await showErrorToast('發生錯誤', error.message);
+    }
   };
   return (
     <>

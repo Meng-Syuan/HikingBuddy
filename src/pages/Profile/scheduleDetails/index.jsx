@@ -1,16 +1,20 @@
 import styled from 'styled-components';
-import color, { styledListTitle } from '@utils/theme';
+import color, { styledListTitle } from '@/theme';
 import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
-import { sha256 } from 'js-sha256';
-import useSchedulesDB from '@utils/hooks/useSchedulesDB';
-import useUsersDB from '@utils/hooks/useUsersDB';
-import useProtectorsDB from '@utils/hooks/useProtectorsDB';
-import { useScheduleState, useUserState } from '@utils/zustand';
 import { useParams } from 'react-router-dom';
-import { Toast } from '@utils/sweetAlert';
+import { sha256 } from 'js-sha256';
 import { isFuture } from 'date-fns';
 
+//utils
+import { Toast, showErrorToast } from '@/utils/sweetAlert';
+import useUsersDB from '@/hooks/useUsersDB';
+import { useScheduleState, useUserState } from '@/zustand';
+import getDocById from '@/firestore/getDocById';
+import getFirestoreDocs from '@/firestore/getFirestoreDocs';
+import setFirestoreDoc from '@/firestore/setFirestoreDoc';
+
+//components
 import TripInfo from './TripInfo';
 import ProtectorSetting from './ProtectorSetting';
 import CheckList from './CheckList';
@@ -66,10 +70,8 @@ const SettingActionBtn = styled(StyledButton)`
 `;
 
 const ScheduleDetails = () => {
-  const { getScheduleInfo, getScheduleDetails, updateScheduleContents } =
-    useSchedulesDB();
+  const HASH_KEY = 'testing..rewrite later';
   const { updateUserDoc } = useUsersDB();
-  const { hashKey, setProtectorsData } = useProtectorsDB();
   const {
     scheduleInfo,
     locationNotes,
@@ -86,13 +88,18 @@ const ScheduleDetails = () => {
   const [isFutureTrip, setIsFutureTrip] = useState(false);
 
   useEffect(() => {
-    const fetchScheduleData = async () => {
-      const info = await getScheduleInfo(scheduleId);
-      const details = await getScheduleDetails(scheduleId);
-      setScheduleState('scheduleInfo', info);
-      setScheduleState('scheduleDetails', details);
-    };
-    fetchScheduleData();
+    (async () => {
+      try {
+        const scheduleInfo = await getDocById('schedules', scheduleId);
+        const scheduleDetails = await getFirestoreDocs(
+          `schedules/${scheduleId}/itineraries`
+        );
+        setScheduleState('scheduleInfo', scheduleInfo);
+        setScheduleState('scheduleDetails', scheduleDetails);
+      } catch (error) {
+        await showErrorToast('發生錯誤', error.message);
+      }
+    })();
   }, []);
 
   useEffect(() => {
@@ -117,45 +124,44 @@ const ScheduleDetails = () => {
   const handleTripsEdition = async () => {
     setTripsEditable((prevState) => !prevState);
     if (Object.keys(locationNotes).length > 0) {
-      await updateScheduleContents(scheduleId, 'locationNotes', locationNotes);
+      try {
+        const firestoreLocationNotes = { locationNotes };
+        await setFirestoreDoc('schedules', scheduleId, firestoreLocationNotes);
+      } catch (error) {
+        await showErrorToast('上傳備註發生錯誤', error.message);
+      }
     }
   };
 
   const handleSaveCheckList = async () => {
-    await updateScheduleContents(
-      scheduleId,
-      'checklist',
-      gearChecklist,
-      otherItemChecklist
+    const notCheckedGearItem = gearChecklist.find((item) => !item.isChecked);
+    const notCheckedOtherItem = otherItemChecklist.find(
+      (item) => !item.isChecked
     );
-    const gearItem = gearChecklist.find((item) => !item.isChecked);
-    const otherItem = otherItemChecklist.find((item) => !item.isChecked);
-    const isAllItemsChecked = !gearItem && !otherItem;
-    if (isAllItemsChecked) {
-      const updatedConfirmedStatus = listsConfirmedStatus.map((list) => {
-        if (list.id === scheduleId) {
-          return { ...list, isConfirmed: true };
-        } else {
-          return list;
-        }
-      });
-      await updateScheduleContents(scheduleId, 'isChecklistConfirmed', true);
-      setUserState('listsConfirmedStatus', updatedConfirmedStatus);
-    } else {
-      const updatedConfirmedStatus = listsConfirmedStatus.map((list) => {
-        if (list.id === scheduleId) {
-          return { ...list, isConfirmed: false };
-        } else {
-          return list;
-        }
-      });
-      await updateScheduleContents(scheduleId, 'isChecklistConfirmed', false);
-      setUserState('listsConfirmedStatus', updatedConfirmedStatus);
-    }
-    Toast.fire({
-      text: '完成清單更新',
-      icon: 'success',
+    const isAllItemsChecked = !notCheckedGearItem && !notCheckedOtherItem;
+    const updatedConfirmedStatus = listsConfirmedStatus.map((list) => {
+      if (list.id === scheduleId) {
+        return { ...list, isConfirmed: isAllItemsChecked };
+      } else {
+        return list;
+      }
     });
+
+    try {
+      const firestoreItem = {
+        isChecklistConfirmed: isAllItemsChecked,
+        gearChecklist,
+        otherItemChecklist,
+      };
+      await setFirestoreDoc('schedules', scheduleId, firestoreItem);
+      setUserState('listsConfirmedStatus', updatedConfirmedStatus);
+      Toast.fire({
+        text: '完成清單更新',
+        icon: 'success',
+      });
+    } catch (error) {
+      await showErrorToast('儲存清單準備失敗', error.message);
+    }
   };
 
   const handleToggleProtectorFunc = async (isActive) => {
@@ -167,9 +173,8 @@ const ScheduleDetails = () => {
       return;
     }
     await updateUserDoc('activeSchedule', scheduleId);
-    await setProtectorsData(scheduleId);
     const encryptedId = sha256(scheduleId);
-    const hashedPassword = sha256.hmac(encryptedId, hashKey);
+    const hashedPassword = sha256.hmac(encryptedId, HASH_KEY);
     await updateUserDoc('hashedPassword', hashedPassword);
     setUserState('activeScheduleId', scheduleId);
   };
