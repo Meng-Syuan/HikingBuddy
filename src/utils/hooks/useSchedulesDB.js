@@ -11,6 +11,7 @@ import {
   GeoPoint,
   deleteDoc,
 } from 'firebase/firestore';
+
 import { useAuth } from '@clerk/clerk-react';
 import { isFuture } from 'date-fns';
 
@@ -22,22 +23,6 @@ const useSchedulesDB = () => {
     where('userId', '==', userId),
     where('isTemporary', '==', true)
   );
-
-  const addLocationToDB = async (id, geopoint, location) => {
-    try {
-      const newItinerary = {
-        geopoint: new GeoPoint(geopoint.lat, geopoint.lng),
-        location,
-      };
-      const itinerariesRef = collection(schedulesRef, id, 'itineraries');
-      const itinerariesDocRef = await addDoc(itinerariesRef, newItinerary);
-      const itineraryId = itinerariesDocRef.id;
-      await updateDoc(itinerariesDocRef, { itineraryId });
-      return itineraryId;
-    } catch (error) {
-      console.log('Error: ' + error);
-    }
-  };
 
   const addArrivalTime = async (scheduleId, itineraryId, time) => {
     try {
@@ -269,7 +254,6 @@ const useSchedulesDB = () => {
   return {
     getTemporaryScheduleId,
     createNewSchedule,
-    addLocationToDB,
     addArrivalTime,
     deleteItinerary,
     saveScheduleDetails,

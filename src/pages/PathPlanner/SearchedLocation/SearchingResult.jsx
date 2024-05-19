@@ -1,11 +1,15 @@
+import styled from 'styled-components';
+import color from '@/theme';
+import ReactLoading from 'react-loading';
+import { GeoPoint } from 'firebase/firestore';
+
+//utils
 import {
   useSearchSingleLocationState,
   useScheduleArrangement,
-} from '@utils/zustand';
-import styled from 'styled-components';
-import color from '@utils/theme';
-import useSchedulesDB from '@utils/hooks/useSchedulesDB';
-import ReactLoading from 'react-loading';
+} from '@/zustand';
+import addFirestoreDoc from '@/firestore/addFirestoreDoc';
+import { showErrorToast } from '@/utils/sweetAlert';
 
 const SearchLocationContainer = styled.div`
   position: fixed;
@@ -69,25 +73,34 @@ const SearchingResult = () => {
     temporaryScheduleId,
     locationNumber,
     setScheduleArrangement,
-    addGeopoint,
+    addMarkerOnScheduleMap,
   } = useScheduleArrangement();
-  const { addLocationToDB } = useSchedulesDB();
 
   const handleAddLocation = async () => {
-    const itineraryId = await addLocationToDB(
-      temporaryScheduleId,
-      geopoint,
-      location
-    );
-    addGeopoint(
-      geopoint.lat,
-      geopoint.lng,
-      itineraryId,
+    const firestoreItem = {
+      geopoint: new GeoPoint(geopoint.lat, geopoint.lng),
       location,
-      locationNumber + 1
-    );
-    setLocationState('location', null);
-    setScheduleArrangement('locationNumber', locationNumber + 1);
+    };
+
+    try {
+      const itineraryId = await addFirestoreDoc(
+        `schedules/${temporaryScheduleId}/itineraries`,
+        firestoreItem,
+        'itineraryId'
+      );
+
+      addMarkerOnScheduleMap(
+        geopoint.lat,
+        geopoint.lng,
+        itineraryId,
+        location,
+        locationNumber + 1
+      );
+      setScheduleArrangement('locationNumber', locationNumber + 1); //display on the right section(schedule arrangement)
+      setLocationState('location', null);
+    } catch (error) {
+      await showErrorToast('發生錯誤', error.message);
+    }
   };
 
   return (
