@@ -1,25 +1,26 @@
 import styled from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
-import gpxParser from 'gpxparser';
-
-import HikerInfo from './HikerInfo';
-import Tabs from './Tabs';
 import { useState, useEffect } from 'react';
+
+import gpxParser from 'gpxparser';
 import { sha256 } from 'js-sha256';
 
+//components
+import HikerInfo from './HikerInfo';
+import Tabs from './Tabs';
+
+//utils
 import useUsersDB from '@/hooks/useUsersDB';
 import useSchedulesDB from '@/hooks/useSchedulesDB';
 import { Toast, showErrorToast } from '@/utils/sweetAlert';
-
-//utils
+import getDocById from '@/firestore/getDocById';
 import {
   useUserState,
   useProtectorPageData,
   useScheduleState,
   useScheduleArrangement,
 } from '@/zustand';
-import getDocById from '@/firestore/getDocById';
 //#region
 const ProtectorContainer = styled.main`
   width: 1100px;
@@ -48,7 +49,7 @@ const Protector = () => {
   const { setScheduleArrangement } = useScheduleArrangement();
   const { setProtectorPageData } = useProtectorPageData();
   const { getActiveScheduleIdByPassword } = useUsersDB();
-  const { getScheduleDetails, getScheduleInfo } = useSchedulesDB();
+  const { getScheduleDetails } = useSchedulesDB();
 
   //determine the perspective and fetch the target data
   useEffect(() => {
@@ -69,15 +70,17 @@ const Protector = () => {
             const hikerInfo = await getDocById('protectors', id);
             setProtectorPageData('hikerInfo', hikerInfo || '');
             setProtectorPageData('hikerPhoto', hikerInfo?.hiker_photo || '');
+
+            const scheduleDetails = await getScheduleDetails(id);
+
+            const scheduleInfo = await getDocById('schedules', id);
+            setScheduleState('scheduleDetails', scheduleDetails);
+            setScheduleState('scheduleInfo', scheduleInfo);
+            setIsEditable(true);
+            setIsUrlValid(true);
           } catch (error) {
             await showErrorToast('讀取登山者資訊發生錯誤', error.message);
           }
-          const scheduleDetails = await getScheduleDetails(id);
-          const scheduleInfo = await getScheduleInfo(id);
-          setScheduleState('scheduleDetails', scheduleDetails);
-          setScheduleState('scheduleInfo', scheduleInfo);
-          setIsEditable(true);
-          setIsUrlValid(true);
         } else {
           await Toast.fire({
             icon: 'info',
@@ -94,16 +97,16 @@ const Protector = () => {
             const hikerInfo = await getDocById('protectors', id);
             setProtectorPageData('hikerInfo', hikerInfo || '');
             setProtectorPageData('hikerPhoto', hikerInfo?.hiker_photo || '');
+
+            const scheduleDetails = await getScheduleDetails(id);
+            const scheduleInfo = await getDocById('schedules', id);
+            setScheduleState('scheduleDetails', scheduleDetails);
+            setScheduleState('scheduleInfo', scheduleInfo);
+            setIsEditable(false);
+            setIsUrlValid(true);
           } catch (error) {
             await showErrorToast('讀取登山者資訊發生錯誤', error.message);
           }
-
-          const scheduleDetails = await getScheduleDetails(id);
-          const scheduleInfo = await getScheduleInfo(id);
-          setScheduleState('scheduleDetails', scheduleDetails);
-          setScheduleState('scheduleInfo', scheduleInfo);
-          setIsEditable(false);
-          setIsUrlValid(true);
         } else {
           await Toast.fire({
             icon: 'info',

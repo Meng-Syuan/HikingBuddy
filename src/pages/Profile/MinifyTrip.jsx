@@ -1,16 +1,16 @@
 import styled from 'styled-components';
-import { lightFormat } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
-import { useUserState, useScheduleState } from '@utils/zustand';
-import useUsersDB from '@utils/hooks/useUsersDB';
-import useSchedulesDB from '@utils/hooks/useSchedulesDB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+
+import { lightFormat } from 'date-fns';
 import { Tooltip } from 'react-tippy';
 
-import sweetAlert from '@utils/sweetAlert';
-import { useEffect, useState } from 'react';
+import { useUserState } from '@/zustand';
+import useUsersDB from '@/hooks/useUsersDB';
+import sweetAlert from '@/utils/sweetAlert';
 
 const TripWrapper = styled.div`
   width: 100%;
@@ -68,9 +68,7 @@ const BadgeChecked = styled(BadgeProtector)`
 `;
 const MinifyTrip = ({ id, firstDay, lastDay, tripName, type }) => {
   const { deleteTargetData } = useUsersDB();
-  const { getScheduleInfo, getScheduleDetails } = useSchedulesDB();
   const { activeScheduleId, deleteTrip, listsConfirmedStatus } = useUserState();
-  const { setScheduleState } = useScheduleState();
   const [isChecked, setIsChecked] = useState();
   const navigate = useNavigate();
   const firstDayContent = lightFormat(firstDay, 'M/d');
@@ -99,14 +97,6 @@ const MinifyTrip = ({ id, firstDay, lastDay, tripName, type }) => {
     await deleteTargetData('schedulesIDs', id);
   };
 
-  const showScheduleDetails = async () => {
-    const info = await getScheduleInfo(id);
-    const details = await getScheduleDetails(id);
-    setScheduleState('scheduleInfo', info);
-    setScheduleState('scheduleDetails', details);
-    navigate(`/profile/schedule-details/${id}`);
-  };
-
   return (
     <Tooltip
       title={tripName}
@@ -116,7 +106,7 @@ const MinifyTrip = ({ id, firstDay, lastDay, tripName, type }) => {
       theme="transparent"
       style={{ width: '90%' }}
     >
-      <TripWrapper onClick={showScheduleDetails}>
+      <TripWrapper onClick={() => navigate(`/profile/schedule-details/${id}`)}>
         <Content>{content}</Content>
         <BadgeWrapper>
           {isChecked && (

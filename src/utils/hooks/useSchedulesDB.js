@@ -8,7 +8,6 @@ import {
   updateDoc,
   query,
   where,
-  deleteDoc,
 } from 'firebase/firestore';
 
 import { useAuth } from '@clerk/clerk-react';
@@ -143,21 +142,6 @@ const useSchedulesDB = () => {
     }
   };
 
-  const getScheduleInfo = async (id) => {
-    try {
-      const scheduleDocRef = doc(schedulesRef, id);
-      const docSnap = await getDoc(scheduleDocRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        return data;
-      } else {
-        console.log('No such schedule');
-      }
-    } catch (error) {
-      console.log('Failed to get current schedule data: ' + error);
-    }
-  };
-
   const getScheduleDetails = async (id) => {
     try {
       const itinerariesRef = collection(schedulesRef, id, 'itineraries');
@@ -237,7 +221,6 @@ const useSchedulesDB = () => {
     createNewSchedule,
     saveScheduleDetails,
     sortSchedulesDates,
-    getScheduleInfo,
     getScheduleDetails,
     updateScheduleContents,
   };

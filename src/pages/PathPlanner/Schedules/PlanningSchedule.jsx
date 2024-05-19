@@ -1,17 +1,23 @@
 import styled from 'styled-components';
-import CalendarDate from './CalendarDate';
-import color from '@theme';
-import { useState, useEffect, useCallback } from 'react';
-import useSchedulesDB from '@utils/hooks/useSchedulesDB';
-import useUploadFile from '@utils/hooks/useUploadFile';
-import Location from './SingleLocation';
-import SaveScheduleBtn from './SaveScheduleBtn';
-import { useScheduleArrangement } from '@utils/zustand';
-import gpxParser from 'gpxparser';
+import color from '@/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
+
+import CalendarDate from './CalendarDate';
+import gpxParser from 'gpxparser';
 import { Tooltip } from 'react-tippy';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { useState, useEffect, useCallback } from 'react';
+//utils
+import useSchedulesDB from '@/utils/hooks/useSchedulesDB';
+import useUploadFile from '@/utils/hooks/useUploadFile';
+import { useScheduleArrangement } from '@/zustand';
+import useNewItineraryListener from '@/hooks/useNewItineraryListener';
+import { showErrorToast } from '@/utils/sweetAlert';
+import getDocById from '@/firestore/getDocById';
+//components
+import Location from './SingleLocation';
+import SaveScheduleBtn from './SaveScheduleBtn';
 //#region
 const PlanningText = styled.div`
   display: flex;
@@ -110,9 +116,7 @@ const PlanningSchedule = () => {
     getTemporaryScheduleId,
     createNewSchedule,
     updateScheduleContents,
-    getScheduleInfo,
     getScheduleDetails,
-    useNewItineraryListener,
   } = useSchedulesDB();
   const { getUploadFileUrl } = useUploadFile();
   const [selectedDates, setSelectedDates] = useState([]);
@@ -170,9 +174,13 @@ const PlanningSchedule = () => {
     if (!temporaryScheduleId || Object.keys(scheduleBlocks).length > 1) return;
     const fetchScheduleData = async () => {
       await getTemporaryLocations();
-      const data = await getScheduleInfo(temporaryScheduleId);
-      setScheduleArrangement('gpxFileName', data?.gpxFileName || '');
-      setScheduleArrangement('gpxUrl', data?.gpxUrl);
+      try {
+        const data = await getDocById('schedules', temporaryScheduleId);
+        setScheduleArrangement('gpxFileName', data?.gpxFileName || '');
+        setScheduleArrangement('gpxUrl', data?.gpxUrl);
+      } catch (error) {
+        await showErrorToast('發生錯誤', error.message);
+      }
     };
     fetchScheduleData();
   }, [temporaryScheduleId]);
