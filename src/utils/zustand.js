@@ -36,7 +36,7 @@ export const useScheduleArrangement = create((set) => ({
   newItinerary: null,
   mapMarkers: [],
   setScheduleArrangement: (key, value) => set({ [key]: value }),
-  addGeopoint: (lat, lng, id, name, number) =>
+  addMarkerOnScheduleMap: (lat, lng, id, name, number) =>
     set((state) => ({
       mapMarkers: [...state.mapMarkers, { lat, lng, id, name, number }],
     })),
