@@ -11,7 +11,6 @@ import HikerInfo from './HikerInfo';
 import Tabs from './Tabs';
 
 //utils
-import useUsersDB from '@/hooks/useUsersDB';
 import { Toast, showErrorToast } from '@/utils/sweetAlert';
 import getDocById from '@/firestore/getDocById';
 import getFirestoreDocs from '@/firestore/getFirestoreDocs';
@@ -48,42 +47,31 @@ const Protector = () => {
     useScheduleState();
   const { setScheduleArrangement } = useScheduleArrangement();
   const { setProtectorPageData } = useProtectorPageData();
-  const { getActiveScheduleIdByPassword } = useUsersDB();
 
   //determine the perspective and fetch the target data
   useEffect(() => {
     const checkStatus = async () => {
       const hashedPassword = sha256.hmac(scheduleId, HASH_KEY);
+
+      //not signed in but might get correct url
       if (!isSignedIn && scheduleId.length <= firestoreDocIdLength) {
         Toast.fire({
           title: '未登入',
           text: '請在右上角進行登入操作',
           icon: 'info',
         });
+
+        //signed in and might get correct url, so check the url validation then get hiker info
       } else if (isSignedIn && scheduleId.length <= firestoreDocIdLength) {
         const encryptedId = sha256(scheduleId);
         const hashedPassword = sha256.hmac(encryptedId, HASH_KEY);
-        const id = await getActiveScheduleIdByPassword(hashedPassword);
-        if (id) {
-          try {
-            const hikerInfo = await getDocById('protectors', id);
-            setProtectorPageData('hikerInfo', hikerInfo || '');
-            setProtectorPageData('hikerPhoto', hikerInfo?.hiker_photo || '');
-
-            const scheduleDetails = await getFirestoreDocs(
-              `schedules/${id}/itineraries`
-            );
-            console.log('scheduleDetails');
-            console.log(scheduleDetails);
-            const scheduleInfo = await getDocById('schedules', id);
-            setScheduleState('scheduleDetails', scheduleDetails);
-            setScheduleState('scheduleInfo', scheduleInfo);
-            setIsEditable(true);
-            setIsUrlValid(true);
-          } catch (error) {
-            await showErrorToast('讀取登山者資訊發生錯誤', error.message);
-          }
-        } else {
+        const result = await getFirestoreDocs(
+          'users',
+          'hashedPassword',
+          hashedPassword
+        );
+        const id = result[0].activeSchedule;
+        if (!id) {
           await Toast.fire({
             icon: 'info',
             title: '導向使用者頁面',
@@ -91,20 +79,41 @@ const Protector = () => {
             position: 'center',
           });
           navigate('/profile');
+          return;
         }
+        try {
+          const hikerInfo = await getDocById('protectors', id);
+          setProtectorPageData('hikerInfo', hikerInfo || '');
+          setProtectorPageData('hikerPhoto', hikerInfo?.hiker_photo || '');
+
+          const scheduleDetails = await getFirestoreDocs(
+            `schedules/${id}/itineraries`
+          );
+          const scheduleInfo = await getDocById('schedules', id);
+          setScheduleState('scheduleDetails', scheduleDetails);
+          setScheduleState('scheduleInfo', scheduleInfo);
+          setIsEditable(true);
+          setIsUrlValid(true);
+          return;
+        } catch (error) {
+          await showErrorToast('讀取登山者資訊發生錯誤', error.message);
+        }
+        //(protector)the url might be the unique and active
       } else if (scheduleId.length > firestoreDocIdLength) {
-        const id = await getActiveScheduleIdByPassword(hashedPassword);
+        const result = await getFirestoreDocs(
+          'users',
+          'hashedPassword',
+          hashedPassword
+        );
+        const id = result[0].activeSchedule;
         if (id) {
           try {
             const hikerInfo = await getDocById('protectors', id);
             setProtectorPageData('hikerInfo', hikerInfo || '');
             setProtectorPageData('hikerPhoto', hikerInfo?.hiker_photo || '');
-
             const scheduleDetails = await getFirestoreDocs(
               `schedules/${id}/itineraries`
             );
-            console.log('scheduleDetails');
-            console.log(scheduleDetails);
             const scheduleInfo = await getDocById('schedules', id);
             setScheduleState('scheduleDetails', scheduleDetails);
             setScheduleState('scheduleInfo', scheduleInfo);
