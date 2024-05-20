@@ -70,7 +70,7 @@ const Protector = () => {
           'hashedPassword',
           hashedPassword
         );
-        const id = result[0].activeSchedule;
+        const id = result?.[0]?.activeSchedule;
         if (!id) {
           await Toast.fire({
             icon: 'info',
