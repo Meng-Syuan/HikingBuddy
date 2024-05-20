@@ -29,5 +29,5 @@ storage.rules
 .firebase/*
 
 .prettierrc
-
+.env
 poc
