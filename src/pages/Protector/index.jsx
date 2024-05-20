@@ -34,7 +34,7 @@ const TabsContainer = styled.section`
 const firestoreDocIdLength = 20;
 //#endregion
 const Protector = () => {
-  const HASH_KEY = 'testing..rewrite later';
+  const HASH_KEY = import.meta.env.VITE_PROTECTOR_ACTIVE_HASH_KEY;
   const [isEditable, setIsEditable] = useState(false);
   const [isUrlValid, setIsUrlValid] = useState(false);
   const [gpxUrl, setGPXurl] = useState(null);

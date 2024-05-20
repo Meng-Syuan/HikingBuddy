@@ -69,7 +69,7 @@ const SettingActionBtn = styled(StyledButton)`
 `;
 
 const ScheduleDetails = () => {
-  const HASH_KEY = 'testing..rewrite later';
+  const HASH_KEY = import.meta.env.VITE_PROTECTOR_ACTIVE_HASH_KEY;
   const {
     scheduleInfo,
     locationNotes,
