@@ -15,7 +15,7 @@ import {
   useClerk,
 } from '@clerk/clerk-react';
 import { useNavigate, NavLink } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 //utils
 import hoverMixin from '@/utils/hoverMixin';
@@ -70,12 +70,13 @@ const SignOutBtn = styled(FontAwesomeIcon)`
 export const SignIn = () => {
   const { user } = useUser();
   const { getToken, isLoaded, isSignedIn, userId } = useAuth();
-  const { setUserState, userPhoto, isTestingAccount } = useUserState();
+  const { setUserState, userPhoto } = useUserState();
+  const [isFirstLogin, setIsFirstLogin] = useState();
 
   const profileIcon = userPhoto || profileDefault;
 
   useEffect(() => {
-    if (!isSignedIn && !isTestingAccount) return;
+    if (!isSignedIn) return;
     (async () => {
       try {
         const userData = await getDocById('users', userId);
@@ -91,7 +92,7 @@ export const SignIn = () => {
         await showErrorToast('取得使用者資料錯誤', error.message);
       }
     })();
-  }, [isSignedIn, isTestingAccount]);
+  }, [isSignedIn, isFirstLogin]);
 
   const signInWithClerk = async () => {
     const token = await getToken({ template: 'integration_firebase' });
@@ -105,10 +106,12 @@ export const SignIn = () => {
       const newUserInfo = {
         userId,
         username: user.username,
-        userPhoto: user.imageUrl || '',
         isFirstSignIn: true,
+        schedulesIDs: [],
+        posts: [],
       };
       await setFirestoreDoc('users', userId, newUserInfo);
+      setIsFirstLogin(true);
     } catch (error) {
       await showErrorToast('使用者資料寫入錯誤', error.message);
     }

@@ -2,8 +2,10 @@ import db from '../firebase/firebaseConfig.js';
 import { doc, getDoc } from 'firebase/firestore';
 
 export default async function getPostsList(postIds) {
-  const postsContent = [];
+  if (postIds.length === 0) return [];
+
   try {
+    const postsContent = [];
     const postPromises = postIds.map(async (postId) => {
       const postRef = doc(db, 'posts', postId);
       const docSnap = await getDoc(postRef);

@@ -84,8 +84,8 @@ const Header = () => {
     if (!userData) return;
     const sortDates = async () => {
       const sortedResult = await sortSchedulesDates(userData);
-      setUserState('futureSchedules', sortedResult.futureSchedules);
-      setUserState('pastSchedules', sortedResult.pastSchedules);
+      setUserState('futureSchedules', sortedResult?.futureSchedules);
+      setUserState('pastSchedules', sortedResult?.pastSchedules);
     };
     sortDates();
   }, [userData]);
@@ -109,6 +109,7 @@ const Header = () => {
         });
         setPostMarkers('postMarkers', postMarkers.flat());
       } catch (error) {
+        console.log('取資料有問題');
         await showErrorToast('發生錯誤', error.message);
       }
     })();
