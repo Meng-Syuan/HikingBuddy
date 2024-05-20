@@ -14,7 +14,7 @@ import {
   useSearchSingleLocationState,
   useScheduleArrangement,
 } from '@/zustand';
-import getGeoJSON from '@/utils/osmApi';
+import getGeoJSON from '@/utils/getGeoJSON';
 
 //components
 import SearchInputField from './SearchedLocation/SearchInput';

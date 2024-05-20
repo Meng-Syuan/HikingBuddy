@@ -10,7 +10,7 @@ import ReactLoading from 'react-loading';
 
 //utils
 import { useSearchSingleLocationState, useSearchLocations } from '@/zustand';
-import getGeoJSON from '@/utils/osmApi';
+import getGeoJSON from '@/utils/getGeoJSON';
 
 const StyledSearchField = styled.div`
   position: absolute;
