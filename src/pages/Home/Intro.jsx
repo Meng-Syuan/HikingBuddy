@@ -1,6 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import color from '@/theme';
-import { SignInButton, useAuth } from '@clerk/clerk-react';
+import { SignInButton, useAuth, useSignIn } from '@clerk/clerk-react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@mui/material';
 import AdsClickIcon from '@mui/icons-material/AdsClick';
 import { useRef, useState, useEffect } from 'react';
+import { Toast } from '@/utils/sweetAlert';
 
 //components
 import schedulePlanner from '/src/assets/svg/mapPlanning.svg';
@@ -175,8 +176,9 @@ const Icon = styled.img`
 `;
 //#endregion
 const Intro = () => {
+  const { signIn } = useSignIn();
   const { isSignedIn } = useAuth();
-  const { isTestingAccount, setUserState } = useUserState();
+  const { isTestingAccount } = useUserState();
 
   const plannerSection = useRef(null);
   const planningImg = useRef(null);
@@ -272,8 +274,23 @@ const Intro = () => {
     };
   }, []);
 
-  const signInWithTestingAccount = () => {
-    setUserState('isTestingAccount', true);
+  const signInWithTestingAccount = async () => {
+    const identifier = 'testor+clerk_test@example.com';
+    const password = 'testaccountpassword';
+    try {
+      await signIn.create({
+        identifier,
+        password,
+      });
+      window.location.reload();
+    } catch (error) {
+      await Toast.fire({
+        icon: 'error',
+        title: '登入失敗',
+        text: '可嘗試重整或洽專案管理員',
+        position: 'center',
+      });
+    }
   };
 
   return (

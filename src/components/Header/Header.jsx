@@ -70,13 +70,8 @@ const AuthIconWrapper = styled.div`
 
 const Header = () => {
   const { sortSchedulesDates } = useFirestoreSchedules();
-  const {
-    // isTestingAccount,
-    setUserState,
-    activeScheduleId,
-    userData,
-    futureSchedules,
-  } = useUserState();
+  const { setUserState, activeScheduleId, userData, futureSchedules } =
+    useUserState();
   const { setPostMarkers } = usePostMapState();
   const [scheduleId, setScheduleId] = useState('no_active_schedule');
 
