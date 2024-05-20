@@ -154,7 +154,7 @@ const IconWrapper = styled.a`
   z-index: 3;
   width: 35px;
   height: 35px;
-  opacity: ${(props) => (props['data-is-visible'] ? 1 : 0)};
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
   transition: opacity 0.3s ease-in-out;
 `;
 
@@ -287,12 +287,12 @@ const Intro = () => {
           <PlannerContext>陪伴你展開旅程</PlannerContext>
           <PlannerContext>完整詳細的行前規劃</PlannerContext>
         </TextWrapper>
-        <IconWrapper data-is-visible={showBtn} href="#header">
+        <IconWrapper $isVisible={showBtn} href="#header">
           <Icon src={upToTopIcon}></Icon>
         </IconWrapper>
       </IntroWrapper>
       <IntroWrapper_protector ref={protectorSection}>
-        <TextWrapper_protector data-section="protector">
+        <TextWrapper_protector>
           <Title>親愛的留守人</Title>
           <ProtectorContext>相伴身後，靜守你的安全</ProtectorContext>
         </TextWrapper_protector>
