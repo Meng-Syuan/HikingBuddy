@@ -35,7 +35,7 @@ const ReleaseBtn = () => {
     if (!result) return;
 
     const reorderedPhotos = reorderPhotos();
-    const parsedContent = structureContent(reorderedPhotos);
+    const parsedContent = structurePostContent(content, reorderedPhotos);
     const createTime = new Date().getTime();
 
     const firestoreItem = {
@@ -116,7 +116,7 @@ const ReleaseBtn = () => {
     return reorderedPhotos;
   };
 
-  const structureContent = (photos) => {
+  const structurePostContent = (content, photos) => {
     if (!photos) {
       return [{ type: 'text', content }];
     } else {
