@@ -117,7 +117,7 @@ const SingleLocation = forwardRef(
     };
 
     return (
-      // make every location can be draggable
+      // make every location draggable
       <ContentWrapper ref={ref} {...props}>
         <Flatpickr options={timePickerOptions}>
           <input type="text" data-input readOnly value={timeStr} />
