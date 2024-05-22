@@ -4,13 +4,13 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyAp91j2RrC9Mx708BmW8mkmQ9nATUrlUpw',
-  authDomain: 'hikingbuddy-4abda.firebaseapp.com',
-  projectId: 'hikingbuddy-4abda',
-  storageBucket: 'hikingbuddy-4abda.appspot.com',
-  messagingSenderId: '326013852726',
-  appId: '1:326013852726:web:391a4a584524bdb3d30c97',
-  measurementId: 'G-FRJBNLQG5D',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Connect to your Firebase app
