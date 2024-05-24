@@ -1,9 +1,12 @@
 import styled from 'styled-components';
 import color from '@/theme';
-import { LoginHover_icon, Login_icon } from '/src/assets/svg/svgIcons';
 import profileDefault from '/src/assets/img/profileDefault.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowRightFromBracket,
+  faArrowRightToBracket,
+} from '@fortawesome/free-solid-svg-icons';
+import { faUser } from '@fortawesome/free-regular-svg-icons';
 
 import { signInWithCustomToken, updateProfile } from 'firebase/auth';
 import {
@@ -13,31 +16,26 @@ import {
   useUser,
   useAuth,
   useClerk,
+  useSignIn,
 } from '@clerk/clerk-react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 //utils
-import hoverMixin from '@/utils/hoverMixin';
 import { auth } from '@/utils/firebase/firebaseConfig.js';
 import { useUserState } from '@/zustand';
 import setFirestoreDoc from '@/firestore/setFirestoreDoc';
 import getDocById from '@/firestore/getDocById';
-import sweetAlert, { showErrorToast } from '@/utils/sweetAlert';
+import sweetAlert, { showErrorToast, Toast } from '@/utils/sweetAlert';
 
-const LoginBtn = styled.div`
+const LoginBtnWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 45px;
+  width: 40px;
   height: 40px;
-  &:hover {
-    cursor: pointer;
-    color: ${color.secondary};
-  }
-  ${hoverMixin('login-hover', 'login')}
 `;
-const Span_login = styled.span`
+const LoginIntro = styled.span`
   line-height: 16px;
   font-size: 0.6rem;
 `;
@@ -46,7 +44,6 @@ const ProfileBtn = styled.div`
   width: 40px;
   height: 40px;
   cursor: pointer;
-  margin: 0 30px;
 `;
 
 const Img = styled.img`
@@ -58,7 +55,7 @@ const Img = styled.img`
   object-fit: cover;
 `;
 
-const SignOutBtn = styled(FontAwesomeIcon)`
+const SignOutIcon = styled(FontAwesomeIcon)`
   font-size: 1.8rem;
   color: #4f4f4f;
   &:hover {
@@ -67,7 +64,9 @@ const SignOutBtn = styled(FontAwesomeIcon)`
   }
 `;
 
-export const SignIn = () => {
+const SignInIcon = styled(SignOutIcon)``;
+
+export const SignInBtn = () => {
   const { user } = useUser();
   const { getToken, isLoaded, isSignedIn, userId } = useAuth();
   const { setUserState, userPhoto } = useUserState();
@@ -130,18 +129,15 @@ export const SignIn = () => {
 
   return (
     <>
-      {/* before sign-in */}
       <SignedOut>
-        <SignInButton>
-          <LoginBtn>
-            <Login_icon />
-            <LoginHover_icon />
-            <Span_login>Log In</Span_login>
-          </LoginBtn>
+        <SignInButton mode="modal">
+          <LoginBtnWrapper>
+            <SignInIcon icon={faUser}></SignInIcon>
+            <LoginIntro>Log In</LoginIntro>
+          </LoginBtnWrapper>
         </SignInButton>
       </SignedOut>
 
-      {/*Manage account after sign-in */}
       <SignedIn>
         {userInfo && (
           <NavLink
@@ -162,10 +158,9 @@ export const SignIn = () => {
   );
 };
 
-export const SignOut = () => {
+export const SignOutBtn = () => {
   const { signOut } = useClerk();
   const navigate = useNavigate();
-  const { isSignedIn } = useAuth();
 
   const handleSignOut = async () => {
     const { value: willSignOut } = await sweetAlert.confirm(
@@ -180,14 +175,42 @@ export const SignOut = () => {
     navigate('/');
   };
   return (
-    <>
-      {isSignedIn && (
-        <SignOutBtn
-          icon={faArrowRightFromBracket}
-          title="登出"
-          onClick={handleSignOut}
-        />
-      )}
-    </>
+    <SignOutIcon
+      icon={faArrowRightFromBracket}
+      title="登出"
+      onClick={handleSignOut}
+    />
+  );
+};
+
+export const SignInAsGuest = () => {
+  const { signIn } = useSignIn();
+  const signInAsGuest = async () => {
+    const identifier = 'testor+clerk_test@example.com';
+    const password = 'testaccountpassword';
+    try {
+      await signIn.create({
+        identifier,
+        password,
+      });
+      window.location.reload();
+    } catch (error) {
+      await Toast.fire({
+        icon: 'error',
+        title: '登入失敗',
+        text: '可嘗試重整或洽專案管理員',
+        position: 'center',
+      });
+    }
+  };
+  return (
+    <LoginBtnWrapper>
+      <SignInIcon
+        icon={faArrowRightToBracket}
+        title="訪客模式登入"
+        onClick={signInAsGuest}
+      />
+      <LoginIntro>GUSET</LoginIntro>
+    </LoginBtnWrapper>
   );
 };

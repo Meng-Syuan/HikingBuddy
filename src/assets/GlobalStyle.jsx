@@ -51,6 +51,17 @@ const GlobalStyle = createGlobalStyle`
   }
 }
 
+.cl-logoBox {
+    height: 30px;
+}
+
+.cl-formButtonPrimary{
+  background-color: #417000d3;
+  &:hover{
+  background-color: #417000;
+  }
+}
+
 `;
 
 export default GlobalStyle;

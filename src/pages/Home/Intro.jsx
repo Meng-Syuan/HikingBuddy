@@ -59,6 +59,7 @@ const CardWrapper = styled.section`
   background: linear-gradient(#cbdddfea, #8ebcc2);
   border-radius: 15px;
   margin-bottom: 15vh;
+  padding: 0 20px;
 `;
 
 const TextWrapper = styled.div`
@@ -274,7 +275,7 @@ const Intro = () => {
     };
   }, []);
 
-  const signInWithTestingAccount = async () => {
+  const signInAsGuest = async () => {
     const identifier = 'testor+clerk_test@example.com';
     const password = 'testaccountpassword';
     try {
@@ -340,10 +341,11 @@ const Intro = () => {
                 </SignInButton>
               </StyledContainedButton>
               {!isTestingAccount && (
-                <StyledOutLinedButton variant="outlined">
-                  <LinkText onClick={signInWithTestingAccount}>
-                    測試帳號登入
-                  </LinkText>
+                <StyledOutLinedButton
+                  variant="outlined"
+                  onClick={signInAsGuest}
+                >
+                  <LinkText>訪客模式登入</LinkText>
                 </StyledOutLinedButton>
               )}
             </>

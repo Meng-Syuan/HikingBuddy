@@ -27,7 +27,14 @@ const LoadingWrapper = styled.div`
 function App() {
   return (
     <>
-      <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <ClerkProvider
+        publishableKey={PUBLISHABLE_KEY}
+        appearance={{
+          layout: {
+            socialButtonsVariant: 'iconButton',
+          },
+        }}
+      >
         <ClerkLoading>
           <LoadingWrapper>
             <ReactLoading type="spinningBubbles" color={color.textColor} />

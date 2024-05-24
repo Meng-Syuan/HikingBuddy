@@ -9,9 +9,13 @@ import { useUserState, usePostMapState } from '@/zustand';
 import useFirestoreSchedules from '@/hooks/useFirestoreSchedules';
 import getPostsList from '@/firestore/getPostsList';
 import { showErrorToast } from '@/utils/sweetAlert';
+import { SignedOut, useAuth } from '@clerk/clerk-react';
 
 //component
-import { SignIn, SignOut } from './AuthIcon';
+import { SignInBtn, SignOutBtn, SignInAsGuest } from './AuthIcon';
+import HeaderNavBtn from './HeaderNavBtn';
+import SignInModal from '../SignInModal';
+
 const HeaderContainer = styled.header`
   height: 80px;
   border-top: solid 10px #4f8700;
@@ -19,15 +23,15 @@ const HeaderContainer = styled.header`
   display: flex;
   justify-content: center;
   position: relative;
-  z-index: 1;
+  z-index: 5;
   background: #fff;
+  padding: 0 25px;
 `;
 const HeaderContent = styled.div`
-  width: 1100px;
+  width: 1150px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-right: 10px;
 `;
 
 const LogoNavLink = styled(NavLink)`
@@ -50,30 +54,46 @@ const UnorderedList = styled.ul`
   justify-content: space-between;
   align-items: center;
   text-align: center;
+  .active {
+    font-weight: 450;
+    color: ${color.primary};
+  }
 `;
 const ListItem = styled.li`
   width: 30%;
   letter-spacing: 0.25rem;
+  color: ${color.textColor};
+  &:hover {
+    font-weight: 450;
+    color: ${color.primary};
+    cursor: pointer;
+  }
 `;
 const Split = styled.hr`
   border: none;
   background-color: ${color.textColor};
   width: 1px;
   height: 1rem;
+  &:nth-child(6) {
+    display: none;
+  }
 `;
 
 const AuthIconWrapper = styled.div`
   display: flex;
   align-items: center;
-  width: 130px;
+  justify-content: space-between;
+  width: 100px;
 `;
 
 const Header = () => {
+  const { isSignedIn } = useAuth();
   const { sortSchedulesDates } = useFirestoreSchedules();
   const { setUserState, activeScheduleId, userData, futureSchedules } =
     useUserState();
   const { setPostMarkers } = usePostMapState();
   const [scheduleId, setScheduleId] = useState('no_active_schedule');
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
 
   useEffect(() => {
     if (!userData) return;
@@ -104,7 +124,6 @@ const Header = () => {
         });
         setPostMarkers('postMarkers', postMarkers.flat());
       } catch (error) {
-        console.log('取資料有問題');
         await showErrorToast('發生錯誤', error.message);
       }
     })();
@@ -124,60 +143,66 @@ const Header = () => {
     setScheduleId(activeScheduleId ?? 'no_active_schedule');
   }, [activeScheduleId]);
 
+  const pageslinks = [
+    { id: '規劃助手', link: '/path-planner' },
+    { id: '山閱足跡', link: '/postslist' },
+    { id: '親愛的留守人', link: `/protector/${scheduleId}` },
+  ];
   return (
-    <HeaderContainer id="header">
-      <HeaderContent>
-        <LogoNavLink to="/">
-          <Logo src={logo} alt="logo-homepage" />
-        </LogoNavLink>
-        <Navigation>
-          <UnorderedList>
-            <ListItem
-              as={NavLink}
-              to="/path-planner"
-              style={({ isActive }) => {
-                return {
-                  color: isActive ? `${color.primary}` : `${color.textColor}`,
-                  fontWeight: isActive ? '450' : '',
-                };
-              }}
-            >
-              規劃助手
-            </ListItem>
-            <Split />
-            <ListItem
-              as={NavLink}
-              to="/postslist"
-              style={({ isActive }) => {
-                return {
-                  color: isActive ? `${color.primary}` : `${color.textColor}`,
-                  fontWeight: isActive ? '450' : '',
-                };
-              }}
-            >
-              山閱足跡
-            </ListItem>
-            <Split />
-            <ListItem
-              as={NavLink}
-              to={`/protector/${scheduleId}`}
-              style={({ isActive }) => {
-                return {
-                  color: isActive ? `${color.primary}` : `${color.textColor}`,
-                  fontWeight: isActive ? '450' : '',
-                };
-              }}
-            >
-              親愛的留守人
-            </ListItem>
-          </UnorderedList>
-        </Navigation>
+    <>
+      <SignedOut>
+        <SignInModal
+          isModalOpen={isSignInModalOpen}
+          setModalOpen={setIsSignInModalOpen}
+        />
+      </SignedOut>
+      <HeaderContainer id="header">
+        <HeaderContent>
+          <LogoNavLink to="/">
+            <Logo src={logo} alt="logo-homepage" />
+          </LogoNavLink>
+          <Navigation>
+            <UnorderedList>
+              {isSignedIn ? (
+                <>
+                  {pageslinks.map((link) => (
+                    <>
+                      <ListItem key={link.id} as={NavLink} to={link.link}>
+                        {link.id}
+                      </ListItem>
+                      <Split />
+                    </>
+                  ))}
+                </>
+              ) : (
+                <>
+                  {pageslinks.map((link) => (
+                    <>
+                      <ListItem
+                        key={link.id}
+                        onClick={() => setIsSignInModalOpen(true)}
+                      >
+                        {link.id}
+                      </ListItem>
+                      <Split />
+                    </>
+                  ))}
+                </>
+              )}
+            </UnorderedList>
+          </Navigation>
+        </HeaderContent>
+
+        <HeaderNavBtn
+          pageslinks={pageslinks}
+          setIsSignInModalOpen={setIsSignInModalOpen}
+        />
         <AuthIconWrapper>
-          <SignIn />
-          <SignOut />
+          <SignInBtn />
+          {isSignedIn ? <SignOutBtn /> : <SignInAsGuest />}
         </AuthIconWrapper>
-      </HeaderContent>
-    </HeaderContainer>
+      </HeaderContainer>
+    </>
   );
 };
 

@@ -1,6 +1,6 @@
 export const screen = {
-  desktop: '1280px',
-  mobile: '350px',
+  md: '@media screen and (max-width:700px)',
+  sm: '@media screen and (max-width:480px)',
 };
 
 const color = {
