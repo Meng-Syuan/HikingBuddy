@@ -1,28 +1,30 @@
 import styled from 'styled-components';
-import color from '@/theme';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileArrowUp } from '@fortawesome/free-solid-svg-icons';
+import color, { screen } from '@/theme';
 
 import gpxParser from 'gpxparser';
-import { Tooltip } from 'react-tippy';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useAuth } from '@clerk/clerk-react';
 import { useState, useEffect, useCallback } from 'react';
 //utils
 import useFirestoreSchedules from '@/hooks/useFirestoreSchedules';
-import uploadFile from '@/utils/uploadFile';
 import { useScheduleArrangement } from '@/zustand';
 import useNewItineraryListener from '@/hooks/useNewItineraryListener';
 import { showErrorToast } from '@/utils/sweetAlert';
 import getDocById from '@/firestore/getDocById';
 import getFirestoreDocs from '@/firestore/getFirestoreDocs';
 import addFirestoreDoc from '@/firestore/addFirestoreDoc';
-import setFirestoreDoc from '@/firestore/setFirestoreDoc';
 //components
 import CalendarDate from './CalendarDate';
 import Location from './SingleLocation';
 import SaveScheduleBtn from './SaveScheduleBtn';
+import UploadGPX from './UploadGPX';
 //#region
+const ScheduleWrapper = styled.div`
+  ${screen.md} {
+    padding: 1rem 2rem;
+  }
+`;
+
 const PlanningText = styled.div`
   display: flex;
   flex-direction: column;
@@ -34,6 +36,9 @@ const TripName = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  ${screen.md} {
+    display: none;
+  }
 `;
 
 const TripNameInput = styled.input`
@@ -76,53 +81,27 @@ const ButtonsContainer = styled.div`
   align-items: end;
   gap: 1rem;
   margin-top: 1rem;
-`;
-
-const UploadGpxButton = styled.div`
-  .gpxUpload {
-    font-size: 2rem;
-    color: #6e6e6e;
-    &:hover {
-      color: #0161bb;
-      cursor: pointer;
-    }
+  ${screen.md} {
+    display: none;
   }
-`;
-
-const GPXfileWrapper = styled.div`
-  display: flex;
-  gap: 1rem;
-  align-items: baseline;
-`;
-
-const GPXfileName = styled.span`
-  font-size: 0.875rem;
-  background-color: #fff0c9;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-style: italic;
 `;
 
 //#endregion
 
-const PlanningSchedule = () => {
+const PlanningSchedule = ({ isSaved, setSave }) => {
   const { userId } = useAuth();
   const {
     setScheduleArrangement,
     temporaryScheduleId,
     newItinerary,
     tripName,
-    gpxFileName,
     locationNumber,
     gpxUrl,
     scheduleBlocks,
   } = useScheduleArrangement();
   const { getTemporaryScheduleId } = useFirestoreSchedules();
-  const { getUploadFileUrl } = uploadFile();
   const [selectedDates, setSelectedDates] = useState([]);
   const [baseBlock, setBaseBlock] = useState([]);
-
-  const [isSaved, setIsSaved] = useState(false);
 
   const getTemporaryLocations = useCallback(async () => {
     try {
@@ -293,24 +272,9 @@ const PlanningSchedule = () => {
     setScheduleArrangement('scheduleBlocks', newBlocks);
   };
 
-  const handleUploadGPX = async (e) => {
-    const file = e.target.files[0];
-    const url = await getUploadFileUrl('gpx_file', file, temporaryScheduleId); //storage
-    try {
-      const firestoreItem = {
-        gpxFileName: file.name,
-        gpxUrl: url,
-      };
-      await setFirestoreDoc('schedules', temporaryScheduleId, firestoreItem);
-      setScheduleArrangement('gpxFileName', file.name); //global state
-      setScheduleArrangement('gpxUrl', url);
-    } catch (error) {
-      await showErrorToast('發生錯誤', error.message);
-    }
-  };
   return (
     <>
-      <div>
+      <ScheduleWrapper>
         <PlanningText>
           <TripName>
             <label htmlFor="tripName">路線名稱</label>
@@ -378,30 +342,10 @@ const PlanningSchedule = () => {
             </div>
           ))}
         </DragDropContext>
-      </div>
+      </ScheduleWrapper>
       <ButtonsContainer>
-        <SaveScheduleBtn isSaved={isSaved} setSave={setIsSaved} />
-        <input
-          type="file"
-          accept=".gpx"
-          onChange={handleUploadGPX}
-          id="gpxUpload"
-          style={{ display: 'none' }}
-        />
-        <GPXfileWrapper>
-          {gpxFileName && <GPXfileName>{gpxFileName}</GPXfileName>}
-          <UploadGpxButton as="label" htmlFor="gpxUpload">
-            <Tooltip
-              title="上傳 GPX"
-              arrow={true}
-              position="right"
-              size="small"
-              theme="light"
-            >
-              <FontAwesomeIcon icon={faFileArrowUp} className="gpxUpload" />
-            </Tooltip>
-          </UploadGpxButton>
-        </GPXfileWrapper>
+        <SaveScheduleBtn isSaved={isSaved} setSave={setSave} />
+        <UploadGPX />
       </ButtonsContainer>
     </>
   );

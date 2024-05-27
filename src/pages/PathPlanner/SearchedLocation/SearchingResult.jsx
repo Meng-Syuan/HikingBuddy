@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color from '@/theme';
+import color, { screen } from '@/theme';
 import ReactLoading from 'react-loading';
 import { GeoPoint } from 'firebase/firestore';
 
@@ -24,6 +24,13 @@ const SearchLocationContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  ${screen.lg} {
+    right: 350px;
+    transform: translateX(0px);
+  }
+  ${screen.md} {
+    right: 10px;
+  }
 `;
 
 const LoadingWrapper = styled(SearchLocationContainer)`

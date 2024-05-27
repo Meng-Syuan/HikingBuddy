@@ -16,7 +16,7 @@ const StyledSearchField = styled.div`
   position: absolute;
   right: 15px;
   top: 15px;
-  z-index: 1000;
+  z-index: 450;
   border-radius: 5px;
 `;
 const Form = styled.form`

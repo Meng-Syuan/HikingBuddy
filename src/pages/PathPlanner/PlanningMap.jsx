@@ -33,6 +33,7 @@ L.Icon.Default.mergeOptions({
   iconRetinaUrl,
   iconUrl,
   shadowUrl,
+  alt: '',
 });
 
 const scheduledMarker = (number) => {

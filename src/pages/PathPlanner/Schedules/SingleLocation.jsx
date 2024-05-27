@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color from '@/theme';
+import color, { screen } from '@/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
@@ -46,6 +46,10 @@ const Location_Name = styled.h5`
   width: 180px;
   line-height: 1rem;
   font-size: 0.875rem;
+  ${screen.md} {
+    width: 60vw;
+    text-align: center;
+  }
 `;
 
 const SingleLocation = forwardRef(

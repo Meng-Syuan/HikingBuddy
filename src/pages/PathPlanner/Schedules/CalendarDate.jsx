@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color from '@/theme';
+import color, { screen } from '@/theme';
 import 'flatpickr/dist/themes/material_blue.css';
 import Flatpickr from 'react-flatpickr';
 import { MandarinTraditional } from 'flatpickr/dist/l10n/zh-tw';
@@ -11,6 +11,10 @@ const StyledInputWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  ${screen.md} {
+    justify-content: center;
+    gap: 1rem;
+  }
   .flatpickr-input {
     width: 220px;
     padding: 5px 10px;
@@ -35,7 +39,7 @@ const CalendarDate = ({ selectDates }) => {
     setScheduleArrangement('dateValue', dateStr);
   };
   const flatpickrCalendarOptions = {
-    // minDate: 'today',
+    minDate: 'today',
     mode: 'range',
     dateFormat: 'Y-m-d',
     locale: MandarinTraditional,
