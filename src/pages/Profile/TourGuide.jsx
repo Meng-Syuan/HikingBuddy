@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components';
-import color from '@/theme';
+import color, { screen } from '@/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 
@@ -40,6 +40,15 @@ const TourGuideWrapper = styled.div`
   &:hover {
     animation: ${flip} 1.5s infinite ease-in-out forwards;
     cursor: pointer;
+  }
+  ${screen.xl} {
+    position: absolute;
+    right: 1rem;
+    top: 320px;
+  }
+  ${screen.md} {
+    position: fixed;
+    top: 140px;
   }
 `;
 

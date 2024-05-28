@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color from '@/theme';
+import color, { screen } from '@/theme';
 import profileDefault from '/src/assets/img/profileDefault.png';
 import { useState, useEffect, useRef } from 'react';
 
@@ -13,7 +13,7 @@ import { showErrorToast } from '@/utils/sweetAlert';
 import Trip from './MinifyTrip';
 //#region
 const PersonalInfoWrapper = styled.section`
-  flex: 0 0 320px;
+  width: 320px;
   min-height: calc(100vh - 100px);
   display: flex;
   flex-direction: column;
@@ -21,13 +21,30 @@ const PersonalInfoWrapper = styled.section`
   gap: 20px;
   padding: 20px 25px;
   background-color: ${color.lightBackgroundColor};
+  ${screen.lg} {
+    width: 35vw;
+    padding: 20px 5px;
+  }
+  ${screen.md} {
+    width: 100vw;
+    min-height: auto;
+  }
 `;
 
 const UserPhoto = styled.div`
+  width: 220px;
+  height: 200px;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  ${screen.lg} {
+    width: 90%;
+  }
+  ${screen.md} {
+    width: 40vw;
+    height: 40vw;
+  }
 `;
 
 const Tip = styled.span`
@@ -38,34 +55,53 @@ const Tip = styled.span`
 `;
 
 const Image = styled.img`
-  width: 220px;
-  height: 220px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 `;
 
 const TripsWrapper = styled.div`
-  flex: 1;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  ${screen.md} {
+    flex-direction: row;
+    justify-content: center;
+  }
+  ${screen.sm} {
+    flex-direction: column;
+  }
+`;
+
+const TripsTime = styled.span`
+  font-size: 1.2rem;
 `;
 
 const FutureTrips = styled.div`
-  flex-basis: 150px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  ${screen.sm} {
+    width: 90%;
+  }
 `;
 const PastTrips = styled(FutureTrips)``;
+
 const Split = styled.hr`
   height: 1px;
   width: 100%;
   border: none;
   background-color: #888;
   margin: 1rem 5px;
+  ${screen.lg} {
+    width: 90%;
+  }
+  ${screen.md} {
+    width: 0;
+  }
 `;
 
 //#endregion
@@ -120,6 +156,7 @@ const PersonalInfo = () => {
       </UserPhoto>
       <TripsWrapper>
         <FutureTrips ref={futureTripsRef}>
+          <TripsTime>未來行程</TripsTime>
           {futureSchedules.length > 0 &&
             futureSchedules.map((schedule) => (
               <Trip
@@ -135,6 +172,7 @@ const PersonalInfo = () => {
         </FutureTrips>
         <Split />
         <PastTrips ref={pastTripsRef}>
+          <TripsTime>過去行程</TripsTime>
           {pastSchedules.length > 0 &&
             pastSchedules.map((schedule) => (
               <Trip

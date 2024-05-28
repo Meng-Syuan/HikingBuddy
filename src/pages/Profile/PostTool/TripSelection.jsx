@@ -52,13 +52,13 @@ const TripSelection = () => {
           if (data) {
             setPostWritingState('title', data?.title);
             setPostWritingState('content', data?.content);
-            setPostWritingState('allUploadPhotos', data?.allUploadPhotos);
+            setPostWritingState('allUploadPhotos', data.allUploadPhotos || []);
             setPostWritingState('mainPhoto', data?.mainPhoto);
           } else {
             //to clear text field if no temp data
             setPostWritingState('title', '');
             setPostWritingState('content', '');
-            setPostWritingState('allUploadPhotos', '');
+            setPostWritingState('allUploadPhotos', []);
             setPostWritingState('mainPhoto', '');
           }
         } catch (error) {

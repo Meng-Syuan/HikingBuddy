@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color from '@/theme';
+import color, { screen } from '@/theme';
 import { TextField } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faXmark, faStar } from '@fortawesome/free-solid-svg-icons';
@@ -26,6 +26,10 @@ const PostContainer = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 25px 40px;
+  ${screen.lg} {
+    padding: 25px 35px;
+    border-right: 1px ${color.borderColor} solid;
+  }
 `;
 
 const PostWrapper = styled.article`

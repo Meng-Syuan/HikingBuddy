@@ -1,31 +1,26 @@
 import styled from 'styled-components';
-import { useAuth } from '@clerk/clerk-react';
-import { useEffect } from 'react';
-
-import { Toast } from '@/utils/sweetAlert';
-
-//components
+import { screen } from '@/theme';
+import { SignedIn } from '@clerk/clerk-react';
 import { Outlet } from 'react-router-dom';
+
+//utils
+import useNavgateToHomeWithAlert from '@/hooks/useNavigateToHomeWithAlert';
 
 const ProfileContainer = styled.main`
   width: 1100px;
+  ${screen.xl} {
+    width: 100vw;
+  }
 `;
 
 const Profile = () => {
-  const { isSignedIn } = useAuth();
-  useEffect(() => {
-    if (!isSignedIn) {
-      Toast.fire({
-        title: '未登入',
-        text: '請在右上角進行登入操作',
-        icon: 'info',
-      });
-    }
-  }, [isSignedIn]);
+  useNavgateToHomeWithAlert();
   return (
-    <ProfileContainer>
-      <Outlet />
-    </ProfileContainer>
+    <SignedIn>
+      <ProfileContainer>
+        <Outlet />
+      </ProfileContainer>
+    </SignedIn>
   );
 };
 

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { screen } from '@/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
@@ -28,6 +29,9 @@ const TripWrapper = styled.div`
     transition: all 0.15s;
     box-shadow: 2px 2px 2px rgba(100, 100, 100, 0.5);
   }
+  ${screen.md} {
+    width: 100%;
+  }
 `;
 
 const Content = styled.div`
@@ -35,11 +39,21 @@ const Content = styled.div`
   margin-right: 1rem;
   width: 115px;
   text-align: center;
+  ${screen.lg} {
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+    max-width: 100%;
+    text-align: left;
+  }
+  ${screen.md} {
+    letter-spacing: 1px;
+    text-align: center;
+  }
 `;
 
 const BadgeWrapper = styled.div`
   display: flex;
-  width: 70px;
+  width: 35px;
   gap: 3px;
 `;
 
@@ -57,6 +71,9 @@ const BadgeProtector = styled.div`
     color: #754a11;
     letter-spacing: 2px;
     transform: translateX(1px);
+    ${screen.lg} {
+      letter-spacing: 0;
+    }
   }
 `;
 
