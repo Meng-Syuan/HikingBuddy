@@ -20,7 +20,7 @@ const PostContainer = styled.main`
   background-color: #fafafa;
   position: relative;
   padding: 20px 150px 80px;
-  ${screen.lg} {
+  ${screen.xl} {
     width: 100vw;
     padding: 20px 0 80px;
   }
@@ -38,7 +38,7 @@ const CreateTime = styled.span`
   letter-spacing: 2px;
   font-size: 0.875rem;
   align-self: end;
-  ${screen.lg} {
+  ${screen.xl} {
     margin-right: 5rem;
   }
   ${screen.md} {
@@ -60,7 +60,7 @@ const TextContent = styled.p`
   letter-spacing: 2px;
   word-break: break-all;
   white-space: pre-wrap;
-  ${screen.lg} {
+  ${screen.xl} {
     width: 70vw;
     min-width: 600px;
   }

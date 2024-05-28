@@ -26,7 +26,7 @@ const PostsContainer = styled.main`
   background-color: #fafafa;
   padding: 3rem;
   padding-bottom: 0;
-  ${screen.lg} {
+  ${screen.xl} {
     width: 100vw;
   }
 `;
