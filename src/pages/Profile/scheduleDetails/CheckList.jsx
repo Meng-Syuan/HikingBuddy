@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components';
-import color, { fieldWrapper } from '@/theme';
+import color, { fieldWrapper, screen } from '@/theme';
 import { SharedListTitle } from './index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileCirclePlus } from '@fortawesome/free-solid-svg-icons';
@@ -30,16 +30,34 @@ const Help = styled.img`
 
 const ListsContainer = styled.div`
   display: flex;
-  justify-content: center;
-  gap: 350px;
+  justify-content: space-between;
   min-height: 400px;
   padding: 0 2rem;
+  width: 100%;
+  ${screen.lg} {
+    justify-content: center;
+    gap: 2rem;
+  }
+  ${screen.sm} {
+    flex-direction: column;
+    padding: 0 1rem;
+  }
 `;
 
 const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+`;
+const ListName = styled.h5`
+  display: none;
+  ${screen.sm} {
+    display: block;
+    font-size: 1.25rem;
+    color: ${color.textColor};
+    font-weight: 500;
+    text-indent: 2rem;
+  }
 `;
 
 const AddItemField = styled.div`
@@ -58,6 +76,12 @@ const ItemInput = styled.input`
   text-align: center;
   &::placeholder {
     font-size: 0.875rem;
+  }
+  ${screen.lg} {
+    width: 160px;
+  }
+  ${screen.sm} {
+    width: 50vw;
   }
 `;
 
@@ -148,6 +172,7 @@ const CheckList = ({ isFuture }) => {
       </TitleWrapper>
       <ListsContainer>
         <ListWrapper>
+          <ListName>裝備清單</ListName>
           {gearChecklist.length > 0 &&
             gearChecklist.map((item) => (
               <ListItem
@@ -172,6 +197,7 @@ const CheckList = ({ isFuture }) => {
           )}
         </ListWrapper>
         <ListWrapper>
+          <ListName>用物清單</ListName>
           {otherItemChecklist.length &&
             otherItemChecklist.map((item) => (
               <ListItem

@@ -1,6 +1,8 @@
 export const screen = {
-  md: '@media screen and (max-width:700px)',
-  sm: '@media screen and (max-width:480px)',
+  xl: '@media screen and (max-width:1100px)',
+  lg: '@media screen and (max-width:820px)',
+  md: '@media screen and (max-width:620px)',
+  sm: '@media screen and (max-width:450px)',
 };
 
 const color = {
@@ -23,9 +25,10 @@ export const textBorder = {
 };
 
 export const fieldWrapper = {
-  width: '90%',
+  width: '100%',
   position: 'relative',
   marginBottom: '1rem',
+  padding: '0 5%',
 };
 
 export const styledListTitle = {

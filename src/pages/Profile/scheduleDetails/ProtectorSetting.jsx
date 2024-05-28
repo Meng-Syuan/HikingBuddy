@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color, { fieldWrapper } from '@/theme';
+import color, { fieldWrapper, screen } from '@/theme';
 import { sha256 } from 'js-sha256';
 import { SharedListTitle } from './index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,7 +15,7 @@ import { useScheduleState } from '@/zustand';
 
 const SettingContainer = styled.div`
   ${fieldWrapper}
-  height: 180px;
+  height: 240px;
 `;
 
 const TitleWrapper = styled.div`
@@ -28,9 +28,9 @@ const Help = styled.img`
 `;
 
 const ProtectorWrapper = styled.div`
-  width: 85%;
+  width: 100%;
   border: 1px solid ${color.borderColor};
-  padding: 0.5rem 1rem 1rem 1.5rem;
+  padding: 0.5rem 1rem 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -39,14 +39,21 @@ const ProtectorWrapper = styled.div`
 const UrlWrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 2rem;
+  ${screen.md} {
+    justify-content: space-between;
+  }
 `;
 
-const ProtectorUrlContent = styled.span`
+const ProtectorUrlContent = styled.div`
   font-size: 0.7rem;
+  word-break: break-all;
+  ${screen.md} {
+    font-size: 0.6rem;
+  }
 `;
 
-const StyledIcon = styled(IconButton)`
+const CopyIcon = styled(IconButton)`
   .copy {
     font-size: 1.5rem;
   }
@@ -80,7 +87,7 @@ const ToolTipContent = () => (
 const ProtectorSetting = ({ salt, scheduleId }) => {
   const { isActive } = useScheduleState();
   const encryptedId = sha256(salt);
-  const hashedUrl = `https://hikingbuddy-4abda.firebaseapp.com/protector/${encryptedId}`;
+  const hashedUrl = `https://hikingbuddy.life/protector/${encryptedId}`;
 
   const handleCopyURL = async () => {
     try {
@@ -122,7 +129,7 @@ const ProtectorSetting = ({ salt, scheduleId }) => {
       {isActive && (
         <ProtectorWrapper>
           <UrlWrapper>
-            <ProtectorUrlContent>{`https://hikingbuddy-4abda.firebaseapp.com/protector/${encryptedId}`}</ProtectorUrlContent>
+            <ProtectorUrlContent>{`https://hikingbuddy.life/protector/${encryptedId}`}</ProtectorUrlContent>
             <Tooltip
               title="複製左側網址"
               arrow={true}
@@ -130,9 +137,9 @@ const ProtectorSetting = ({ salt, scheduleId }) => {
               size="small"
               theme="light"
             >
-              <StyledIcon onClick={handleCopyURL}>
+              <CopyIcon onClick={handleCopyURL}>
                 <FontAwesomeIcon icon={faCopy} className="copy" />
-              </StyledIcon>
+              </CopyIcon>
             </Tooltip>
           </UrlWrapper>
           <Note>

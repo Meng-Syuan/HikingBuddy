@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color from '@/theme';
+import color, { screen } from '@/theme';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import { IconButton } from '@mui/material';
@@ -8,7 +8,8 @@ import { useScheduleState } from '@/zustand';
 const ItemContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 1rem;
   width: ${({ $isFuture }) => ($isFuture ? 'auto' : '260px')};
 `;
 
@@ -36,6 +37,12 @@ const ItemName = styled.span`
   width: 200px;
   line-height: 1.25rem;
   text-align: ${({ $isFuture }) => ($isFuture ? '' : 'center')};
+  ${screen.lg} {
+    width: 25vw;
+  }
+  ${screen.sm} {
+    width: 50vw;
+  }
 `;
 
 const StyledIcon = styled(IconButton)`

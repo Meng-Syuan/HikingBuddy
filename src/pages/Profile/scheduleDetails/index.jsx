@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color, { styledListTitle } from '@/theme';
+import color, { styledListTitle, screen } from '@/theme';
 import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -12,6 +12,7 @@ import { useScheduleState, useUserState } from '@/zustand';
 import getDocById from '@/firestore/getDocById';
 import getFirestoreDocs from '@/firestore/getFirestoreDocs';
 import setFirestoreDoc from '@/firestore/setFirestoreDoc';
+import useNavigateToHomeWithAlert from '@/hooks/useNavigateToHomeWithAlert';
 
 //components
 import TripInfo from './TripInfo';
@@ -32,6 +33,9 @@ const ArticlesContainer = styled.section`
   left: 50%;
   transform: translateX(-50%);
   padding-bottom: 2rem;
+  ${screen.xl} {
+    width: 100vw;
+  }
 `;
 const ArticleWrapper = styled.article`
   width: 100%;
@@ -84,6 +88,7 @@ const ScheduleDetails = () => {
   const { scheduleId } = useParams();
   const [tripsEditable, setTripsEditable] = useState(false);
   const [isFutureTrip, setIsFutureTrip] = useState(false);
+  useNavigateToHomeWithAlert();
 
   useEffect(() => {
     (async () => {

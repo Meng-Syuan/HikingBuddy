@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color, { textBorder, fieldWrapper } from '@/theme';
+import color, { textBorder, fieldWrapper, screen } from '@/theme';
 import { SharedListTitle } from './index';
 import { lightFormat, format } from 'date-fns';
 import { useEffect, useState } from 'react';
@@ -38,14 +38,22 @@ const LocationsContainer = styled.div``;
 
 const LocationWrapper = styled.div`
   display: flex;
-  gap: 8px;
+  gap: 1rem;
   margin-bottom: 4px;
+  ${screen.lg} {
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const ItemWrapper = styled.div`
   display: flex;
   width: 45%;
   gap: 8px;
+  ${screen.lg} {
+    width: 100%;
+  }
 `;
 
 const Time = styled.span`
@@ -57,12 +65,13 @@ const LocationName = styled.span`
   ${textBorder};
   text-align: center;
   flex: 1;
+  min-width: 150px;
   min-height: 28px;
   background-color: transparent;
 `;
 const NoteInput = styled.input`
   ${textBorder}
-  flex: 1;
+  flex:1;
   border-radius: 5px;
   outline: ${(props) => (props.readOnly ? 'none' : '')};
   border: ${(props) => (props.readOnly ? 'none' : '')};
@@ -134,6 +143,7 @@ const TripInfo = ({ isEditable }) => {
                           }
                           value={locationNotes[itinerary.id] || ''}
                           readOnly={!isEditable}
+                          maxLength={50}
                         />
                       ) : null}
                     </LocationWrapper>
