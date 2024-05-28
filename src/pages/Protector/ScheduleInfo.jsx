@@ -1,5 +1,10 @@
 import styled from 'styled-components';
-import color, { textBorder, fieldWrapper, styledListTitle } from '@/theme';
+import color, {
+  textBorder,
+  fieldWrapper,
+  styledListTitle,
+  screen,
+} from '@/theme';
 import { lightFormat, format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useScheduleState } from '@/zustand';
@@ -12,6 +17,9 @@ const InfoContainer = styled.section`
   flex-direction: column;
   gap: 3rem;
   height: calc(100% - 64px);
+  ${screen.sm} {
+    padding: 2rem 1.5rem;
+  }
 `;
 const TripInfoWrapper = styled.section`
   ${fieldWrapper};
@@ -52,15 +60,24 @@ const LocationsContainer = styled.div``;
 
 const LocationWrapper = styled.div`
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   margin-bottom: 4px;
-  align-items: baseline;
+  align-items: center;
+  ${screen.md} {
+    flex-direction: column;
+    align-items: start;
+    gap: 0.5rem;
+    margin-bottom: 20px;
+  }
 `;
 
 const ItemWrapper = styled.div`
   display: flex;
   max-width: 45%;
   gap: 8px;
+  ${screen.md} {
+    max-width: 100%;
+  }
 `;
 
 const Time = styled.span`
@@ -70,12 +87,13 @@ const Time = styled.span`
 `;
 const LocationName = styled.span`
   ${textBorder};
+  font-size: 0.9rem;
   text-align: center;
-  min-width: 200px;
+  min-width: calc(100% - 70px);
   min-height: 28px;
   background-color: ${color.lightBackgroundColor};
 `;
-const Note = styled.span`
+const Note = styled.div`
   font-size: 0.875rem;
 `;
 

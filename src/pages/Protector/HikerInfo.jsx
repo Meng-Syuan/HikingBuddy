@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color from '@/theme';
+import color, { screen } from '@/theme';
 import { Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
@@ -12,14 +12,23 @@ import uploadFile from '@/utils/uploadFile';
 import { Toast, showErrorToast } from '@/utils/sweetAlert';
 import setFirestoreDoc from '@/firestore/setFirestoreDoc';
 
+//#region
 const HikerInfoContainer = styled.section`
-  flex: 0 1 360px;
-  padding: 40px 45px 10px;
+  width: 360px;
+  padding: 40px 40px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 35px;
+  gap: 30px;
   background-color: ${color.lightBackgroundColor};
+  height: 100%;
+  ${screen.xl} {
+    width: 35vw;
+    padding: 40px 0px 10px;
+  }
+  ${screen.lg} {
+    min-width: 100vw;
+  }
 `;
 
 const PhotoWrapper = styled.div``;
@@ -35,6 +44,9 @@ const Image = styled.img`
   width: 240px;
   height: 230px;
   object-fit: contain;
+  ${screen.xl} {
+    max-width: 100%;
+  }
 `;
 
 const Tip = styled.span`
@@ -42,11 +54,13 @@ const Tip = styled.span`
   font-size: 0.75rem;
   top: 50%;
   z-index: 1;
+  margin: 0 0.5rem;
 `;
 
 const InfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 25px;
 `;
 
@@ -54,15 +68,20 @@ const InputWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 28px;
+  ${screen.xl} {
+    max-width: 80%;
+  }
+  ${screen.lg} {
+    max-width: 100%;
+  }
 `;
 
 const Label = styled.label`
   font-size: 0.875rem;
 `;
 const StyledInput = styled.input`
-  width: 200px;
-  height: 25px;
+  width: 70%;
+  height: 30px;
   border: 1px solid ${color.borderColor};
   border-radius: 5px;
   padding: 5px;
@@ -72,6 +91,13 @@ const StyledInput = styled.input`
   }
   background-color: ${(props) =>
     props.readOnly ? color.lightBackgroundColor : '#fff'};
+  ${screen.xl} {
+    width: 70%;
+  }
+  ${screen.lg} {
+    width: 80%;
+    height: 35px;
+  }
 `;
 
 const MessageInput = styled.textarea`
@@ -87,6 +113,12 @@ const MessageInput = styled.textarea`
   }
   background-color: ${(props) =>
     props.readOnly ? color.lightBackgroundColor : '#fff'};
+  ${screen.xl} {
+    width: 70%;
+  }
+  ${screen.lg} {
+    width: 80%;
+  }
 `;
 
 const SaveEditionBtn = styled(Button)`
@@ -122,6 +154,7 @@ const StyledWritingIcon = styled(BorderColorIcon)`
   height: 1.2rem;
   color: ${color.secondary};
 `;
+//#endregion
 
 const HikerInfo = ({ isEditable, id, valid }) => {
   const [sendable, setSendable] = useState(false);
@@ -222,24 +255,24 @@ const HikerInfo = ({ isEditable, id, valid }) => {
               autoFocus
             ></MessageInput>
           </InputWrapper>
+          {isEditable && sendable ? (
+            <SaveEditionBtn
+              onClick={handleUploadHikerInfo}
+              variant="outlined"
+              size="small"
+              endIcon={<SendIcon />}
+            >
+              上傳資訊
+            </SaveEditionBtn>
+          ) : isEditable ? (
+            <Note variant="outlined" size="small">
+              編輯資訊
+              <StyledWritingIcon size="small" />
+            </Note>
+          ) : (
+            ''
+          )}
         </InfoWrapper>
-        {isEditable && sendable ? (
-          <SaveEditionBtn
-            onClick={handleUploadHikerInfo}
-            variant="outlined"
-            size="small"
-            endIcon={<SendIcon />}
-          >
-            上傳資訊
-          </SaveEditionBtn>
-        ) : isEditable ? (
-          <Note variant="outlined" size="small">
-            編輯資訊
-            <StyledWritingIcon size="small" />
-          </Note>
-        ) : (
-          ''
-        )}
       </HikerInfoContainer>
     )
   );

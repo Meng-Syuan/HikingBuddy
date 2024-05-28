@@ -46,7 +46,7 @@ const arrivedMarker = L.icon({
 });
 
 const StyledMapContainer = styled(MapContainer)`
-  min-height: calc(100% - -50px);
+  min-height: 100%;
 `;
 
 const PopupContent = styled.div`

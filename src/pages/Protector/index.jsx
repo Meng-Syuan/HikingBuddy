@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { screen } from '@/theme';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
 import { useState, useEffect } from 'react';
@@ -8,7 +9,7 @@ import { sha256 } from 'js-sha256';
 
 //components
 import HikerInfo from './HikerInfo';
-import Tabs from './Tabs';
+import Tabs from './ProtectorTabs';
 
 //utils
 import { Toast, showErrorToast } from '@/utils/sweetAlert';
@@ -20,15 +21,25 @@ import {
   useScheduleState,
   useScheduleArrangement,
 } from '@/zustand';
+
 //#region
 const ProtectorContainer = styled.main`
   width: 1100px;
   display: flex;
+  ${screen.xl} {
+    width: 100vw;
+  }
 `;
 
 const TabsContainer = styled.section`
-  min-height: 100vh;
-  flex: 2 1 530px;
+  min-height: calc(100vh - 80px);
+  flex: 1;
+`;
+
+const HikerInfoWrapper = styled.div`
+  ${screen.lg} {
+    display: none;
+  }
 `;
 
 const firestoreDocIdLength = 20;
@@ -184,17 +195,16 @@ const Protector = () => {
       {scheduleId !== 'no_active_schedule' && (
         <TabsContainer>
           <Tabs
-            isEditable={isEditable}
-            gpxPoints={gpxPoints}
+            id={scheduleId}
             valid={isUrlValid}
+            gpxPoints={gpxPoints}
+            isEditable={isEditable}
           />
         </TabsContainer>
       )}
-      <HikerInfo
-        isEditable={isEditable}
-        id={scheduleId}
-        valid={isUrlValid}
-      ></HikerInfo>
+      <HikerInfoWrapper>
+        <HikerInfo id={scheduleId} valid={isUrlValid} isEditable={isEditable} />
+      </HikerInfoWrapper>
     </ProtectorContainer>
   );
 };
