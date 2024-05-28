@@ -1,12 +1,11 @@
 import styled from 'styled-components';
 import color, { screen } from '@/theme';
 import 'leaflet/dist/leaflet.css';
-import { useAuth, SignedIn } from '@clerk/clerk-react';
-import { useNavigate } from 'react-router-dom';
+import { SignedIn } from '@clerk/clerk-react';
 import { useState } from 'react';
 
-import { Toast } from '@/utils/sweetAlert';
 import { useScheduleArrangement } from '@/zustand';
+import useNavigateToHomeWithAlert from '@/hooks/useNavigateToHomeWithAlert';
 
 //components
 import Map from './PlanningMap';
@@ -75,22 +74,10 @@ const ScheduleWrapper = styled.section`
 `;
 
 const PathPlanner = () => {
-  const { isSignedIn } = useAuth();
-  const navigate = useNavigate();
   const { tripName, setScheduleArrangement } = useScheduleArrangement();
   const [isSaved, setIsSaved] = useState(false);
 
-  const navigateToHomeWithAlert = async () => {
-    if (isSignedIn) return;
-    await Toast.fire({
-      title: '請先登入',
-      icon: 'warning',
-      timer: 1500,
-    });
-    navigate('/');
-  };
-
-  navigateToHomeWithAlert();
+  useNavigateToHomeWithAlert();
 
   return (
     <SignedIn>
