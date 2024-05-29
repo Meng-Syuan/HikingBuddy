@@ -17,7 +17,7 @@ const PlannerContainer = styled.main`
   width: 1100px;
   justify-content: center;
   background-color: ${color.lightBackgroundColor};
-  ${screen.lg} {
+  ${screen.xl} {
     width: 100vw;
   }
   ${screen.md} {
@@ -57,7 +57,6 @@ const MapWrapper = styled.section`
   flex: 1;
   ${screen.md} {
     display: none;
-    width: 100vw;
   }
 `;
 

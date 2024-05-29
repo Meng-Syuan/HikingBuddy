@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import color from '@/theme';
+import color, { screen } from '@/theme';
 import logo from '/src/assets/img/logo.png';
 import { NavLink } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -23,7 +23,7 @@ const HeaderContainer = styled.header`
   display: flex;
   justify-content: center;
   position: relative;
-  z-index: 5;
+  z-index: 500;
   background: #fff;
   padding: 0 25px;
 `;
@@ -39,7 +39,7 @@ const LogoNavLink = styled(NavLink)`
   top: 3px;
   left: 2px;
   height: 85%;
-  width: 140px;
+  width: 80px;
 `;
 
 const Logo = styled.img`
@@ -47,13 +47,19 @@ const Logo = styled.img`
 `;
 
 const Navigation = styled.nav`
-  width: 100%;
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  ${screen.md} {
+    display: none;
+  }
 `;
 const UnorderedList = styled.ul`
   display: flex;
   justify-content: space-between;
   align-items: center;
   text-align: center;
+  width: 100%;
   .active {
     font-weight: 450;
     color: ${color.primary};
@@ -191,16 +197,16 @@ const Header = () => {
               )}
             </UnorderedList>
           </Navigation>
-        </HeaderContent>
 
-        <HeaderNavBtn
-          pageslinks={pageslinks}
-          setIsSignInModalOpen={setIsSignInModalOpen}
-        />
-        <AuthIconWrapper>
-          <SignInBtn />
-          {isSignedIn ? <SignOutBtn /> : <SignInAsGuest />}
-        </AuthIconWrapper>
+          <HeaderNavBtn
+            pageslinks={pageslinks}
+            setIsSignInModalOpen={setIsSignInModalOpen}
+          />
+          <AuthIconWrapper>
+            <SignInBtn />
+            {isSignedIn ? <SignOutBtn /> : <SignInAsGuest />}
+          </AuthIconWrapper>
+        </HeaderContent>
       </HeaderContainer>
     </>
   );

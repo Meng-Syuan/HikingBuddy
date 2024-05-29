@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components';
-import color from '@/theme';
+import color, { screen } from '@/theme';
 import { SignInButton, useAuth, useSignIn } from '@clerk/clerk-react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -38,11 +38,13 @@ const IntroWrapper = styled.section`
   height: 55vh;
   width: 100vw;
   background-color: rgba(255, 255, 255, 0.8);
+  ${screen.md} {
+    flex-direction: column-reverse;
+    padding: 2rem 3rem;
+  }
 `;
 
-const IntroWrapper_protector = styled(IntroWrapper)`
-  width: 90vw;
-`;
+const IntroWrapper_protector = styled(IntroWrapper)``;
 
 const IntroWrapper_posts = styled(IntroWrapper_protector)`
   align-self: flex-end;
@@ -55,11 +57,15 @@ const CardWrapper = styled.section`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10rem;
   background: linear-gradient(#cbdddfea, #8ebcc2);
   border-radius: 15px;
   margin-bottom: 15vh;
-  padding: 0 20px;
+  padding: 0 5vw;
+  ${screen.md} {
+    flex-direction: column;
+    justify-content: center;
+    gap: 30%;
+  }
 `;
 
 const TextWrapper = styled.div`
@@ -67,11 +73,18 @@ const TextWrapper = styled.div`
   flex-direction: column;
   justify-content: space-between;
   height: 45%;
+  ${screen.md} {
+    height: 40%;
+    align-self: flex-start;
+  }
 `;
 
 const TextWrapper_protector = styled(TextWrapper)`
   align-items: flex-end;
-  height: 35%;
+  height: 30%;
+  ${screen.md} {
+    align-items: flex-start;
+  }
 `;
 
 const Title = styled.h3`
@@ -81,14 +94,34 @@ const Title = styled.h3`
   font-weight: 600;
 `;
 
-const ImgWrapper = styled.div``;
-
-const PlannerImg = styled.img`
+const ImgWrapper = styled.div`
   width: 20vw;
+  ${screen.md} {
+    width: 180px;
+    align-self: flex-end;
+  }
 `;
 
-const Img = styled.img`
-  width: 25vw;
+const PlannerImg = styled.img`
+  width: 100%;
+  ${screen.md} {
+    width: 180px;
+  }
+`;
+
+const ProtectorImg = styled(PlannerImg)`
+  ${screen.md} {
+    width: 210px;
+  }
+`;
+
+const HikingImg = styled(ProtectorImg)``;
+
+const WorldImg = styled.img`
+  width: 50%;
+  ${screen.md} {
+    width: 250px;
+  }
 `;
 
 const PlannerContext = styled.p`
@@ -99,10 +132,13 @@ const PlannerContext = styled.p`
 
 const ProtectorContext = styled(PlannerContext)`
   align-items: flex-end;
+  ${screen.md} {
+    align-items: flex-start;
+  }
 `;
 const PostsContext = styled(PlannerContext)``;
 
-const CardContext = styled.p`
+const CardContext = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -118,7 +154,7 @@ const StyledContainedButton = styled(Button)`
   }
 `;
 const SignInText = styled.p`
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: #ccc;
 `;
 
@@ -315,13 +351,13 @@ const Intro = () => {
           <ProtectorContext>相伴身後，靜守你的安全</ProtectorContext>
         </TextWrapper_protector>
         <ImgWrapper>
-          <Img src={protector}></Img>
+          <ProtectorImg src={protector}></ProtectorImg>
         </ImgWrapper>
       </IntroWrapper_protector>
 
       <IntroWrapper_posts ref={postsSection}>
         <ImgWrapper>
-          <Img src={hiking}></Img>
+          <HikingImg src={hiking}></HikingImg>
         </ImgWrapper>
         <TextWrapper>
           <Title>山閱足跡</Title>
@@ -362,7 +398,7 @@ const Intro = () => {
             </StyledOutLinedButton>
           )}
         </CardContext>
-        <Img src={world}></Img>
+        <WorldImg src={world}></WorldImg>
       </CardWrapper>
     </IntroContainer>
   );

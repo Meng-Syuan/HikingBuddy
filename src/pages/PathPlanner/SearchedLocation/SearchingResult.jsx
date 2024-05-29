@@ -24,7 +24,7 @@ const SearchLocationContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  ${screen.lg} {
+  ${screen.xl} {
     right: 350px;
     transform: translateX(0px);
   }

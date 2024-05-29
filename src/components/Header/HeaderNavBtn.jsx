@@ -112,26 +112,22 @@ const HeaderNavBtn = ({ pageslinks, setIsSignInModalOpen }) => {
           {isSignedIn ? (
             <>
               {pageslinks.map((link) => (
-                <>
-                  <ListItem
-                    key={link.id}
-                    as={NavLink}
-                    to={link.link}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {link.id}
-                  </ListItem>
-                </>
+                <ListItem
+                  key={link.id}
+                  as={NavLink}
+                  to={link.link}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.id}
+                </ListItem>
               ))}
             </>
           ) : (
             <>
               {pageslinks.map((link) => (
-                <>
-                  <ListItem key={link.id} onClick={handleSignIn}>
-                    {link.id}
-                  </ListItem>
-                </>
+                <ListItem key={link.id} onClick={handleSignIn}>
+                  {link.id}
+                </ListItem>
               ))}
             </>
           )}
