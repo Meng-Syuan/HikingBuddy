@@ -28,15 +28,15 @@
 
 - Create a new trip with OpenStreetMap and upload the gpx file you want.
 - Select the dates, and drag items to the date block. Choose the times as ETA.
-  <video src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fplanner.mp4?alt=media&token=c42c2a70-8e8c-48cd-984f-c2b77608b681" width="60%" height="auto"></video>
-  <br />
+
+<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fplanner.gif?alt=media&token=2f0d22ac-82b1-4b09-b43a-51aa311521ba" width='600' alt="schedule planning">
+<br />
 
 - Click the minified schedule on profile page and arrange the details of the schedule.
 - Add location notes you need.
 - Create or delete item of checklist, and also check the item prepared.
-<div align="center">
-<video src=https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2FscheduleDetails.mp4?alt=media&token=e954ed13-92fe-4135-af5a-dc35b440fec0 width=60%/>
-</div>
+
+<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2FscheduleDetails.gif?alt=media&token=1ae956ef-d08d-48b3-b826-cb308052da08" width='600' alt="schedule details">
 <br />
 
 **Emergency contact**
@@ -45,10 +45,8 @@
 - Leave your photo and messages for your contacts.
 - Click on the icon to mark your arrival time.
 - Contacts can access your detailed itinerary through the trip information tab.
-<div align="center">
-<video src=https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fturn_on_protector.mp4?alt=media&token=fefe7bca-ba9c-4648-861b-ad22a1787cd6 width=60%/>
-</div>
-<br />
+
+<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fturn_on_protector.gif?alt=media&token=44566479-896f-49e7-89cb-4d3ac46f1082" width='600' alt="protector">
 
 **Itinerary Journaling**
 
@@ -57,10 +55,8 @@
 - Save the post if it is not finished yet.
 - Choose the markers that will display on the map when searching posts.
 - Read the post once it is finished.
-<div align="center">
-<video src=https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fpost.mp4?alt=media&token=9cfd9e31-43f2-49c9-9764-c8e618abfb37 width=60%/>
-</div>
-<br />
+
+<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fpost.gif?alt=media&token=732d024c-2a2f-4748-ac12-8606d73685d3" width='600' alt="post flow">
 
 ## Built with
 
