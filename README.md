@@ -1,7 +1,8 @@
 <div align="center">
-<img src=https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Flogo.png?alt=media&token=d817881d-e6fb-43f2-8480-dae5b7833417 width=20% />
-<p>Embarking on a journey to the peak.</p>
+  <img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Flogo.png?alt=media&token=d817881d-e6fb-43f2-8480-dae5b7833417" width="20%" />
 </div>
+
+<p align="center" style="margin-top: 10px; margin-bottom: 10px;">Embarking on a journey to the peak.</p>
 
 # Hiking Buddy
 
@@ -27,10 +28,8 @@
 
 - Create a new trip with OpenStreetMap and upload the gpx file you want.
 - Select the dates, and drag items to the date block. Choose the times as ETA.
-<div align="center">
-<video src=https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fplanner.mp4?alt=media&token=c42c2a70-8e8c-48cd-984f-c2b77608b681 width=60%/>
-</div>
-<br />
+  <video src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fplanner.mp4?alt=media&token=c42c2a70-8e8c-48cd-984f-c2b77608b681" width="60%" height="auto"></video>
+  <br />
 
 - Click the minified schedule on profile page and arrange the details of the schedule.
 - Add location notes you need.
