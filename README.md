@@ -2,6 +2,8 @@
   <img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Flogo.png?alt=media&token=d817881d-e6fb-43f2-8480-dae5b7833417" width="20%" />
 </div>
 
+<br />
+
 <p align="center" style="margin-top: 10px; margin-bottom: 10px;">Embarking on a journey to the peak.</p>
 
 # Hiking Buddy
@@ -29,14 +31,14 @@
 - Create a new trip with OpenStreetMap and upload the gpx file you want.
 - Select the dates, and drag items to the date block. Choose the times as ETA.
 
-<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fplanner.gif?alt=media&token=2f0d22ac-82b1-4b09-b43a-51aa311521ba" width='600' alt="schedule planning">
+<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2FnewSchedule.gif?alt=media&token=d9e92626-976d-4fd9-823d-516e001859db" width='500' alt="schedule planning">
 <br />
 
 - Click the minified schedule on profile page and arrange the details of the schedule.
 - Add location notes you need.
 - Create or delete item of checklist, and also check the item prepared.
 
-<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2FscheduleDetails.gif?alt=media&token=1ae956ef-d08d-48b3-b826-cb308052da08" width='600' alt="schedule details">
+<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2FscheduleDetails.gif?alt=media&token=67a40c85-44e0-4278-a811-eea19606da4f" width='500' alt="schedule details">
 <br />
 
 **Emergency contact**
@@ -46,17 +48,20 @@
 - Click on the icon to mark your arrival time.
 - Contacts can access your detailed itinerary through the trip information tab.
 
-<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fturn_on_protector.gif?alt=media&token=44566479-896f-49e7-89cb-4d3ac46f1082" width='600' alt="protector">
+<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fprotector.gif?alt=media&token=e803e856-cffc-4f06-9f49-81d7df26e40e" width='500' alt="protector">
 
 **Itinerary Journaling**
 
 - Select a past schedule and edit the journal with a title and content.
 - Upload up to 10 photos and choose your favorite one as the cover.
-- Save the post if it is not finished yet.
 - Choose the markers that will display on the map when searching posts.
+
+<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fpost_part1.gif?alt=media&token=80475b08-9224-48eb-b78f-056927ca5e1c" width='500' alt="post flow">
+
+- Save the post if it is not finished yet.
 - Read the post once it is finished.
 
-<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fpost.gif?alt=media&token=732d024c-2a2f-4748-ac12-8606d73685d3" width='600' alt="post flow">
+<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fpost_part2.gif?alt=media&token=b9ac0dc1-fd5d-4364-a225-8b26df034b0b" width='500' alt="post flow">
 
 ## Built with
 
