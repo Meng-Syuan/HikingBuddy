@@ -1,9 +1,6 @@
 <div align="center">
-  <img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Flogo.png?alt=media&token=d817881d-e6fb-43f2-8480-dae5b7833417" width="20%" />
+  <img src="https://github.com/Meng-Syuan/HikingBuddy/assets/152586819/e2941ead-6e93-4ffd-9ea7-a75403c4d8ad" width="180" />
 </div>
-
-<br />
-
 <p align="center" style="margin-top: 10px; margin-bottom: 10px;">Embarking on a journey to the peak.</p>
 
 # Hiking Buddy
@@ -31,15 +28,13 @@
 - Create a new trip with OpenStreetMap and upload the gpx file you want.
 - Select the dates, and drag items to the date block. Choose the times as ETA.
 
-<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2FnewSchedule.gif?alt=media&token=d9e92626-976d-4fd9-823d-516e001859db" width='500' alt="schedule planning">
-<br />
+<img src="https://github.com/Meng-Syuan/HikingBuddy/assets/152586819/dadaeca3-0d76-47d4-a559-20b50bc7e066" width='600' alt="new schedule">
 
 - Click the minified schedule on profile page and arrange the details of the schedule.
 - Add location notes you need.
 - Create or delete item of checklist, and also check the item prepared.
 
-<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2FscheduleDetails.gif?alt=media&token=67a40c85-44e0-4278-a811-eea19606da4f" width='500' alt="schedule details">
-<br />
+<img src="https://github.com/Meng-Syuan/HikingBuddy/assets/152586819/65906cc8-8af5-4049-be8f-d23ffb9674d8" width='600' alt="schedule details">
 
 **Emergency contact**
 
@@ -48,7 +43,7 @@
 - Click on the icon to mark your arrival time.
 - Contacts can access your detailed itinerary through the trip information tab.
 
-<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fprotector.gif?alt=media&token=e803e856-cffc-4f06-9f49-81d7df26e40e" width='500' alt="protector">
+<img src="https://github.com/Meng-Syuan/HikingBuddy/assets/152586819/79d880bc-632f-4db4-8e1b-3f27e16e44d7" width='600' alt="protector">
 
 **Itinerary Journaling**
 
@@ -56,12 +51,12 @@
 - Upload up to 10 photos and choose your favorite one as the cover.
 - Choose the markers that will display on the map when searching posts.
 
-<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fpost_part1.gif?alt=media&token=80475b08-9224-48eb-b78f-056927ca5e1c" width='500' alt="post flow">
+<img src="https://github.com/Meng-Syuan/HikingBuddy/assets/152586819/22ff1dcb-4b23-4a91-a13c-bcd547da7e1b" width='600' alt="post flow">
 
 - Save the post if it is not finished yet.
 - Read the post once it is finished.
 
-<img src="https://firebasestorage.googleapis.com/v0/b/hikingbuddy-4abda.appspot.com/o/README_intro%2Fpost_part2.gif?alt=media&token=b9ac0dc1-fd5d-4364-a225-8b26df034b0b" width='500' alt="post flow">
+<img src="https://github.com/Meng-Syuan/HikingBuddy/assets/152586819/39db4b3c-dbf9-44e8-ab44-31a5f04fd97d" width='600' alt="post flow">
 
 ## Built with
 
